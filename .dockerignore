@@ -1,0 +1,42 @@
+# Version control
+.git/
+.gitignore
+
+# macOS junk
+__MACOSX/
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+
+# IDE
+.idea/
+.vscode/
+
+# Logs and temp
+*.log
+*.tmp
+
+# Large artifacts (다운로드/생성된 모델, 데이터셋)
+*.pt
+*.tflite
+*.onnx
+*.h5
+*.pb
+*.bin
+models/
+datasets/
+*.mp4
+*.avi
+*.mov
+
+# Docker artifacts
+docker-compose.override.yml
+
+# Documentation builds
+docs/_build/

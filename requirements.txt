@@ -1,0 +1,25 @@
+# Core scientific
+numpy==1.26.4
+opencv-python-headless
+pyyaml
+tqdm
+pillow
+
+# TensorFlow / Keras stack (Ultralytics TFLite export 호환 조합)
+# 멘토 docs는 tensorflow==2.13.0이지만 현재 Ultralytics(8.4.75) export가 tf_keras<=2.19.0 요구
+# → AutoUpdate가 일어나면 환경 깨짐. 사전에 2.19 stack으로 핀.
+tensorflow==2.19.1
+tf_keras==2.19.0
+keras==3.12.2
+ai-edge-litert
+protobuf>=5,<6
+ml-dtypes
+
+# Ultralytics + ONNX 변환 도구 체인
+ultralytics
+onnx
+onnxruntime
+onnxslim
+onnx2tf
+onnx_graphsurgeon
+sng4onnx

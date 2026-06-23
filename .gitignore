@@ -1,0 +1,97 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+
+# === 가상 환경 ===
+.venv/
+venv/
+env/
+ENV/
+
+# === ML 모델 파일 (재생성 가능, 크기 큼) ===
+*.tflite
+*.pt
+*.pth
+*.onnx
+*.h5
+*.pb
+*.bin
+*.npy
+*.npz
+*.ckpt
+*.safetensors
+
+# === ML 데이터셋 (auto-download, 크기 큼) ===
+datasets/
+data/
+
+# === Export 결과물 (재생성 가능) ===
+*_saved_model/
+
+# === Ultralytics 자동 다운로드 ===
+yolov*.pt
+yolov*.onnx
+yolo*.pt
+yolo*.onnx
+calibration_image_sample_data_*
+Arial.ttf
+
+# === 압축 / 큰 파일 ===
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.rar
+
+# === 비밀 / 개인 환경 ===
+.env
+.env.*
+*.env
+secrets.*
+credentials.*
+*.key
+*.pem
+*.crt
+
+# === Logs / 임시 ===
+*.log
+logs/
+.cache/
+*.tmp
+*.bak
+*.swp
+*.swo
+
+# === Jupyter ===
+.ipynb_checkpoints/
+
+# === OS junk ===
+.DS_Store
+__MACOSX/
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+*~
+
+# === IDE ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+
+# === 본 프로젝트의 임시 출력 ===
+# 호스트 측 임시 디렉토리는 /tmp/unoq-yolo/ (절대 경로, git 대상 아님)
+# 만약 프로젝트 폴더 내에 임시 출력 두면 여기 추가
