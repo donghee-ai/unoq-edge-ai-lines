@@ -131,20 +131,22 @@ Ultralytics int8 export의 표준 동작:
 | Thread count | 4 (호스트는 8 코어 16 스레드 중 4개) | 4 (전부) | — |
 | **종합 예상** | — | — | **약 8~15× 느림** |
 
-### 4-2. UNO Q 예상 수치
+### 4-2. UNO Q 실측 수치 (2026-06-23 확정)
 
-| 지표 | 호스트 실측 | UNO Q 추정 |
-|---|---|---|
-| latency mean (ms) | 12.5 | 100~190 |
-| FPS mean | 80 | 5~10 |
+| 지표 | 호스트 실측 | UNO Q 실측 | 디바이스/호스트 비율 |
+|---|---|---|---|
+| latency mean (ms) | 12.5 | **101.27** | **8.1×** |
+| latency p50 (ms) | 12.23 | 94.03 | 7.7× |
+| latency p95 (ms) | 14.98 | 129.06 | 8.6× |
+| FPS mean | 80 | **9.88** | 1/8.1 |
 
-### 4-3. 본 작품 시나리오에서의 의미
+→ **사전 추정 (100~190 ms / 5~10 FPS) 범위 내에서 가장 빠른 쪽 결과.** 자세한 내용 및 합격 판정은 `07_device_first_inference.md` 참조.
+
+### 4-3. 본 작품 시나리오에서의 의미 — 합격 판정 완료
 
 - 본 작품 합격선: **8 FPS 이상** (`01_model_selection_log.md`)
-- UNO Q 추정 범위 (5~10 FPS) — **경계선**
-- 실측 결과에 따라:
-  - 8 FPS 이상 → YOLO 유지, 후속 단계 진행
-  - 8 FPS 미만 → 최적화 (해상도 축소, frame skip) 또는 MediaPipe Face 전환 검토
+- UNO Q 실측: **9.88 FPS** → ✅ **합격선 통과**
+- 결정: **YOLO 유지**. MediaPipe 전환 트리거 발동 안 됨.
 
 ---
 
@@ -204,6 +206,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_float16.tflite
 | 날짜 | 변경 | 사유 |
 |---|---|---|
 | 2026-06-23 | 초안 작성, 호스트 baseline 12.5ms / 80 FPS 기록 | STEP 3 완료 |
+| 2026-06-23 | Section 4 갱신: UNO Q 실측 수치 채움 (101.27 ms / 9.88 FPS) | STEP 5 완료. 상세는 `07_device_first_inference.md` |
 
 ---
 

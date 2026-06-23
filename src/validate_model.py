@@ -24,13 +24,20 @@ from pathlib import Path
 
 import numpy as np
 
-# tflite_runtime이 있으면 우선 (디바이스 친화적), 없으면 tensorflow.lite 폴백
+# TFLite 런타임 3단 폴백 (디바이스 친화적 → 호스트 컨테이너 호환)
+#   1. ai-edge-litert: Google AI Edge LiteRT (모던, 디바이스 권장 — Python 3.13/aarch64 지원)
+#   2. tflite_runtime: legacy 경량 런타임 (구 디바이스)
+#   3. tensorflow.lite: 전체 TF (호스트 컨테이너)
 try:
-    import tflite_runtime.interpreter as tflite
-    RUNTIME = "tflite_runtime"
+    from ai_edge_litert import interpreter as tflite
+    RUNTIME = "ai_edge_litert"
 except ImportError:
-    import tensorflow.lite as tflite
-    RUNTIME = "tensorflow.lite"
+    try:
+        import tflite_runtime.interpreter as tflite
+        RUNTIME = "tflite_runtime"
+    except ImportError:
+        import tensorflow.lite as tflite
+        RUNTIME = "tensorflow.lite"
 
 
 def clean_value(v):

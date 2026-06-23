@@ -3,7 +3,7 @@
 > Arduino UNO Q (Qualcomm Dragonwing QRB2210) 위에서 동작하는 책상용 교감로봇 프로젝트.
 > TFLite로 얼굴/표정을 실시간 분석하여 LED·모터·소리로 반응합니다.
 
-**현재 상태**: 호스트 환경 셋업 + 모델 export + 호스트 baseline 측정 완료. UNO Q 디바이스 측 작업 예정.
+**현재 상태**: STEP 1~5 완료. UNO Q 디바이스에서 **9.88 FPS 실측 확인** — 본 작품 합격선(8 FPS) 통과.
 
 ---
 
@@ -83,11 +83,13 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 | 2 | YOLOv8n int8 TFLite export | ✅ |
 | 2-α | `requirements.lock`으로 환경 재현성 확보 | ✅ |
 | 3 | 호스트 모델 검증 + latency baseline | ✅ (12.5 ms / 80 FPS) |
-| 4 | UNO Q 디바이스로 모델 전송 | ⏳ 하드웨어 대기 |
-| 5 | UNO Q에서 추론 실행 + 실측 | ⏳ |
-| 6 | GPU delegate 트러블슈팅 (필요 시) | ⏳ |
-| 7 | 얼굴 검출 / 표정 추론 파이프라인 | ⏳ |
-| 8 | MCU 연동 (LED, 모터) | ⏳ |
+| 4 | UNO Q 디바이스 셋업 + 모델 전송 | ✅ (ai-edge-litert + venv) |
+| 5 | UNO Q에서 추론 실행 + 실측 | ✅ (**101 ms / 9.88 FPS**) |
+| 6 | GPU delegate 트러블슈팅 (선택) | ⏳ (CPU로 합격선 통과로 후순위) |
+| 7 | 후처리 모듈 (NMS, 박스 디코딩) | ⏳ |
+| 8 | 실제 이미지 추론 + 시각화 | ⏳ |
+| 9 | 얼굴 검출 / 표정 추론 파이프라인 | ⏳ |
+| 10 | MCU 연동 (LED, 모터) | ⏳ |
 
 ---
 
@@ -95,10 +97,14 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 
 | 측정 환경 | 모델 | latency mean | FPS mean | 비고 |
 |---|---|---|---|---|
-| 호스트 CPU (Ryzen 7 6800HS, 4 thread, XNNPACK) | YOLOv8n int8 320×320 | **12.5 ms** | **79.96** | baseline |
-| UNO Q CPU (Cortex-A53 ×4) | 동일 | 측정 예정 | 측정 예정 | 8~15× 느릴 것으로 추정 |
+| 호스트 CPU (Ryzen 7 6800HS, 4 thread, XNNPACK) | YOLOv8n int8 320×320 | 12.5 ms | 79.96 | baseline |
+| **UNO Q CPU (Cortex-A53 ×4, ai-edge-litert + XNNPACK)** | YOLOv8n int8 320×320 | **101.27 ms** | **9.88** | 호스트 대비 8.1× 느림 |
 
-상세 분석: [`danny/05_host_validation_results.md`](danny/05_host_validation_results.md)
+작품 합격선: **8 FPS 이상** → ✅ **통과** (여유 1.88 FPS).
+
+상세 분석:
+- 호스트 baseline: [`danny/05_host_validation_results.md`](danny/05_host_validation_results.md)
+- UNO Q 첫 추론: [`danny/07_device_first_inference.md`](danny/07_device_first_inference.md)
 
 ---
 
@@ -120,9 +126,10 @@ unoq-companion-robot/
 │   ├── 04_uno_q_env_setup.md
 │   └── 05_host_validation_results.md
 ├── scripts/
-│   └── env.sh              UNO Q 접속 환경 변수
+│   ├── env.sh              UNO Q 접속 환경 변수
+│   └── setup_device.sh     UNO Q 디바이스 셋업 자동화 (idempotent)
 └── src/
-    └── validate_model.py   TFLite 모델 검증 + latency 측정
+    └── validate_model.py   TFLite 모델 검증 + latency 측정 (호스트/디바이스 공용)
 ```
 
 ---
@@ -136,7 +143,10 @@ unoq-companion-robot/
 | [`danny/02_export_environment_fix.md`](danny/02_export_environment_fix.md) | Export 환경 충돌 해결 + lock 적용 |
 | [`danny/03_project_conventions.md`](danny/03_project_conventions.md) | 프로젝트 코딩/운영 규약 |
 | [`danny/04_uno_q_env_setup.md`](danny/04_uno_q_env_setup.md) | UNO Q 접속 환경 변수 사용법 |
-| [`danny/05_host_validation_results.md`](danny/05_host_validation_results.md) | 호스트 baseline 측정 결과 |
+| [`danny/05_host_validation_results.md`](danny/05_host_validation_results.md) | 호스트 baseline + UNO Q 실측 비교 |
+| [`danny/06_device_setup.md`](danny/06_device_setup.md) | UNO Q 디바이스 환경 셋업 + 런타임 선택 |
+| [`danny/07_device_first_inference.md`](danny/07_device_first_inference.md) | UNO Q 첫 추론 결과 (9.88 FPS, 합격 판정) |
+| [`danny/08_usage_runbook.md`](danny/08_usage_runbook.md) | 실행 방법 가이드 (호스트/디바이스 공용 명령) |
 
 ---
 
