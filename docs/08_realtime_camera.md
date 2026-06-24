@@ -26,9 +26,8 @@
 | 런타임 | ai_edge_litert 2.1.5 + XNNPACK |
 | 모델 | yolov8n_int8.tflite (320×320, w8a8) |
 | 카메라 모델 | SU200 USB UVC mini camera (native 720p, 2.8 mm 렌즈, DC 5 V) |
-| 카메라 지원 포맷 | MJPG 1280×720 @ 30 / 640×480 @ 25, YUYV 1280×720 @ 10 / 640×480 @ 25 (`v4l2-ctl --list-formats-ext`로 확인) |
-| 카메라 해상도 | 640×480 캡처 (native 720p에서 다운스케일, 25 fps 한계 내) |
-| 카메라 병목 분석 | 카메라 native 25 fps 한계의 33%만 사용 (8.29 / 25) — capture latency 1.4 ms 평균. 추론(CPU)이 명백한 병목 |
+| 카메라 지원 포맷 | MJPG 1280×720 @ 30 / 640×480 @ 25, YUYV 1280×720 @ 10 / 640×480 @ 25 |
+| 카메라 해상도 | 640×480 캡처 (native 720p에서 다운스케일) |
 | 입력 | 실시간 카메라 (책상 환경: laptop, book 검출) |
 | 측정 일자 | 2026-06-23 |
 
@@ -273,22 +272,7 @@ scp 'arduino@192.168.0.45:/tmp/unoq-yolo/cam-debug/*.jpg' test_camera_output/
 | 증상 | 원인 | 해결 |
 |---|---|---|
 | `cannot open camera /dev/video0` + `ls /dev/video*` 빈 출력 | `lsusb`엔 카메라 보이는데 uvcvideo 미바인딩 | `sudo modprobe -r uvcvideo; sleep 1; sudo modprobe uvcvideo; sleep 2; ls /dev/video*` |
-| `/dev/video0`이 `Type: Video Capture Multiplanar` + NV12/Q08C/H264/HEVC만 노출 | UVC가 아니라 Qualcomm Venus 코덱(M2M) 노드 — USB 카메라 미연결 또는 USB 인식 끊김 | `lsusb`로 SU200 vendor ID 확인 → USB 재연결 / 다른 포트 → uvcvideo 재로드. 정상 시 첫 번째 `/dev/video*`가 `Type: Video Capture` (single-plane) + MJPG/YUYV로 노출 |
 | `Killed` 메시지 후 명령 즉시 중단 | `pkill -f infer_camera.py`가 자기 ssh 명령줄 매칭 → self-kill | pkill 옵션 빼고 그냥 실행 (좀비 거의 없음) |
 | nested SSH (디바이스 셸 안에서 또 ssh) | 호스트 WSL이 아닌 디바이스 셸에서 명령 복붙 실행 | `exit` 두 번 → 호스트 WSL로 복귀 |
 | `--save-dir` 디버그 JPEG 누적 | `/tmp` 용량 잠식 | 측정 후 호스트 회수 + `rm -rf /tmp/unoq-yolo/cam-debug` |
 | 카메라 인덱스 다름 | `/dev/video0` 외 다른 번호 부여 | `ls /dev/video*` 확인 후 `--camera 1` 등 시도 |
-
-#### 카메라 노드 정체 진단 (UVC vs Qualcomm 코덱 구분)
-
-```bash
-v4l2-ctl --list-formats-ext -d /dev/video0
-```
-
-| 출력 패턴 | 정체 |
-|---|---|
-| `Type: Video Capture` (single-plane) + MJPG / YUYV | USB UVC 카메라 (정상 — 이 노드를 측정에 사용) |
-| `Type: Video Capture Multiplanar` + NV12 / Q08C | Qualcomm 카메라 ISP / CSI 백엔드 (M2M — capture가 아닐 수 있음) |
-| `Type: Video Capture Multiplanar` + H264 / HEVC | Qualcomm Venus 비디오 인코더 (카메라 아님, 메모리↔메모리 변환) |
-
-추가 검증: `v4l2-ctl --all -d /dev/videoN | head -5` → `Driver name`이 `uvcvideo`면 UVC, `qcom-venus`면 코덱 노드.
