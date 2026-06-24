@@ -17,7 +17,7 @@
 | GPU | Adreno 702 (CPU 폴백 우선 사용) |
 | NPU / DSP / HTP | **없음** — TFLite/LiteRT CPU 단독 경로 |
 | MCU (제어) | STM32U585 (Cortex-M33, 최대 160 MHz) |
-| RAM / 저장소 | 2~4 GB LPDDR4 / 16~32 GB eMMC |
+| RAM / 저장소 | 4 GB LPDDR4 / 32 GB eMMC |
 | OS | Linux Debian (사전 설치됨) |
 
 ---
