@@ -1,57 +1,37 @@
-# UNO Q 디바이스 셋업 및 런타임 설치 결정
+# UNO Q Device Setup and TFLite Runtime Installation
 
-> 본 문서는 STEP 4 (디바이스 측 모델 전송 준비) 단계에서 수행한 SSH 연결 확립, 디바이스 사양 실측, TFLite 런타임 선택 및 설치 결정을 기록합니다.
+본 문서는 UNO Q 디바이스의 SSH 연결 확립, 사양 실측, TFLite 런타임 선택 및 설치 결정을 정리합니다. 단일 책임 — 디바이스 준비 단계의 환경 / 의사결정 / 절차 기록.
 
----
-
-## 결정 요약 (한 화면)
+## 0. 핵심 결정
 
 | 항목 | 결정 / 결과 |
 |---|---|
-| 디바이스 SSH 사용자 | `arduino` (hostname `unoq-korea01`과 별개) |
-| 디바이스 IP | `192.168.0.45` (DHCP, 동일 LAN) |
-| 디바이스 OS / Python | Debian aarch64 (kernel 7.0) / Python 3.13.5 |
-| 디바이스 SoC | QRB2210 (soc_id 524) — 가정 정확히 일치 |
-| TFLite 런타임 사전 설치 | **없음** (tflite_runtime, tensorflow 둘 다 미설치) |
-| Qualcomm `gst-ai-object-detection` | **없음** (PATH에 없음) |
-| 채택 런타임 | **`ai-edge-litert`** (pip + venv 경유) |
-| 시스템 Python 오염 방지 | venv 사용 (`~/venv-unoq`) |
-| 추론 코드 호환성 | 3단 import 폴백 패턴 채택 (ai_edge_litert → tflite_runtime → tensorflow.lite) |
+| **디바이스 SSH 사용자** | `arduino` (hostname `unoq-korea01`과 별개) |
+| **디바이스 IP** | `192.168.0.45` (DHCP, 동일 LAN) |
+| **디바이스 OS / Python** | Debian aarch64 (kernel 7.0) / Python 3.13.5 |
+| **디바이스 SoC** | QRB2210 (soc_id 524) — 가정 정확히 일치 |
+| **TFLite 런타임 사전 설치** | 없음 (`tflite_runtime`, `tensorflow` 둘 다 미설치) |
+| **Qualcomm `gst-ai-object-detection`** | 없음 (PATH에 없음) |
+| **채택 런타임** | `ai-edge-litert` (pip + venv 경유) |
+| **시스템 Python 오염 방지** | venv 사용 (`~/venv-unoq`) |
+| **추론 코드 호환성** | 3단 import 폴백 (ai_edge_litert → tflite_runtime → tensorflow.lite) |
 
----
+## 1. SSH 사용자 정보
 
-## 1. SSH 연결 확립 (트러블슈팅 포함)
+디바이스 측 `id` 결과:
 
-### 1-1. 진행 흐름
-
-1. UNO Q IP/호스트명 파악: `192.168.0.45` / `unoq-korea01`
-2. SSH 사용자명 초기 가정 오류: 호스트명 `unoq-korea01`을 사용자명으로 착각
-3. UNO Q 로컬 콘솔에서 `whoami` 결과 → 실제 사용자명은 `arduino`
-4. 호스트명 ≠ 사용자명 명확화
-5. `ssh arduino@192.168.0.45` 성공
-
-### 1-2. 비번 입력 함정 (참고)
-
-SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
-
-- 사용자명 오류 (`unoq-korea01` → 존재하지 않는 유저)
-- 한/영 입력기가 한국어로 설정된 상태에서 비번 입력 → 영문 비번이 한글 자모로 전송됨
-
-향후 디바이스 작업 시 **터미널 입력 직전 입력기 영어 모드 확인** 필요.
-
-### 1-3. 사용자 정보 (디바이스 측 `id` 결과)
-
-- UID/GID: 1000 / 1000
-- 그룹: `arduino, adm, dialout, sudo, audio, video, users, netdev, bluetooth, docker, sysupgrade, render, input, gpiod`
+- 사용자명 / 호스트명: `arduino` / `unoq-korea01` (별개).
+- UID / GID: 1000 / 1000.
+- 그룹: `arduino, adm, dialout, sudo, audio, video, users, netdev, bluetooth, docker, sysupgrade, render, input, gpiod`.
 
 본 작품 관련 그룹:
 
-- **`sudo`**: 시스템 명령 가능
-- **`docker`**: 디바이스에서 컨테이너 실행 가능 (필요 시)
-- **`gpiod`**: LED/모터 GPIO 제어 권한 (작품에 핵심)
-- **`video`, `render`**: 카메라 및 그래픽 출력 가능
-
----
+| 그룹 | 권한 |
+|---|---|
+| `sudo` | 시스템 명령 가능 |
+| `docker` | 디바이스에서 컨테이너 실행 가능 (필요 시) |
+| `gpiod` | LED / 모터 GPIO 제어 권한 (작품에 핵심) |
+| `video`, `render` | 카메라 및 그래픽 출력 가능 |
 
 ## 2. 디바이스 사양 (실측)
 
@@ -59,14 +39,12 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 
 | 항목 | 값 | 출처 |
 |---|---|---|
-| Kernel | Linux 7.0.0-g122c2c22d838 SMP PREEMPT | `uname -a` |
-| Architecture | aarch64 (ARM64) | 동상 |
-| SoC | QRB2210 (soc_id 524) | `/sys/devices/soc0/{soc_id,machine}` |
-| CPU 코어 | 4 | `nproc` |
-| RAM | 3.6 GiB total / 2.4 GiB 가용 | `free -h` |
-| Storage (/) | 9.8 GB total / 2.9 GB 가용 (69% used) | `df -h /` |
-
-→ **4 GB UNO Q 변종**. RAM 여유 충분, 스토리지 여유 작음 (큰 패키지 설치 주의).
+| **Kernel** | Linux 7.0.0-g122c2c22d838 SMP PREEMPT | `uname -a` |
+| **Architecture** | aarch64 (ARM64) | 동상 |
+| **SoC** | QRB2210 (soc_id 524) | `/sys/devices/soc0/{soc_id,machine}` |
+| **CPU 코어** | 4 | `nproc` |
+| **RAM** | 3.6 GB total / 2.4 GB 가용 | `free -h` |
+| **Storage (/)** | 9.8 GB total / 2.9 GB 가용 (69% used) | `df -h /` |
 
 ### 2-2. 소프트웨어
 
@@ -78,16 +56,14 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 | `tensorflow` | 미설치 |
 | `gst-ai-object-detection` | PATH에 없음 |
 
-### 2-3. 그래픽/GPU 관련
+### 2-3. 그래픽 / GPU 관련
 
 | 항목 | 값 | 의미 |
 |---|---|---|
-| `/dev/dri/card0`, `renderD128` | 존재 | DRM/KMS 그래픽 스택 사용 가능 |
-| `/dev/kgsl*` | 없음 | Qualcomm GPU 메모리 디바이스 미노출 → OpenCL/Adreno 가속 어려울 가능성 |
+| `/dev/dri/card0`, `renderD128` | 존재 | DRM / KMS 그래픽 스택 사용 가능 |
+| `/dev/kgsl*` | 없음 | Qualcomm GPU 메모리 디바이스 미노출 → OpenCL / Adreno 가속 어려울 가능성 |
 
-→ **GPU delegate 시도는 후순위.** CPU 단독 경로가 안정적이며 본인 기대치(8~15 FPS)에 충분할 가능성.
-
----
+GPU delegate 시도는 후순위. CPU 단독 경로가 안정적이며 본인 기대치(8~15 FPS)에 충분할 가능성.
 
 ## 3. 멘토 docs 검토 결과 (pip 접근 정당성)
 
@@ -95,14 +71,14 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 
 ### 3-1. 멘토 docs의 가정
 
-- 디바이스에 `tflite_runtime` (또는 `tensorflow`) 사전 설치되어 있음을 전제
-- 설치 방법은 명시되지 않음
-- 사용 코드 패턴: `try: import tflite_runtime.interpreter; except ImportError: import tensorflow.lite`
+- 디바이스에 `tflite_runtime` (또는 `tensorflow`) 사전 설치되어 있음을 전제.
+- 설치 방법은 명시되지 않음.
+- 사용 코드 패턴: `try: import tflite_runtime.interpreter; except ImportError: import tensorflow.lite`.
 
 ### 3-2. 본인 디바이스 현실과의 차이
 
-- 사전 설치된 런타임 없음 → **본인이 설치해야 함**
-- 멘토가 가정한 사전 설치 도구들 (`gst-ai-object-detection`, `benchmark_model`) 모두 없음
+- 사전 설치된 런타임 없음 → 본인이 설치해야 함.
+- 멘토가 가정한 사전 설치 도구들 (`gst-ai-object-detection`, `benchmark_model`) 모두 없음.
 
 ### 3-3. pip 접근 적합성 평가
 
@@ -115,32 +91,28 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 
 ### 3-4. 결론
 
-**pip + venv + ai-edge-litert 채택**. 멘토 docs의 정신(TFLite 사용)에 충실하며, Python 3.13 + aarch64 + Debian 12+ 환경 제약에 부합.
-
----
+pip + venv + ai-edge-litert 채택. 멘토 docs의 정신(TFLite 사용)에 충실하며, Python 3.13 + aarch64 + Debian 12+ 환경 제약에 부합.
 
 ## 4. 런타임 선택 — `ai-edge-litert` vs `tflite-runtime`
 
-| 측면 | `tflite-runtime` | **`ai-edge-litert`** |
+| 측면 | `tflite-runtime` | `ai-edge-litert` |
 |---|---|---|
 | 제공처 | TensorFlow 팀 (legacy) | Google AI Edge (modern 대체) |
 | 패키지 크기 | ~3 MB | ~17 MB |
 | Python 3.13 지원 (aarch64) | 불확실 / 제한적 | 지원 |
 | 향후 유지보수 | 점진적 EOL 예고 | 활발 |
-| 호스트 컨테이너 일치 | 없음 (호스트는 tensorflow.lite) | 호스트 requirements.lock에 `ai-edge-litert==2.1.5` 포함됨 → **양측 통일 가능** |
-| 채택 | △ (호환성 위험) | **○ 채택** |
+| 호스트 컨테이너 일치 | 없음 (호스트는 tensorflow.lite) | 호스트 requirements.lock에 `ai-edge-litert==2.1.5` 포함됨 (양측 통일 가능) |
+| 채택 | 호환성 위험 | 채택 |
 
 호스트와 디바이스 양측이 `ai_edge_litert` 동일 import를 쓸 수 있어 코드 일관성도 확보.
-
----
 
 ## 5. 설치 절차 — `scripts/setup_device.sh`로 자동화
 
 본 절차는 `scripts/setup_device.sh` 스크립트 하나로 묶어 재현성 확보.
 
-### 5-1. 스크립트 실행 (권장 경로)
+### 5-1. 스크립트 실행
 
-**방법 A: 호스트에서 전송 후 일괄 실행**
+#### 방법 A: 호스트에서 전송 후 일괄 실행
 
 ```bash
 # 호스트 WSL에서
@@ -148,7 +120,7 @@ scp scripts/setup_device.sh arduino@192.168.0.45:~/
 ssh arduino@192.168.0.45 'bash ~/setup_device.sh'
 ```
 
-**방법 B: SSH 들어간 상태에서 직접**
+#### 방법 B: SSH 들어간 상태에서 직접
 
 ```bash
 # 호스트에서 한 번 전송
@@ -158,15 +130,17 @@ scp scripts/setup_device.sh arduino@192.168.0.45:~/
 bash ~/setup_device.sh
 ```
 
-스크립트는 **idempotent** — 재실행해도 안전 (이미 있는 건 skip, 없는 것만 설치).
+스크립트는 idempotent — 재실행해도 안전 (이미 있는 건 skip, 없는 것만 설치).
 
 ### 5-2. 스크립트가 수행하는 5단계
 
-1. **Phase 1**: `python3-pip`, `python3-venv` apt 설치 (없을 때만)
-2. **Phase 2**: `~/venv-unoq` 가상환경 생성 (없을 때만)
-3. **Phase 3**: `pip install ai-edge-litert numpy` (venv 안에)
-4. **Phase 4**: import 동작 확인 (`ai_edge_litert.Interpreter`, `numpy`)
-5. **Phase 5**: `/opt/unoq-yolo/{models,labels,media,configs,logs}` 디렉토리 생성 + chown
+| Phase | 작업 |
+|---|---|
+| Phase 1 | `python3-pip`, `python3-venv` apt 설치 (없을 때만) |
+| Phase 2 | `~/venv-unoq` 가상환경 생성 (없을 때만) |
+| Phase 3 | `pip install ai-edge-litert numpy` (venv 안에) |
+| Phase 4 | import 동작 확인 (`ai_edge_litert.Interpreter`, `numpy`) |
+| Phase 5 | `/opt/unoq-yolo/{models,labels,media,configs,logs}` 디렉토리 생성 + chown |
 
 각 phase 시작 시 콘솔에 `==> Phase N: ...` 출력 → 어디까지 진행됐는지 명확.
 
@@ -197,40 +171,20 @@ echo '[ -f ~/venv-unoq/bin/activate ] && source ~/venv-unoq/bin/activate' >> ~/.
 
 이렇게 하면 매번 `source ~/venv-unoq/bin/activate` 안 쳐도 자동.
 
----
-
 ## 6. 알려진 한계 및 후속 작업
 
 ### 6-1. 본 단계의 한계
 
-- 설치 절차 검증 미완 — pip 설치 + venv + ai-edge-litert까지 실행해야 확정
-- Camera (`/dev/video*`) 존재 여부 미확인 — 별도 점검 필요
-- 카메라 드라이버 / Wayland 셋업 미확인 — 시각 출력 시 추가 작업 가능
+- 설치 절차 검증 미완 — pip 설치 + venv + ai-edge-litert까지 실행해야 확정.
+- Camera (`/dev/video*`) 존재 여부 미확인 — 별도 점검 필요.
+- 카메라 드라이버 / Wayland 셋업 미확인 — 시각 출력 시 추가 작업 가능.
 
-### 6-2. 후속 작업 진행 상태 (2026-06-23 갱신)
+### 6-2. 후속 작업 진행 상태
 
-1. ✅ pip + venv + ai-edge-litert 설치 완료 (`scripts/setup_device.sh` 또는 수동)
-2. ✅ 호스트에서 `yolov8n_int8.tflite` scp로 `/opt/unoq-yolo/models/`에 전송
-3. ✅ `src/validate_model.py`에 3단 import 폴백 추가 (`ai_edge_litert` 우선)
-4. ✅ 디바이스 첫 latency 실측 완료 (별도 문서)
-5. ✅ 디바이스 측정 결과 합격선 통과 (별도 문서)
-
----
-
-## 변경 이력
-
-| 날짜 | 변경 | 사유 |
-|---|---|---|
-| 2026-06-23 | 초안 작성 | UNO Q SSH 연결 확립 + 디바이스 사양 실측 + pip 접근 정당성 검토 + 런타임 선택 결정 |
-| 2026-06-23 | "/opt/unoq-yolo/ 디렉토리 구조" 섹션 제거 (03과 중복, 실제 mkdir은 5-3에 이미 포함) | 중복 정리 |
-
----
-
-## 작성 정보
-
-| 항목 | 값 |
+| 단계 | 상태 |
 |---|---|
-| 작성일 | 2026-06-23 |
-| 작성 시점 진행 단계 | STEP 4 진입 (디바이스 사양 파악 + 런타임 설치 직전) |
-| 적용 범위 | UNO Q SSH 연결 + 디바이스 사양 + TFLite 런타임 선택/설치 |
-| 갱신 정책 | 디바이스 OS/런타임/사양 변경 시 |
+| pip + venv + ai-edge-litert 설치 (`scripts/setup_device.sh` 또는 수동) | 완료 |
+| 호스트에서 `yolov8n_int8.tflite` scp로 `/opt/unoq-yolo/models/`에 전송 | 완료 |
+| `src/validate_model.py`에 3단 import 폴백 추가 (`ai_edge_litert` 우선) | 완료 |
+| 디바이스 첫 latency 실측 (별도 문서 05) | 완료 |
+| 디바이스 측정 결과 합격선 통과 (별도 문서 05) | 완료 |
