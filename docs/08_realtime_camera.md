@@ -25,7 +25,8 @@
 | Python | 3.13.5 (venv `~/venv-unoq`) |
 | 런타임 | ai_edge_litert 2.1.5 + XNNPACK |
 | 모델 | yolov8n_int8.tflite (320×320, w8a8) |
-| 카메라 | USB UVC, 640×480 캡처 |
+| 카메라 모델 | SU200 USB UVC mini camera (native 720p, 2.8 mm 렌즈, DC 5 V) |
+| 카메라 해상도 | 640×480 캡처 (native 720p에서 다운스케일) |
 | 입력 | 실시간 카메라 (책상 환경: laptop, book 검출) |
 | 측정 일자 | 2026-06-23 |
 
