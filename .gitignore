@@ -105,5 +105,8 @@ test_*.png
 *_annotated.jpg
 *_annotated.png
 
+# === 로컬 에디터 설정 (개인 취향, 공유 불필요) ===
+.markdownlint.jsonc
+
 # === 대외비 자료 (멘토 패키지 — Public 전환 전 반드시 점검) ===
 docs/mentor/
