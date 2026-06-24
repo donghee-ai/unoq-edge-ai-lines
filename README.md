@@ -126,10 +126,11 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 
 상세 분석:
 
-- 호스트 baseline: [`docs/03_host_validation_results.md`](docs/03_host_validation_results.md)
-- UNO Q 첫 추론: [`docs/05_device_first_inference.md`](docs/05_device_first_inference.md)
-- End-to-end + cold start 분석: [`docs/07_postprocess_and_e2e.md`](docs/07_postprocess_and_e2e.md)
-- 공식 100회 벤치마크: [`docs/08_official_benchmark.md`](docs/08_official_benchmark.md)
+- 청사진 (한 페이지 overview): [`docs/00_project_blueprint.md`](docs/00_project_blueprint.md)
+- 호스트 + 디바이스 첫 측정: [`docs/05_initial_inference_measurement.md`](docs/05_initial_inference_measurement.md)
+- End-to-end + cold start 분석: [`docs/06_postprocess_and_e2e.md`](docs/06_postprocess_and_e2e.md)
+- 공식 100회 벤치마크: [`docs/07_official_benchmark.md`](docs/07_official_benchmark.md)
+- 카메라 실시간 측정: [`docs/08_realtime_camera.md`](docs/08_realtime_camera.md)
 
 ---
 
@@ -163,16 +164,16 @@ unoq-companion-robot/
 
 | 문서 | 내용 |
 |---|---|
-| [`docs/00_environment_setup.md`](docs/00_environment_setup.md) | Docker 호스트 환경 셋업 + `requirements.lock` 도입 경위 |
-| [`docs/01_model_selection_log.md`](docs/01_model_selection_log.md) | 모델 선택 의사결정 로그 (YOLO ↔ MediaPipe) |
-| [`docs/02_project_conventions.md`](docs/02_project_conventions.md) | 프로젝트 코딩/운영 규약 + UNO Q 환경 변수 사용법 |
-| [`docs/03_host_validation_results.md`](docs/03_host_validation_results.md) | 호스트 baseline (12.5 ms / 80 FPS) |
+| [`docs/00_project_blueprint.md`](docs/00_project_blueprint.md) | **청사진 — 한 페이지 overview** (UNO Q 스펙 + 모델 선택 + 데이터셋 + YOLOv8 아키텍처 + 합격 4기준 + 진행 흐름 + 사전 조건) |
+| [`docs/01_host_environment_setup.md`](docs/01_host_environment_setup.md) | Docker 호스트 환경 셋업 + `requirements.lock` 도입 경위 |
+| [`docs/02_model_selection_log.md`](docs/02_model_selection_log.md) | 모델 선택 의사결정 로그 (YOLO ↔ MediaPipe) |
+| [`docs/03_project_conventions.md`](docs/03_project_conventions.md) | 프로젝트 코딩/운영 규약 + UNO Q 환경 변수 사용법 |
 | [`docs/04_device_setup.md`](docs/04_device_setup.md) | UNO Q SSH + 사양 + 런타임 선택 (ai-edge-litert) |
-| [`docs/05_device_first_inference.md`](docs/05_device_first_inference.md) | UNO Q 첫 추론 결과 (9.88 FPS, 합격선 통과) |
-| [`docs/06_usage_runbook.md`](docs/06_usage_runbook.md) | 실행 방법 가이드 (호스트/디바이스 공용 명령) |
-| [`docs/07_postprocess_and_e2e.md`](docs/07_postprocess_and_e2e.md) | 후처리 모듈 + 두 함정 (정규화 좌표, cv2 cold start) + e2e |
-| [`docs/08_official_benchmark.md`](docs/08_official_benchmark.md) | 공식 벤치마크 100회 (단일 이미지) — **9.23 FPS / 60.5°C / 100 MB** |
-| [`docs/09_realtime_camera.md`](docs/09_realtime_camera.md) | 카메라 실시간 추론 — 100f 측정(8.52 FPS) + 운영 측정 2184f(8.29 FPS, temp **70.8°C** 임계 도달) |
+| [`docs/05_initial_inference_measurement.md`](docs/05_initial_inference_measurement.md) | 호스트 baseline + 디바이스 첫 측정 (통합, 9.88 FPS 합격) |
+| [`docs/06_postprocess_and_e2e.md`](docs/06_postprocess_and_e2e.md) | 후처리 모듈 + 두 함정 (정규화 좌표, cv2 cold start) + e2e |
+| [`docs/07_official_benchmark.md`](docs/07_official_benchmark.md) | 공식 벤치마크 100회 (단일 이미지) — 9.23 FPS / 60.5°C / 100 MB |
+| [`docs/08_realtime_camera.md`](docs/08_realtime_camera.md) | 카메라 실시간 추론 — 100f 8.52 FPS + 운영 2184f 8.29 FPS, temp 70.8°C |
+| [`docs/09_usage_runbook.md`](docs/09_usage_runbook.md) | 실행 방법 가이드 (호스트/디바이스 공용 명령, 참조용) |
 
 ---
 

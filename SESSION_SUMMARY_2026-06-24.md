@@ -2,11 +2,13 @@
 
 > 2026-06-23 첫 세션(환경 셋업 → 9.23 FPS 합격)의 후속 세션. 카메라 실시간 측정 추가 + docs 양식 통일 + 멘토 보고용 한국어 정리본(`docs/ko/`) 10개 신규 작성 + 문서 구조 재편(청사진 신규 + 시퀀스 재정렬).
 
+> 세션 종료 시점 결론: ko/를 단일 트랙으로 채택. `docs/ko/*` → `docs/*`로 통합, 옛 본인 트랙 `docs/00~09`는 git history에만 보존(2개 커밋 분리: "병행 상태 보존" + "ko/ 채택"). 본문 내 `docs/` 표현은 통합 후 위치(루트)를 의미. 본문 historical 기록은 보존됨.
+
 ---
 
 ## 0. 한 줄 결론
 
-**카메라 실시간 YOLO 운영 측정 완료(8.29 FPS, thermal 70.8°C 임계 1도 초과 발견) + 멘토 보고용 `docs/ko/` 10개 한국어 정리본 신규 트랙 완성 + docs/ 본인 트랙도 양식/번호 정리. 다음 세션은 soak test, 얼굴 검출(MediaPipe Face), 또는 MCU 연동 중 선택.**
+**카메라 실시간 YOLO 운영 측정 완료(8.29 FPS, thermal 70.8°C 임계 1도 초과 발견) + 멘토 보고용 `docs/` 10개 한국어 정리본 신규 트랙 완성 + docs/ 본인 트랙도 양식/번호 정리. 다음 세션은 soak test, 얼굴 검출(MediaPipe Face), 또는 MCU 연동 중 선택.**
 
 ---
 
@@ -14,7 +16,7 @@
 
 | 영역 | 세션 시작 (2026-06-24 초) | 세션 종료 |
 |---|---|---|
-| docs/ 폴더 구조 | `danny/` 11개 + `ko/`(멘토 번역본) | `docs/` 9개(번호 재정렬 후) + `docs/mentor/` 9개 + `docs/ko/` 10개(신규 멘토 보고 트랙) |
+| docs/ 폴더 구조 | `danny/` 11개 + `ko/`(멘토 번역본) | `docs/` 9개(번호 재정렬 후) + `docs/mentor/` 9개 + `docs/` 10개(신규 멘토 보고 트랙) |
 | 카메라 측정 | 단일 이미지 e2e 9.23 FPS만 | 카메라 100f 8.52 FPS + 운영 2184f 8.29 FPS + temp 70.8°C 발견 |
 | `src/` | 4개 (validate, postprocess, infer_image, benchmark_e2e) | 5개 (+ `infer_camera.py`, `--serve 8080` HTTP MJPEG 포함) |
 | 문서 양식 | ✅ 이모지 + `**굵게**` 다수 | 양식 통일 (이모지 텍스트 대체, 굵게 표 라벨에만, 멘토 양식 따라감) |
@@ -27,6 +29,7 @@
 ## 2. 시간순 작업 흐름
 
 ### Phase A — docs/ 구조 정리 (이전 세션 마무리)
+
 1. 폴더 리네임: `danny/` → `docs/`, `ko/` → `docs/mentor/`
 2. 02 (export_environment_fix) → 00 (environment_setup) 흡수 통합
 3. 04 (env_setup) → 02 (project_conventions)에 env.sh 사용법 흡수 통합
@@ -36,6 +39,7 @@
 7. `markdownlint-cli2 --fix` 적용 + `.markdownlint.jsonc` 설정
 
 ### Phase B — 카메라 작업
+
 1. `src/infer_camera.py` 작성 (카메라 + YOLO 실시간 + rolling FPS + 단계별 latency)
 2. 멘토 06 권고 점검 후 보강: dropped_frames 카운트, 카메라 reconnect, RSS/온도 모니터링, JSON 출력 (`--json`), 멘토 06 형식 준수
 3. `--serve PORT` HTTP MJPEG 라이브 스트리밍 추가 (DEBUG ONLY, 로컬 LAN)
@@ -45,13 +49,15 @@
 7. 카메라 트러블슈팅 함정 5종 기록 (uvcvideo reload, pkill self-kill, nested SSH, /tmp 누적, video 인덱스)
 
 ### Phase C — 양식 통일 작업
+
 1. 가이드라인 도출: 이모지 → 텍스트(통과/수집/임계 도달), `**` 위치 = 멘토 mentor/00 패턴(표 첫 컬럼 라벨만)
 2. docs/08, 09 양식 정리 시범 → 사용자가 "멘토 인용 보존" + "이모지 대체" 명시
 3. 멘토 인용 자급자족 변환 작업 → 사용자 재지시로 복원
 4. `.markdownlint.jsonc`로 본 프로젝트 환경에 맞지 않는 룰 5종 비활성화
 
-### Phase D — `docs/ko/` 신규 트랙 (멘토 보고 전용)
-1. `docs/ko/` 빈 폴더 발견 → 사용자 의사 확인 (멘토용 한국어 정리본 병행 결정)
+### Phase D — `docs/` 신규 트랙 (멘토 보고 전용)
+
+1. `docs/` 빈 폴더 발견 → 사용자 의사 확인 (멘토용 한국어 정리본 병행 결정)
 2. 멘토 양식 가이드라인 확정 (영문 키워드 제목, `>` 부제 X, 메타 표 X, 굵게 거의 X, 본문 0굵게)
 3. 9개 docs/* → 멘토 양식으로 ko/0~8 작성 (구 docs/03+05 → ko/03 통합)
 4. 사용자 피드백 반영: 멘토 인용 보존, 이모지는 대체, 04의 SSH 1-1/1-2 트러블슈팅 제거 + 표 끝 파이프 누락 lint 수정
@@ -60,6 +66,7 @@
 7. inter-doc 인용 정확히 갱신 + 검증
 
 ### Phase E — 사이드 작업 (사용자 질문 답변)
+
 - "스토리지 2.9 GB 가용" 의미 설명 (A/B 슬롯, modem firmware 등 단계별 손실 + 사전 설치 시스템 차지)
 - "환경 셋업이 4 GB UNO Q 변종..." 한 줄 의미 설명
 - "비번 함정/호스트명 파악 빼도 되나" 답변 후 04 Section 1 단순화
@@ -67,7 +74,7 @@
 
 ---
 
-## 3. 최종 `docs/ko/` 구조 (10개, 멘토 보고용)
+## 3. 최종 `docs/` 구조 (10개, 멘토 보고용)
 
 | 번호 | 파일명 | 역할 | 비고 |
 |---|---|---|---|
@@ -83,6 +90,7 @@
 | 09 | `09_usage_runbook.md` | 자주 쓰는 명령 모음 (참조용 끝) | 구 docs/06 |
 
 **적용된 멘토 양식 규칙**:
+
 - 영문 키워드 제목 (예: "Project Blueprint — UNO Q Real-time YOLOv8 Detection")
 - `>` blockquote 부제 X, 일반 한 줄 텍스트
 - 결정 요약 / 변경 이력 / 작성 정보 표 모두 제거
@@ -160,17 +168,21 @@ docs/는 historical / 개발용으로 그대로 보존. ko/와 병행 운영. �
 ## 7. 만들어진 / 변경된 자산
 
 ### 7-1. 코드
+
 - `src/infer_camera.py` — 카메라 실시간 추론 + 멘토 06 권고 준수 + `--serve 8080` HTTP MJPEG (DEBUG ONLY)
 
-### 7-2. 문서 (`docs/ko/` 신규 10개)
+### 7-2. 문서 (`docs/` 신규 10개)
+
 - 00 `project_blueprint` — 청사진 (한 페이지 overview)
 - 01 ~ 09: 위 Section 3 표 참조
 
 ### 7-3. 설정
+
 - `.gitignore` — `docs/mentor/` 추가
 - `.markdownlint.jsonc` — 한국어 / 표 환경 룰 비활성화 5종
 
 ### 7-4. 환경 정리
+
 - `scripts/env.sh` — 멘토 인용 제거, ko/ 옛 경로 갱신
 - `src/postprocess.py` docstring — `danny/03` → `docs/02`
 - `requirements.txt` 코멘트 — 멘토 인용 자급자족 형태로
@@ -182,22 +194,26 @@ docs/는 historical / 개발용으로 그대로 보존. ko/와 병행 운영. �
 ## 8. 다음 단계 (우선순위)
 
 ### 8-1. 시급
+
 - [ ] **Soak test 8h+** — thermal plateau / throttle 거동 확인 (운영 측정의 70.8°C 후속)
 - [ ] **`--serve` 부담 분리 측정** — `--serve` 없이 같은 길이 운영 측정으로 차이 정량화 (30분 작업)
 - [ ] **cam_serve_*.json 호스트 회수** — 디바이스 `~/benchmarks/`에 있는 JSON
 
 ### 8-2. 본 작품 핵심
+
 - [ ] **얼굴 검출 모델 결정** (MediaPipe Face 권장 — 표정 추론에 직결, Apache-2.0 라이선스)
 - [ ] **표정 추론 L1/L2** (FaceMesh 468 landmark + 규칙 기반)
 - [ ] **MCU 연동** (STM32U585 + LED + 모터 PWM, JSON-like 메시지 + heartbeat)
 - [ ] App Lab vs systemd 결정
 
 ### 8-3. 운영 안정성
+
 - [ ] Watchdog policy (heartbeat 1s, no-heartbeat 5s restart, no-camera 10s reinit)
 - [ ] Golden image set (20~100장 + 기대 검출 IoU)
 - [ ] Camera reconnect 실측 검증 (USB unplug / replug 10회)
 
 ### 8-4. Public 전환 (작품 완성 후)
+
 - [ ] LICENSE 추가 (Apache-2.0 권장)
 - [ ] SSH key 인증 전환 + 기본 비번 변경
 - [ ] 멘토 인용 redact (Public 전환 시점)
@@ -208,10 +224,11 @@ docs/는 historical / 개발용으로 그대로 보존. ko/와 병행 운영. �
 ## 9. 다음 세션 진입 가이드
 
 ### 9-1. 컨텍스트 복원 순서
+
 1. **본 문서**(`SESSION_SUMMARY_2026-06-24.md`) — 이번 세션 종합
 2. **`SESSION_SUMMARY_2026-06-23.md`** — 첫 세션(환경 ~ 9.23 FPS 합격)
-3. **`docs/ko/00_project_blueprint.md`** — 작품 청사진 한 페이지
-4. **`docs/ko/09_usage_runbook.md`** — 자주 쓰는 명령 모음
+3. **`docs/00_project_blueprint.md`** — 작품 청사진 한 페이지
+4. **`docs/09_usage_runbook.md`** — 자주 쓰는 명령 모음
 5. 메모리 시스템 (`C:\Users\A\.claude\projects\c--Project\memory\`) — 자동 로드됨
 
 ### 9-2. 자주 쓰는 명령 (호스트 WSL에서)
@@ -246,7 +263,7 @@ ssh arduino@192.168.0.45 'sudo modprobe -r uvcvideo; sleep 1; sudo modprobe uvcv
 다음 세션 진입 시 이 사항들도 메모리에 반영 권장:
 
 - 카메라 운영 측정 thermal 70.8°C 발견 (`project_unoq_known_traps.md`에 추가)
-- `docs/ko/` 10개 트랙 존재 (멘토 보고 전용) + 청사진 00 신규
+- `docs/` 10개 트랙 존재 (멘토 보고 전용) + 청사진 00 신규
 - `src/infer_camera.py` + `--serve 8080` 옵션
 - soak test가 다음 최우선
 
@@ -259,5 +276,5 @@ ssh arduino@192.168.0.45 'sudo modprobe -r uvcvideo; sleep 1; sudo modprobe uvcv
 | 작성일 | 2026-06-24 |
 | 위치 | 프로젝트 루트 (`C:\Project\unoq-companion-robot\SESSION_SUMMARY_2026-06-24.md`) |
 | 용도 | 세션 종료 시 컨텍스트 핸드오프 + 다른 창에서 이어 작업용 |
-| 관련 자산 | `docs/ko/` 10개, `src/infer_camera.py`, `benchmarks/*.json`, README |
+| 관련 자산 | `docs/` 10개, `src/infer_camera.py`, `benchmarks/*.json`, README |
 | 다음 갱신 | 다음 세션 종료 시 새 `SESSION_SUMMARY_<날짜>.md` 작성 권장 |

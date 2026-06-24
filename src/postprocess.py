@@ -7,7 +7,7 @@ YOLOv8 TFLite 출력 shape: (1, 84, 2100)
   - 84: 4 (bbox xywh) + 80 (COCO class scores, post-sigmoid)
   - 2100: anchor 개수 (40x40 + 20x20 + 10x10 = 2100 at 320 입력)
 
-본 프로젝트 규약 (docs/02_project_conventions.md Section 5-2)에 따라:
+본 프로젝트 규약 (docs/03_project_conventions.md Section 5-2)에 따라:
   - hard-code된 q-offset/scale 없음 (입출력 float32라 양자화 변환 불필요)
   - 단일 책임: 디코딩 + NMS + 시각화. 추론은 별도 모듈
 """
