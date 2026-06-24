@@ -12,7 +12,7 @@
 | 명령어 사용자 | `<UNO_Q_USER>` 변수, 기본 `arduino` | 채택 (UNO Q 연결 단계에서 적용) |
 | 디바이스 디렉토리 | `/opt/unoq-yolo/{models,labels,media,configs,logs}` | 채택 (배포 단계에서 적용) |
 | 보안 | `setenforce 0` 제품 이미지에서 제거 | 채택 |
-| 모델 출처 표현 | AI Hub는 "소스 후보", 실행은 TFLite 로컬 검증 | 적용 중 (`01`, `02` 참조) |
+| 모델 출처 표현 | AI Hub는 "소스 후보", 실행은 TFLite 로컬 검증 | 적용 중 |
 | 라이선스 | 모든 모델/라이브러리의 라이선스 명시 | 적용 중 |
 | 추론 메타데이터 | q-offsets/q-scales hard-code 금지, `get_input_details()` 자동 추출 | 코드 작성 시 적용 |
 | GPU delegate | CPU 기본, GPU optional feature flag | 코드 설계 시 적용 |
@@ -27,15 +27,6 @@
 UNO Q에 접속하는 모든 명령은 사용자명/호스트를 하드코딩하지 않고 환경 변수로 처리합니다.
 
 **구현**: 프로젝트 루트의 `scripts/env.sh` 파일에 기본값 정의. UNO Q 관련 작업 전 source.
-상세 사용법 및 본인 값 등록 방법은 `danny/04_uno_q_env_setup.md` 참조.
-
-```bash
-# 기본값 적용
-source scripts/env.sh
-
-# 본인 환경 값으로 override
-UNO_Q_HOST=192.168.1.42 source scripts/env.sh
-```
 
 정의된 변수:
 
@@ -46,26 +37,47 @@ UNO_Q_HOST=192.168.1.42 source scripts/env.sh
 | `APP_ROOT` | `/opt/unoq-yolo` | UNO Q 측 앱 루트 디렉토리 |
 | `HOST_TMP` | `/tmp/unoq-yolo` | 호스트 측 임시 작업 디렉토리 |
 
+기본값 출처: Arduino UNO Q 공식 문서 + Edge Impulse 문서의 App Lab 초기 설정 관례 (`UNO_Q_USER=arduino`). 실제 사용자명이 다르면 본인 값으로 override.
+
+#### Override 메커니즘
+
+핵심 문법:
+
+```bash
+export UNO_Q_USER="${UNO_Q_USER:-arduino}"
+```
+
+`${VAR:-default}`는 "VAR가 이미 설정돼 있으면 그 값, 없으면 default". 즉 본인 값을 미리 export한 상태에서 `source scripts/env.sh` 호출하면 본인 값 유지.
+
+#### 본인 값 등록 3가지 방법
+
+| 방법 | 명령 | 장점 | 단점 |
+|---|---|---|---|
+| 1. 1회용 export | `export UNO_Q_HOST=192.168.0.42; source scripts/env.sh` | 즉시 적용 | 터미널 종료 시 사라짐 |
+| 2. `.env` 파일 (권장) | `echo 'export UNO_Q_HOST=192.168.0.42' > .env` → `source .env && source scripts/env.sh` | 영구, 프로젝트 단위 응집 | 매 셸마다 두 번 source. `.gitignore`에 `.env` 필수 |
+| 3. `~/.bashrc` | WSL `~/.bashrc` 마지막에 `export UNO_Q_HOST=192.168.0.42` 추가 | 가장 편함, 자동 적용 | 본인 컴퓨터에만 적용. 다른 프로젝트와 변수 이름 충돌 가능 |
+
+권장: 작업 본격 시작 시 **방법 2 (.env 파일)** — Python `dotenv`, Docker `--env-file` 등 다른 도구와도 같은 표준.
+
 사용 예:
+
 ```bash
 source scripts/env.sh
 ssh ${UNO_Q_USER}@${UNO_Q_HOST} "ls ${APP_ROOT}/models"
 scp model.tflite ${UNO_Q_USER}@${UNO_Q_HOST}:${APP_ROOT}/models/
 ```
 
-기본값 출처:
-- `UNO_Q_USER=arduino` — Arduino UNO Q 공식 문서 및 Edge Impulse 문서의 App Lab 초기 설정 관례
-- 실제 사용자명이 다르게 설정된 경우 사용자가 환경 변수로 override
-
 ### 1-2. 셸 스크립트 안전 기본값
 
 새로 작성하는 `.sh` 스크립트는 다음 헤더로 시작:
+
 ```bash
 #!/usr/bin/env bash
 set -euo pipefail
 ```
 
 이유:
+
 - `set -e`: 명령 실패 시 즉시 중단
 - `set -u`: 미정의 변수 참조 시 에러
 - `set -o pipefail`: 파이프 중간 명령 실패도 감지
@@ -108,6 +120,7 @@ ssh ${UNO_Q_USER}@${UNO_Q_HOST} \
 | `/tmp/` | 일시 작업 공간 | 일시 (재부팅 시 사라짐 가능) | **약함 — 시스템 자동 정리** |
 
 규약:
+
 - 임시 파일/실험 출력은 `/tmp/unoq-yolo/` 하위에 둠
   - 시스템이 자동 정리하므로 영구성을 가정하지 않음
   - 그러나 본인 프로젝트 이름의 서브디렉토리에 모아 두어 작업 중 추적 가능
@@ -146,6 +159,7 @@ UNO Q의 기본 비밀번호는 첫 접속 시 즉시 변경.
 ### 4-1. 모델 도입 절차
 
 새 모델을 본 프로젝트에 도입할 때 다음을 `01_model_selection_log.md`에 기록:
+
 - 모델 이름 및 버전
 - 라이선스
 - 데이터셋 라이선스 (학습에 사용된 경우)
@@ -191,6 +205,7 @@ scale, offset = input_details[0]['quantization']
 ### 5-2. 후처리 분리
 
 raw 모델 출력은 그대로 사용하지 않고, 다음 단계로 분리된 모듈에서 처리:
+
 1. dequantize (필요 시)
 2. reshape/transpose
 3. confidence threshold
@@ -218,6 +233,7 @@ def load_interpreter(model_path, num_threads=4, enable_gpu=False):
 ```
 
 원칙:
+
 - **CPU가 기본**: GPU는 명시적 opt-in
 - **silent fail 금지**: GPU delegate 실패 시 로그로 명확히 알림
 - **fallback은 fail-safe**: GPU 실패해도 CPU로 동작은 보장
@@ -239,6 +255,7 @@ def load_interpreter(model_path, num_threads=4, enable_gpu=False):
 ### 6-2. 부족 시 대응 순서
 
 표준 최적화 순서:
+
 1. 입력 해상도 축소 (320 → 256 → 192)
 2. 더 작은 모델 (n → s 만 → 그보다 작은 변종)
 3. frame skipping
@@ -249,6 +266,7 @@ def load_interpreter(model_path, num_threads=4, enable_gpu=False):
 ### 6-3. 측정 표준
 
 성능은 다음 지표로 일관 측정/보고:
+
 - latency p50, p95 (ms)
 - FPS mean
 - max RSS (MB)
@@ -262,7 +280,8 @@ JSON 포맷은 본 프로젝트 벤치마크 문서에서 별도 정의.
 
 ### 7-1. 문서 디렉토리
 
-- 본 프로젝트 자체 문서는 모두 `danny/` 폴더에 작성
+- 본 프로젝트 자체 문서는 모두 `docs/` 폴더에 작성
+- 멘토/외부 자료의 한국어 정리는 `docs/mentor/` 하위에 보관 (외부 공개 X)
 - 외부 자료/참고 자료는 본 저장소에 직접 포함하지 않음 (필요 시 링크로 참조)
 
 ### 7-2. 파일명
@@ -274,6 +293,7 @@ JSON 포맷은 본 프로젝트 벤치마크 문서에서 별도 정의.
 ### 7-3. 의사결정 문서 구조
 
 의사결정을 다루는 문서(`01_model_selection_log.md` 등)는 다음 섹션 필수:
+
 - 결정 요약 (한 화면 표)
 - 채택 근거
 - 알려진 한계 / 위험
@@ -282,6 +302,7 @@ JSON 포맷은 본 프로젝트 벤치마크 문서에서 별도 정의.
 ### 7-4. 사실/추측 분리
 
 본인이 직접 검증한 내용과 외부 출처 인용을 구분:
+
 - 검증: "본 환경에서 측정 결과 X 확인"
 - 인용: "[출처 URL]에 따르면 ..."
 - 추측: "...일 가능성 높음 (실측 필요)"
@@ -319,6 +340,8 @@ git에 커밋하지 않고, 다운로드 스크립트(`scripts/download_models.s
 | 2026-06-23 | 초안 작성 | 임베디드 AI 프로젝트 권장 사항을 본 프로젝트 규약으로 채택 |
 | 2026-06-23 | Section 2-3 보완 | `/opt`와 `/tmp`의 의미 차이 + 임시 파일도 프로젝트 서브디렉토리 안에 두기 명시 |
 | 2026-06-23 | Section 1-1 구현 반영 | `scripts/env.sh` 파일 생성. 변수 표 형식으로 정리 |
+| 2026-06-23 | Section 1-1에 04 (env.sh 사용법 가이드) 흡수 — override 메커니즘 + 본인 값 등록 3방법 통합 | 04 통합 / 중복 정리 |
+| 2026-06-23 | Section 7-1 `danny/` → `docs/` (폴더명 변경) + `docs/mentor/` 명시 | 폴더 리네이밍 반영 |
 
 ---
 

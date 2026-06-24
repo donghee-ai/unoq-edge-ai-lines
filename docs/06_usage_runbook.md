@@ -1,7 +1,6 @@
 # 실행 방법 Runbook — 호스트/디바이스 공용
 
-> 본 문서는 자주 쓰는 명령을 모은 실용 가이드입니다.
-> 본 프로젝트의 환경/스크립트/규약은 다른 문서(`00`~`07`)에 정의되어 있으며, 본 문서는 그것들을 "어떻게 쓰는가"에 집중합니다.
+> 본 문서는 자주 쓰는 명령을 모은 실용 가이드입니다. 환경/스크립트/규약 정의가 아니라 "어떻게 쓰는가"에 집중 — 본 작품의 명령 단일 SoT.
 
 ---
 
@@ -45,6 +44,7 @@
 ```
 
 규약:
+
 - **git/SSH/scp**: 호스트 WSL에서만 (컨테이너 안에서 git은 user 분리 문제로 비권장)
 - **모델 export/검증**: 컨테이너 안 (재현성 보장)
 - **디바이스 추론**: 디바이스에서 (venv 활성화 필수)
@@ -86,6 +86,7 @@ python -c "from ultralytics import YOLO; m=YOLO('yolov8n.pt'); \
 ```
 
 생성:
+
 - `models/yolov8n_saved_model/yolov8n_int8.tflite` (3.19 MB) — 메인
 - 기타 변종: float32, float16, integer_quant, full_integer_quant
 
@@ -97,6 +98,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 ```
 
 또는 JSON 저장:
+
 ```bash
 python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite \
   --json /work/benchmarks/host_$(date +%Y%m%d).json
@@ -123,7 +125,8 @@ source ~/venv-unoq/bin/activate
 # → 프롬프트 앞에 (venv-unoq) 표시되면 활성화 완료
 ```
 
-(`~/.bashrc`에 자동 활성화 등록하면 매번 안 쳐도 됨 — `06_device_setup.md` Section 5-4 참조)
+(`~/.bashrc`에 자동 활성화 등록하면 매번 안 쳐도 됨:
+`echo '[ -f ~/venv-unoq/bin/activate ] && source ~/venv-unoq/bin/activate' >> ~/.bashrc`)
 
 ### 3-3. 디바이스 추론 실행
 
@@ -132,6 +135,7 @@ python3 ~/validate_model.py /opt/unoq-yolo/models/yolov8n_int8.tflite
 ```
 
 JSON 저장:
+
 ```bash
 mkdir -p ~/benchmarks
 python3 ~/validate_model.py /opt/unoq-yolo/models/yolov8n_int8.tflite \
@@ -184,6 +188,7 @@ ssh arduino@192.168.0.45 'source ~/venv-unoq/bin/activate && \
 ```
 
 결과가 호스트 셸에 그대로 출력됨. 길면 파일로:
+
 ```bash
 ssh arduino@192.168.0.45 '...' > /tmp/device_out.log 2>&1
 cat /tmp/device_out.log
@@ -207,12 +212,13 @@ source scripts/env.sh
 ```
 
 그 다음 모든 명령에서:
+
 ```bash
 ssh ${UNO_Q_USER}@${UNO_Q_HOST} 'whoami'
 scp <file> ${UNO_Q_USER}@${UNO_Q_HOST}:/opt/unoq-yolo/models/
 ```
 
-영구화는 `.env` 파일 또는 `~/.bashrc` — 자세한 건 `04_uno_q_env_setup.md`.
+영구화: `.env` 파일 (프로젝트 단위, 권장) 또는 `~/.bashrc` (셸 단위).
 
 ---
 
@@ -227,6 +233,7 @@ ssh arduino@192.168.0.45 'bash ~/setup_device.sh'
 ```
 
 스크립트가 자동 수행:
+
 1. apt: `python3-pip`, `python3-venv`
 2. `~/venv-unoq` 생성
 3. `pip install ai-edge-litert numpy`
@@ -277,6 +284,7 @@ GitHub 인증은 첫 회 `gh auth login` 한 번만, 이후 자동.
 본 작품의 측정 데이터는 다음 형식으로 일관 수집:
 
 ### 9-1. 측정 명령
+
 ```bash
 # 디바이스에서
 python3 ~/validate_model.py /opt/unoq-yolo/models/<MODEL_NAME>.tflite \
@@ -285,30 +293,94 @@ python3 ~/validate_model.py /opt/unoq-yolo/models/<MODEL_NAME>.tflite \
 ```
 
 ### 9-2. JSON 파일명 규칙
+
 `<host|device>_<model_short_name>_<YYYYMMDD>.json`
 
 예:
+
 - `host_yolov8n_int8_20260623.json`
 - `device_yolov8n_int8_20260623.json`
 - `device_mediapipe_face_20260701.json` (향후)
 
 ### 9-3. 호스트로 회수 + git에 포함 여부
+
 - 회수: `benchmarks/` 폴더로 (`.gitignore`에서 명시적으로 빼야 함)
 - git 포함 여부: 검토 후 결정 (현재는 미포함)
+
+### 9-4. 카메라 실시간 추론 + 라이브 디버그 (운영 측정)
+
+`src/infer_camera.py`로 카메라 + 추론 + (옵션) HTTP MJPEG 라이브 스트리밍.
+
+⚠ `--serve` DEBUG ONLY. 인증 없음. 로컬 LAN 외부 노출 금지.
+
+#### 권장 한 줄 명령 (호스트 WSL → 디바이스 원격 + 자동 자료 저장)
+
+```bash
+ssh arduino@192.168.0.45 'source ~/venv-unoq/bin/activate && \
+    mkdir -p ~/benchmarks && \
+    python3 ~/infer_camera.py /opt/unoq-yolo/models/yolov8n_int8.tflite \
+        --camera 0 --serve 8080 \
+        --json ~/benchmarks/cam_serve_$(date +%Y%m%d_%H%M%S).json \
+        --save-dir /tmp/unoq-yolo/cam-debug --save-every 60 \
+        --print-every 50'
+```
+
+- 브라우저: `http://192.168.0.45:8080/` (영상 + 통계 패널, 500ms 폴링)
+- 종료: `Ctrl+C` (디바이스 콘솔) → 카메라 release + JSON 자동 저장
+- 자료: `~/benchmarks/cam_serve_<TS>.json` + `/tmp/unoq-yolo/cam-debug/frame_*.jpg`
+
+#### 자료 회수 (호스트 WSL에서)
+
+```bash
+mkdir -p benchmarks test_camera_output
+scp 'arduino@192.168.0.45:~/benchmarks/cam_serve_*.json' benchmarks/
+scp 'arduino@192.168.0.45:/tmp/unoq-yolo/cam-debug/*.jpg' test_camera_output/
+```
+
+#### 옵션 조정
+
+| 옵션 | 기본 | 변경 효과 |
+|---|---|---|
+| `--max-frames 0` | 무제한 | 고정 측정 → 예: `--max-frames 1800` (~3.5분) |
+| `--save-every 60` | 60프레임마다 | 더 자주 → `--save-every 30` |
+| `--print-every 50` | 50프레임마다 콘솔 | `--print-every 100`으로 조용 |
+| `--jpeg-quality 70` | 70 | `--jpeg-quality 50`로 대역폭/CPU ↓ |
+| `--reconnect-after 5` | 5회 연속 실패 → 재오픈 | 적당히 |
+
+#### 자주 만나는 함정 (실측 사고 기록)
+
+| 증상 | 원인 | 해결 |
+|---|---|---|
+| `ERROR: cannot open camera /dev/video0` + `ls /dev/video*` 빈 출력 | `lsusb`엔 카메라 보이는데 uvcvideo 미바인딩 | `ssh arduino@192.168.0.45 'sudo modprobe -r uvcvideo; sleep 1; sudo modprobe uvcvideo; sleep 2; ls /dev/video*'` |
+| `Killed` 메시지 후 명령 즉시 중단 | `pkill -f infer_camera.py`가 자기 ssh 명령줄 매칭 → self-kill | pkill 옵션 빼고 그냥 실행 |
+| 카메라 인덱스 다름 | `/dev/video0` 외 다른 번호 부여 | `ls /dev/video*` 확인 후 `--camera 1` 시도 |
+| nested SSH (디바이스 셸 안에서 또 ssh) | 호스트 WSL이 아닌 디바이스 셸에서 실행 | `exit` 두 번 → 호스트 WSL로 복귀 |
+| 카메라 인식 안 됨 (lsusb에도 없음) | USB 케이블/포트 문제 | 케이블 재연결 → 5초 대기 → `ls /dev/video*` 재확인. 안 되면 `sudo reboot` |
+
+상세 측정 결과 + 함정 진단 → `09_realtime_camera.md`
 
 ---
 
 ## 10. 다음 작업 진입 (체크리스트)
 
-본 단계까지 끝나면 다음 진입:
+이미 완료된 항목은 본 작품 합격선 통과까지:
 
-- [ ] `src/postprocess.py` 작성 (NMS + 박스 디코딩)
-- [ ] 실제 이미지 추론 (`coco128/images/train2017/*.jpg` 사용)
-- [ ] 박스 그려서 PNG 저장 (README 데모 자산)
-- [ ] 호스트/디바이스 양쪽에서 end-to-end FPS 측정
-- [ ] (향후) 카메라 입력 처리
-- [ ] (향후) 얼굴 검출 모델로 전환 (또는 YOLO fine-tuning)
-- [ ] (향후) MCU 연동 (LED, 모터)
+- [x] `src/postprocess.py` 작성 (NMS + 박스 디코딩)
+- [x] 실제 이미지 추론 (`coco128/images/train2017/*.jpg`)
+- [x] 박스 그려서 PNG 저장 (README 데모 자산)
+- [x] 호스트/디바이스 양쪽에서 end-to-end FPS 측정 (100회 + 멘토 형식 JSON)
+
+- [x] 카메라 입력 처리 (`src/infer_camera.py`) — `--serve 8080` HTTP MJPEG 디버그 UI + 멘토 06 권고(dropped_frames / reconnect / RSS / temp) 포함
+
+향후 진입:
+
+- [ ] Soak test (8시간+) — 운영 측정에서 thermal 70.8°C 발견, 장시간 거동 확인 필요
+- [ ] 얼굴 검출 모델 결정 (YOLO person만 / YOLO face fine-tune / MediaPipe Face)
+- [ ] 표정 추론 L1/L2 (FaceMesh + 규칙 기반)
+- [ ] MCU 연동 (LED, 모터 PWM) + heartbeat/safe-state
+- [ ] Watchdog (no-heartbeat 5s restart, no-camera 10s reinit)
+- [ ] Golden image set 20~100장
+- [ ] Public 전환 준비 (LICENSE, SSH key, 비번 변경, 멘토 인용 redact)
 
 ---
 
@@ -317,6 +389,8 @@ python3 ~/validate_model.py /opt/unoq-yolo/models/<MODEL_NAME>.tflite \
 | 날짜 | 변경 | 사유 |
 |---|---|---|
 | 2026-06-23 | 초안 작성 | 호스트/디바이스 셋업 + 첫 추론까지 완료 후, 실행 가이드 정리 |
+| 2026-06-23 | inter-doc 참조 라인 정리 (04, 06 → 자체 안내로) + 다음 작업 체크리스트 갱신 | 중복 정리 / 자급자족화 |
+| 2026-06-23 | Section 9-4 추가 — 카메라 실시간 추론 + 라이브 디버그 (`--serve 8080`) 권장 명령 + 함정 4종 등록 | 실 운영 측정 후 재현성 확보 |
 
 ---
 

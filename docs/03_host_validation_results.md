@@ -1,7 +1,6 @@
 # 호스트 모델 검증 결과 - YOLOv8n int8 TFLite
 
-> 본 문서는 STEP 3 (전송 전 모델 검증)의 호스트 CPU 측정 결과를 기록합니다.
-> 향후 UNO Q 디바이스 측정 결과의 비교 baseline으로 사용됩니다.
+> 본 문서는 호스트 Docker 컨테이너(Ryzen 7 + XNNPACK)에서 측정한 YOLOv8n int8 TFLite의 순수 inference latency를 기록합니다. 단일 책임 — 호스트 baseline 그 자체.
 
 ---
 
@@ -16,7 +15,7 @@
 | Mean latency | **12.5 ms** |
 | p50 / p95 | 12.2 ms / 15.0 ms |
 | FPS (mean) | **79.96** |
-| 결론 | 호스트 baseline 확보. UNO Q 실측 시 본 수치의 약 1/8~1/15 예상 (5~10 FPS) |
+| 결론 | 호스트 baseline 확보 |
 
 ---
 
@@ -85,6 +84,7 @@
 ### 2-4. "Int8 모델인데 입출력이 float32"인 이유
 
 Ultralytics int8 export의 표준 동작:
+
 - **Weight는 int8 양자화** (모델 크기 12.7 MB → 3.19 MB, 약 4× 압축)
 - **내부 op는 int8 산술**
 - 입출력 텐서만 float32 (사용자 코드에서 quant/dequant 변환 불필요)
@@ -114,63 +114,23 @@ Ultralytics int8 export의 표준 동작:
 ### 3-2. FPS 의미
 
 - 호스트에서 **약 80 FPS** = 실시간 비디오 (30 FPS) 대비 2.5× 여유
-- 단, 이는 **호스트의 강력한 CPU 기준**이며 UNO Q에선 다름
+- 호스트 CPU 기준이라 다른 환경(UNO Q 등)에서는 다른 수치가 나옴 — 본 문서 범위 외
 
 ---
 
-## 4. UNO Q로의 변환 추정
+## 4. 알려진 한계
 
-### 4-1. CPU 성능 비교
-
-| 항목 | 호스트 | UNO Q | 비율 |
-|---|---|---|---|
-| 아키텍처 | Zen3+ (Out-of-Order, 큰 SIMD) | Cortex-A53 (In-Order, 작은 SIMD) | — |
-| 클럭 | ~3.2 GHz | 2.0 GHz | 1.6× |
-| IPC | 높음 (현세대 데스크탑) | 낮음 (효율 코어) | ~3× |
-| 종합 단일 스레드 추정 차이 | — | — | **약 5~10× 느림** |
-| Thread count | 4 (호스트는 8 코어 16 스레드 중 4개) | 4 (전부) | — |
-| **종합 예상** | — | — | **약 8~15× 느림** |
-
-### 4-2. UNO Q 실측 수치 (2026-06-23 확정)
-
-| 지표 | 호스트 실측 | UNO Q 실측 | 디바이스/호스트 비율 |
-|---|---|---|---|
-| latency mean (ms) | 12.5 | **101.27** | **8.1×** |
-| latency p50 (ms) | 12.23 | 94.03 | 7.7× |
-| latency p95 (ms) | 14.98 | 129.06 | 8.6× |
-| FPS mean | 80 | **9.88** | 1/8.1 |
-
-→ **사전 추정 (100~190 ms / 5~10 FPS) 범위 내에서 가장 빠른 쪽 결과.** 자세한 내용 및 합격 판정은 `07_device_first_inference.md` 참조.
-
-### 4-3. 본 작품 시나리오에서의 의미 — 합격 판정 완료
-
-- 본 작품 합격선: **8 FPS 이상** (`01_model_selection_log.md`)
-- UNO Q 실측: **9.88 FPS** → ✅ **합격선 통과**
-- 결정: **YOLO 유지**. MediaPipe 전환 트리거 발동 안 됨.
+- **호스트 CPU 기준 측정** — 본 문서는 호스트 baseline만 다룸
+- **더미 입력 (random uint8)** — 실제 이미지 사용 시 latency 영향 미미
+- **XNNPACK delegate 자동 사용** — `tensorflow.lite`가 컨테이너에서 자동 활성화
+- **단일 측정 1회** — 시간대/시스템 부하 차이 미반영
 
 ---
 
-## 5. 알려진 한계 및 후속 측정 계획
+## 5. 빠른 참조
 
-### 5-1. 본 측정의 한계
-- **호스트 CPU 기준** — 디바이스 실측이 진실값
-- **더미 입력 (random uint8)** — 실제 이미지 사용 시 약간 다를 수 있음 (정확도엔 영향, latency엔 미미)
-- **XNNPACK delegate 자동 사용** — 디바이스에서도 동일한 delegate가 활성화되는지 확인 필요
-- **단일 측정 1회** — 시간대/온도/시스템 부하 차이 미반영
+### 5-1. 측정 재실행
 
-### 5-2. UNO Q 측정 시 추가 수집할 데이터
-- latency p50/p95/mean
-- FPS mean
-- **max RSS** (메모리 peak)
-- **max temperature** (`/sys/class/thermal/...`에서 읽기)
-- **dropped frames** (실제 비디오 입력 시)
-- 추가: GPU delegate 시도 결과 (`benchmark_model --use_gpu=true`)
-
----
-
-## 6. 빠른 참조
-
-### 6-1. 측정 재실행
 ```bash
 # 컨테이너 진입
 cd /mnt/c/Project/unoq-companion-robot
@@ -181,16 +141,16 @@ cd /work
 python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 ```
 
-### 6-2. JSON 저장 (멘토 보고용)
+### 5-2. JSON 저장
+
 ```bash
 python src/validate_model.py \
   models/yolov8n_saved_model/yolov8n_int8.tflite \
   --json /work/benchmarks/host_validate_int8_$(date +%Y%m%d).json
 ```
 
-(`benchmarks/` 폴더는 `.gitignore` 패턴 점검 후 git에 포함할지 결정. 현재는 미포함)
+### 5-3. 다른 변종 모델로 비교
 
-### 6-3. 다른 변종 모델로 비교
 ```bash
 # float32 (양자화 없음, 정확도 기준선)
 python src/validate_model.py models/yolov8n_saved_model/yolov8n_float32.tflite
@@ -206,7 +166,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_float16.tflite
 | 날짜 | 변경 | 사유 |
 |---|---|---|
 | 2026-06-23 | 초안 작성, 호스트 baseline 12.5ms / 80 FPS 기록 | STEP 3 완료 |
-| 2026-06-23 | Section 4 갱신: UNO Q 실측 수치 채움 (101.27 ms / 9.88 FPS) | STEP 5 완료. 상세는 `07_device_first_inference.md` |
+| 2026-06-23 | 디바이스 비교/추정 섹션 제거 — 호스트 baseline 단일 책임 명확화 | 중복 정리 |
 
 ---
 
@@ -215,6 +175,6 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_float16.tflite
 | 항목 | 값 |
 |---|---|
 | 작성일 | 2026-06-23 |
-| 다음 갱신 시점 | UNO Q 디바이스 실측 후 (Section 4-2 표 채움) |
+| 갱신 정책 | 호스트 환경/모델 변경 시 (디바이스 측정 변동은 본 문서와 무관) |
 | 관련 스크립트 | `src/validate_model.py` |
 | 관련 모델 | `models/yolov8n_saved_model/yolov8n_int8.tflite` (gitignored) |

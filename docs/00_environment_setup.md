@@ -14,7 +14,7 @@
 | **컨테이너 Python** | 3.10.12 |
 | **AI 런타임** | TFLite (LiteRT) 경유, TensorFlow 핀 |
 | **사용 목적** | 호스트 PC에서의 모델 변환, 검증, 벤치마크 (디바이스 추론 X) |
-| **공유 방식** | 4개 텍스트 파일 git 푸시 → 협업자 측 동일 환경 재현 |
+| **공유 방식** | 5개 텍스트 파일(Dockerfile, requirements.txt/lock, .dockerignore, run.sh) git 푸시 → `bash run.sh`로 byte-exact 재현 |
 
 ### 왜 도커인가
 
@@ -47,10 +47,11 @@
 C:\Project\
 └── unoq-companion-robot/                <-- 프로젝트 루트 (git 대상)
     ├── Dockerfile                       <-- 환경 정의
-    ├── requirements.txt                 <-- Python 의존성
+    ├── requirements.txt                 <-- 의도 표현 (15개 패키지)
+    ├── requirements.lock                <-- byte-exact 설치 (94 패키지, pip freeze 결과)
     ├── .dockerignore                    <-- 빌드 컨텍스트 위생
     ├── run.sh                           <-- 원샷 빌드+실행 스크립트
-    └── danny/
+    └── docs/
         └── 00_environment_setup.md      <-- 본 문서
 ```
 
@@ -61,10 +62,11 @@ C:\Project\
 | 파일 | 역할 | git 커밋 대상 |
 |------|------|---|
 | `Dockerfile` | 컨테이너 이미지 정의 (베이스, 시스템 패키지, 유저, Python 설치) | O |
-| `requirements.txt` | pip 설치 대상 패키지 목록 | O |
+| `requirements.txt` | pip 의도 표현 (사람이 읽는 형태) | O |
+| `requirements.lock` | byte-exact 설치 (`pip freeze` 결과, 94 패키지) | O |
 | `.dockerignore` | 빌드 컨텍스트에서 제외할 경로 패턴 | O (없으면 빌드만 느려짐) |
 | `run.sh` | `docker build` + `docker run` 원샷 wrapper | O |
-| `danny/*.md` | 작업/의사결정 기록 | O (선택) |
+| `docs/*.md` | 작업/의사결정 기록 | O (선택) |
 
 ---
 
@@ -105,6 +107,7 @@ bash run.sh
 첫 빌드는 시스템 패키지(약 300 MB) + Python 패키지(약 1.5 GB) 다운로드가 발생하여 **10~15분** 소요됩니다. 이후 캐시 활용으로 재진입은 5초 이내.
 
 진입 성공 시 프롬프트 변화:
+
 ```
 (base) a@DESKTOP-...:/mnt/c/Project/unoq-companion-robot$   <-- 호스트
                                   ↓ bash run.sh
@@ -132,24 +135,30 @@ print('OpenCV', cv2.__version__); print('NumPy', numpy.__version__)"
 ## 컨테이너 사용 패턴
 
 ### 진입
+
 ```bash
 cd /mnt/c/Project/unoq-companion-robot
 bash run.sh
 ```
 
 ### 강제 재빌드 (Dockerfile/requirements.txt 변경 후)
+
 ```bash
 bash run.sh --rebuild
 ```
 
 ### 종료
+
 컨테이너 내부에서:
+
 ```bash
 exit       # 또는 Ctrl+D
 ```
+
 `--rm` 옵션으로 실행되므로 종료 시 컨테이너는 자동 삭제되며, 이미지는 보존됩니다.
 
 ### 추가 셸 열기 (이미 실행 중인 컨테이너에)
+
 Docker Desktop GUI → Containers → `unoq-yolo-dev` → 터미널 아이콘 클릭
 
 ---
@@ -165,6 +174,7 @@ bash run.sh
 ```
 
 전제 조건:
+
 - Docker (Desktop 또는 Engine)
 - bash 셸
 
@@ -193,7 +203,85 @@ bash run.sh
 | 모델 캐시 위치 | 컨테이너 임시 (`/tmp`) | named volume 또는 호스트 마운트로 영속화 |
 | 카메라 패스스루 | 미설정 | UNO Q 디바이스에서 직접 추론하므로 호스트 환경에선 불필요 |
 | 멀티 사용자 UID | `1000:1000` 고정 가정 | 향후 build-arg 기본값 동적 처리 (현재 `id -u`로 매핑) |
-| 라이브러리 락 파일 | 미생성 | 환경 안정화 후 `pip freeze > requirements.lock` 작성 |
+
+---
+
+## 환경 진화 — `requirements.lock` 도입 경위
+
+본 환경은 초기 `requirements.txt` 핀(`tensorflow==2.13.0`)만으로는 재현성이 부족하여 사고를 한 번 겪었습니다. 그 결과 transitive deps 사전 핀 + byte-exact lock 파일을 도입했습니다. 본 섹션은 그 사고/해결/학습을 압축 기록합니다.
+
+### 사고 요약
+
+YOLOv8n TFLite export 시도 중 두 단계 실패:
+
+| 단계 | 원인 |
+|---|---|
+| 1차 실패 | Ultralytics export가 AutoUpdate로 핀된 환경 침범 (`tf_keras<=2.19.0` 요구가 TF 2.19, numpy 2.1, keras 3.12 강제 업그레이드). 같은 프로세스 안에서 TF 2.13 / TF 2.19 모듈 충돌 → `KerasTensor` 비호환 에러 |
+| 2차 실패 | 디스크상 numpy 2.1.3 상태에서 torch 2.1.x(numpy 1.x ABI 빌드) import 시 `RuntimeError: Numpy is not available` (ABI 비호환) |
+
+근본 원인: Ultralytics가 export 단계에서 누락 deps를 `pip install --user`로 자동 설치 → 기존 핀 침범 + mid-process 패키지 교체로 모듈 일관성 붕괴.
+
+### 해결 — `requirements.txt` 핀 확장 + lock 파일 도입
+
+`requirements.txt`를 의도 표현으로 유지하되, **AutoUpdate가 침범할 transitive deps를 모두 사전 핀**:
+
+```diff
+- tensorflow==2.13.0
++ # Core scientific
++ numpy==1.26.4
++ # TensorFlow / Keras stack
++ tensorflow==2.19.1
++ tf_keras==2.19.0
++ keras==3.12.2
++ ai-edge-litert
++ protobuf>=5,<6
++ # Ultralytics + ONNX 변환 도구 체인
++ ultralytics
++ onnx, onnxruntime, onnxslim, onnx2tf, onnx_graphsurgeon, sng4onnx
+```
+
+| 패키지 | 핀 버전 | 근거 |
+|---|---|---|
+| numpy | 1.26.4 | torch 2.1.x(<2) + TF 2.19(>=1.26) 교집합 |
+| tensorflow | 2.19.1 | Ultralytics 요구 tf_keras 2.19.0과 짝 |
+| protobuf | >=5,<6 | TF 2.19 호환, 미래 6.x 변경 차단 |
+
+export 성공 시점에 byte-exact lock 파일 생성:
+
+```bash
+pip freeze > requirements.lock     # 94 패키지 동결
+```
+
+`Dockerfile`은 실제 설치 출처를 `requirements.lock`으로 변경:
+
+```dockerfile
+COPY requirements.txt requirements.lock /tmp/
+RUN pip3 install --user -r /tmp/requirements.lock
+```
+
+| 파일 | 용도 | 누가 읽나 |
+|---|---|---|
+| `requirements.txt` | 의도 표현 ("TF 2.19, ultralytics 필요해") | 사람 |
+| `requirements.lock` | byte-exact 설치 (94 패키지 동결) | Docker / pip |
+
+### Lock 파일 갱신 시점
+
+의도적으로 의존성 업그레이드할 때만:
+
+1. `requirements.txt` 갱신
+2. `bash run.sh --rebuild`
+3. 컨테이너 안에서 `pip freeze > requirements.lock`
+4. 커밋
+
+Lock 파일은 직접 손으로 편집하지 않음 (생성 결과물).
+
+### 학습 포인트 — Python 패키징 함정 3개
+
+1. **상위 도구의 AutoUpdate**가 핀된 환경을 침범 (Ultralytics → tf_keras → TF/numpy 연쇄 업그레이드)
+2. **사전 컴파일 wheel의 ABI 호환성**, 특히 numpy 메이저 버전(1.x vs 2.x) 경계 — torch 2.1.x는 numpy <2에 묶임
+3. **mid-process 패키지 교체** 시 모듈 import 일관성 깨짐 — TF 2.13/2.19 동시 메모리 거주 → `KerasTensor` 에러
+
+방어: 모든 transitive deps를 lock 파일로 사전 핀 → AutoUpdate 차단 + byte-exact 재현성.
 
 ---
 
@@ -224,24 +312,34 @@ docker rmi unoq-yolo-dev:22.04
 
 본 문서가 다루는 범위는 **호스트 PC 개발 환경 셋업**까지입니다. 이후 단계는 별도 문서로 분리합니다.
 
-| 다음 문서 (예정) | 내용 |
+| 다음 문서 | 내용 |
 |------|------|
-| Git 초기화, `.gitignore`, 첫 커밋, GitHub 연결 | 별도 문서 |
-| 모델 선택 및 export | `01_model_selection_log.md`, `02_export_environment_fix.md` |
-| 호스트에서 단일 이미지 추론 테스트 | 별도 문서 (예정) |
-| UNO Q 디바이스로 모델 전송 및 실행 | 별도 문서 (예정) |
-| 실측 latency/FPS/메모리 기록 | 별도 문서 (예정) |
+| Git 초기화, `.gitignore`, 첫 커밋, GitHub 연결 | (별도 작업) |
+| 모델 선택 의사결정 | 01 |
+| 호스트 모델 검증 | 03 |
+| UNO Q 디바이스 셋업 + 추론 | 04, 05 |
+| End-to-end 측정 + 공식 벤치마크 | 07, 08 |
 
 ---
 
 ## 부록 - 파일 전체 내용
 
-본 문서 시점의 4개 파일 전체 내용은 프로젝트 루트(`../`)에 위치합니다. 변경 이력은 git log를 참조하세요.
+본 문서 시점의 환경 정의 파일들은 프로젝트 루트(`../`)에 위치합니다. 변경 이력은 git log를 참조하세요.
 
 - `../Dockerfile`
-- `../requirements.txt`
+- `../requirements.txt` (의도 표현)
+- `../requirements.lock` (byte-exact 설치, 94 패키지)
 - `../.dockerignore`
 - `../run.sh`
+
+---
+
+## 변경 이력
+
+| 날짜 | 변경 | 사유 |
+|---|---|---|
+| 2026-06-23 | 초안 작성 — Docker 호스트 환경 셋업 + 4 파일 정의 + smoke test | 빌드 성공 (약 13.5분) |
+| 2026-06-23 | "환경 진화 — Lock 파일 도입" 섹션 흡수 (구 02 통합) — 환경 정의의 단일 SoT 완성 | 02 통합 / 중복 정리 |
 
 ---
 
@@ -252,4 +350,4 @@ docker rmi unoq-yolo-dev:22.04
 | 작성일 | 2026-06-23 |
 | 작성 시점 빌드 결과 | 성공 (총 빌드 시간 약 13.5분) |
 | 검증 환경 | Windows 11 + WSL2 Ubuntu 24.04 + Docker Desktop 4.78.0 |
-| 요구사항 충족 | Docker / Ubuntu 22.04 / 셸 원샷 / 협업자 공유 가능 - 모두 충족 |
+| 적용 범위 | 호스트 Docker 컨테이너 환경 (디바이스 환경은 04 참조) |

@@ -1,0 +1,20 @@
+// Markdown lint 설정 — 한국어 기술 문서 + 표 중심 + 도식 블록 사용에 맞춤
+// 콘텐츠/렌더링에 영향 없는 스타일 강제 룰만 비활성화
+{
+  // 줄 길이 제한: 한국어 + 표 셀은 자연스럽게 80자 초과
+  "MD013": false,
+
+  // emphasis-as-heading: **Why:**, **How to apply:** 같은 의도적 강조 사용
+  "MD036": false,
+
+  // 중복 헤딩: ### 1-1, ### 2-1 같은 sub-numbering 패턴이 Section마다 반복
+  // siblings_only=true → 같은 부모 아래에서만 중복 검사
+  "MD024": { "siblings_only": true },
+
+  // 코드블록 언어 미명시: 도식/ASCII 아트는 ``` 그대로 사용 (의도적)
+  "MD040": false,
+
+  // 표 컬럼 스타일 (cli2 확장): |x| vs | x | — GitHub 렌더링 동일
+  "MD060": false,
+  "table-column-style": false
+}

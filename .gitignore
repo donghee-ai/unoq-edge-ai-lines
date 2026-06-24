@@ -95,3 +95,15 @@ ehthumbs.db
 # === 본 프로젝트의 임시 출력 ===
 # 호스트 측 임시 디렉토리는 /tmp/unoq-yolo/ (절대 경로, git 대상 아님)
 # 만약 프로젝트 폴더 내에 임시 출력 두면 여기 추가
+
+# === Ultralytics 자동 출력 폴더 ===
+runs/
+
+# === 임시 테스트 결과 ===
+test_*.jpg
+test_*.png
+*_annotated.jpg
+*_annotated.png
+
+# === 대외비 자료 (멘토 패키지 — Public 전환 전 반드시 점검) ===
+docs/mentor/

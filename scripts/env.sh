@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # UNO Q 접속 및 디바이스 경로 환경 변수
-# (멘토 docs ko/01_source_checked_corrections.md의 안전한 명령 템플릿 채택)
+# 본 프로젝트 규약 (docs/02_project_conventions.md Section 1-1) 표준화
 #
 # 사용 방법:
 #   source scripts/env.sh                                # 기본값 적용

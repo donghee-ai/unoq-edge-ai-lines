@@ -6,8 +6,8 @@ tqdm
 pillow
 
 # TensorFlow / Keras stack (Ultralytics TFLite export 호환 조합)
-# 멘토 docs는 tensorflow==2.13.0이지만 현재 Ultralytics(8.4.75) export가 tf_keras<=2.19.0 요구
-# → AutoUpdate가 일어나면 환경 깨짐. 사전에 2.19 stack으로 핀.
+# 초기 tensorflow==2.13.0 핀은 Ultralytics(8.4.75) export가 tf_keras<=2.19.0 요구해서 깨짐
+# → AutoUpdate가 환경 손상. 사전에 2.19 stack으로 핀하여 안정성 확보 (docs/00 환경 진화 섹션 참조)
 tensorflow==2.19.1
 tf_keras==2.19.0
 keras==3.12.2

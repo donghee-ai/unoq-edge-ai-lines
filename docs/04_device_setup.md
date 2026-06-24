@@ -23,6 +23,7 @@
 ## 1. SSH 연결 확립 (트러블슈팅 포함)
 
 ### 1-1. 진행 흐름
+
 1. UNO Q IP/호스트명 파악: `192.168.0.45` / `unoq-korea01`
 2. SSH 사용자명 초기 가정 오류: 호스트명 `unoq-korea01`을 사용자명으로 착각
 3. UNO Q 로컬 콘솔에서 `whoami` 결과 → 실제 사용자명은 `arduino`
@@ -30,17 +31,21 @@
 5. `ssh arduino@192.168.0.45` 성공
 
 ### 1-2. 비번 입력 함정 (참고)
+
 SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
+
 - 사용자명 오류 (`unoq-korea01` → 존재하지 않는 유저)
 - 한/영 입력기가 한국어로 설정된 상태에서 비번 입력 → 영문 비번이 한글 자모로 전송됨
 
 향후 디바이스 작업 시 **터미널 입력 직전 입력기 영어 모드 확인** 필요.
 
 ### 1-3. 사용자 정보 (디바이스 측 `id` 결과)
+
 - UID/GID: 1000 / 1000
 - 그룹: `arduino, adm, dialout, sudo, audio, video, users, netdev, bluetooth, docker, sysupgrade, render, input, gpiod`
 
 본 작품 관련 그룹:
+
 - **`sudo`**: 시스템 명령 가능
 - **`docker`**: 디바이스에서 컨테이너 실행 가능 (필요 시)
 - **`gpiod`**: LED/모터 GPIO 제어 권한 (작품에 핵심)
@@ -89,11 +94,13 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 본 단계 진입 전, 멘토 패키지 docs 중 디바이스 측 런타임 관련 부분 정독.
 
 ### 3-1. 멘토 docs의 가정
+
 - 디바이스에 `tflite_runtime` (또는 `tensorflow`) 사전 설치되어 있음을 전제
 - 설치 방법은 명시되지 않음
 - 사용 코드 패턴: `try: import tflite_runtime.interpreter; except ImportError: import tensorflow.lite`
 
 ### 3-2. 본인 디바이스 현실과의 차이
+
 - 사전 설치된 런타임 없음 → **본인이 설치해야 함**
 - 멘토가 가정한 사전 설치 도구들 (`gst-ai-object-detection`, `benchmark_model`) 모두 없음
 
@@ -107,6 +114,7 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 | 멘토 코드 패턴 적용 | 가능 (import 폴백 패턴에 `ai_edge_litert.interpreter` 추가하여 3단 폴백) |
 
 ### 3-4. 결론
+
 **pip + venv + ai-edge-litert 채택**. 멘토 docs의 정신(TFLite 사용)에 충실하며, Python 3.13 + aarch64 + Debian 12+ 환경 제약에 부합.
 
 ---
@@ -133,6 +141,7 @@ SSH 첫 시도들에서 password 인증 실패가 반복됨. 원인:
 ### 5-1. 스크립트 실행 (권장 경로)
 
 **방법 A: 호스트에서 전송 후 일괄 실행**
+
 ```bash
 # 호스트 WSL에서
 scp scripts/setup_device.sh arduino@192.168.0.45:~/
@@ -140,6 +149,7 @@ ssh arduino@192.168.0.45 'bash ~/setup_device.sh'
 ```
 
 **방법 B: SSH 들어간 상태에서 직접**
+
 ```bash
 # 호스트에서 한 번 전송
 scp scripts/setup_device.sh arduino@192.168.0.45:~/
@@ -163,6 +173,7 @@ bash ~/setup_device.sh
 ### 5-3. 수동 실행 (스크립트 없이) — 참고용
 
 스크립트 없이 한 줄씩 칠 경우:
+
 ```bash
 sudo apt update && sudo apt install -y python3-pip python3-venv
 python3 -m venv ~/venv-unoq
@@ -177,7 +188,9 @@ sudo chown -R arduino:arduino /opt/unoq-yolo
 (스크립트가 위와 동일한 작업 수행)
 
 ### 5-4. 자동 활성화 (선택)
+
 매 SSH 진입 시 venv 자동 활성화하려면 `~/.bashrc` 마지막에:
+
 ```bash
 echo '[ -f ~/venv-unoq/bin/activate ] && source ~/venv-unoq/bin/activate' >> ~/.bashrc
 ```
@@ -186,32 +199,21 @@ echo '[ -f ~/venv-unoq/bin/activate ] && source ~/venv-unoq/bin/activate' >> ~/.
 
 ---
 
-## 6. `/opt/unoq-yolo/` 디렉토리 구조 생성
+## 6. 알려진 한계 및 후속 작업
 
-본 프로젝트 규약(`03_project_conventions.md` Section 2-1) 따라:
+### 6-1. 본 단계의 한계
 
-```bash
-sudo mkdir -p /opt/unoq-yolo/{models,labels,media,configs,logs}
-sudo chown -R arduino:arduino /opt/unoq-yolo
-```
-
-이 위치가 향후 모델/라벨/벤치 결과의 표준 위치.
-
----
-
-## 7. 알려진 한계 및 후속 작업
-
-### 7-1. 본 단계의 한계
 - 설치 절차 검증 미완 — pip 설치 + venv + ai-edge-litert까지 실행해야 확정
-- Camera (`/dev/video*`) 존재 여부 미확인 — STEP 5에서 별도 점검 필요
+- Camera (`/dev/video*`) 존재 여부 미확인 — 별도 점검 필요
 - 카메라 드라이버 / Wayland 셋업 미확인 — 시각 출력 시 추가 작업 가능
 
-### 7-2. 후속 작업 진행 상태 (2026-06-23 갱신)
+### 6-2. 후속 작업 진행 상태 (2026-06-23 갱신)
+
 1. ✅ pip + venv + ai-edge-litert 설치 완료 (`scripts/setup_device.sh` 또는 수동)
 2. ✅ 호스트에서 `yolov8n_int8.tflite` scp로 `/opt/unoq-yolo/models/`에 전송
 3. ✅ `src/validate_model.py`에 3단 import 폴백 추가 (`ai_edge_litert` 우선)
-4. ✅ **디바이스 첫 latency 실측 완료** — 결과는 `07_device_first_inference.md`
-5. ✅ 호스트 12.5 ms vs 디바이스 101.3 ms → **9.88 FPS 합격선(8) 통과**
+4. ✅ 디바이스 첫 latency 실측 완료 (별도 문서)
+5. ✅ 디바이스 측정 결과 합격선 통과 (별도 문서)
 
 ---
 
@@ -220,6 +222,7 @@ sudo chown -R arduino:arduino /opt/unoq-yolo
 | 날짜 | 변경 | 사유 |
 |---|---|---|
 | 2026-06-23 | 초안 작성 | UNO Q SSH 연결 확립 + 디바이스 사양 실측 + pip 접근 정당성 검토 + 런타임 선택 결정 |
+| 2026-06-23 | "/opt/unoq-yolo/ 디렉토리 구조" 섹션 제거 (03과 중복, 실제 mkdir은 5-3에 이미 포함) | 중복 정리 |
 
 ---
 
@@ -229,5 +232,5 @@ sudo chown -R arduino:arduino /opt/unoq-yolo
 |---|---|
 | 작성일 | 2026-06-23 |
 | 작성 시점 진행 단계 | STEP 4 진입 (디바이스 사양 파악 + 런타임 설치 직전) |
-| 관련 문서 | `01_model_selection_log.md` (모델 선택), `03_project_conventions.md` (디렉토리 규약), `05_host_validation_results.md` (호스트 baseline 비교 대상) |
-| 다음 갱신 시점 | 런타임 설치 완료 + 디바이스 첫 latency 실측 후 |
+| 적용 범위 | UNO Q SSH 연결 + 디바이스 사양 + TFLite 런타임 선택/설치 |
+| 갱신 정책 | 디바이스 OS/런타임/사양 변경 시 |
