@@ -3,7 +3,7 @@
 > Arduino UNO Q (Qualcomm Dragonwing QRB2210) 위에서 동작하는 책상용 교감로봇 프로젝트.
 > TFLite로 얼굴/표정을 실시간 분석하여 LED·모터·소리로 반응합니다.
 
-**현재 상태**: STEP 1~5 완료 + end-to-end 파이프라인 검증. UNO Q에서 **공식 벤치마크 9.23 FPS 실측** — 본 작품 합격선(8 FPS) 통과.
+**현재 상태**: PoC 단계 완료. UNO Q에서 **공식 벤치마크 9.23 FPS** (단일 이미지) + **카메라 실시간 8.29 FPS** (운영 2184f / 285s) 모두 합격선(8 FPS) 통과. 운영 측정에서 **thermal 70.8°C** 발견 — 장시간 soak test가 다음 최우선.
 
 ---
 
@@ -76,7 +76,7 @@ cd /work
 python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 ```
 
-상세 절차는 [`docs/00_environment_setup.md`](docs/00_environment_setup.md) 참조.
+상세 절차는 [`docs/01_host_environment_setup.md`](docs/01_host_environment_setup.md) 참조. 전체 흐름 한 페이지 청사진은 [`docs/00_project_blueprint.md`](docs/00_project_blueprint.md).
 
 ---
 
@@ -84,18 +84,21 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 
 | 단계 | 내용 | 상태 |
 |---|---|---|
-| 1 | 호스트 PC Docker 개발 환경 | ✅ |
-| 2 | YOLOv8n int8 TFLite export | ✅ |
-| 2-α | `requirements.lock`으로 환경 재현성 확보 | ✅ |
-| 3 | 호스트 모델 검증 + latency baseline | ✅ (12.5 ms / 80 FPS) |
-| 4 | UNO Q 디바이스 셋업 + 모델 전송 | ✅ (ai-edge-litert + venv) |
-| 5 | UNO Q에서 추론 실행 + 실측 | ✅ (**101 ms / 9.88 FPS**) |
-| 6 | GPU delegate 트러블슈팅 (선택) | ⏳ (CPU로 합격선 통과로 후순위) |
-| 7 | 후처리 모듈 (NMS, 박스 디코딩) | ✅ (`src/postprocess.py`) |
-| 8 | 실제 이미지 추론 + 시각화 | ✅ (`src/infer_image.py`, e2e 9.3 FPS warm) |
-| 9 | 얼굴 검출 / 표정 추론 파이프라인 | ⏳ |
-| 10 | 카메라 입력 + 실시간 루프 | ⏳ |
-| 11 | MCU 연동 (LED, 모터) | ⏳ |
+| 1 | 호스트 PC Docker 개발 환경 | 완료 |
+| 2 | YOLOv8n int8 TFLite export | 완료 |
+| 2-α | `requirements.lock`으로 환경 재현성 확보 | 완료 |
+| 3 | 호스트 모델 검증 + latency baseline | 완료 (12.5 ms / 80 FPS) |
+| 4 | UNO Q 디바이스 셋업 + 모델 전송 | 완료 (ai-edge-litert + venv) |
+| 5 | UNO Q 추론 실행 + 실측 | 완료 (101 ms / 9.88 FPS) |
+| 6 | 후처리 모듈 (NMS, 박스 디코딩) | 완료 (`src/postprocess.py`) |
+| 7 | 실제 이미지 추론 + 시각화 + e2e | 완료 (`src/infer_image.py`, 9.3 FPS warm) |
+| 8 | 공식 100회 벤치마크 (멘토 06 형식) | 완료 (`src/benchmark_e2e.py`, 9.23 FPS / 60.5°C) |
+| 9 | 카메라 입력 + 실시간 루프 + HTTP 디버그 | 완료 (`src/infer_camera.py --serve 8080`, 운영 8.29 FPS, **temp 70.8°C**) |
+| 10 | Soak test (8h+) — thermal plateau | 다음 최우선 |
+| 11 | `--serve` 부담 분리 측정 | 다음 (30분 작업) |
+| 12 | 얼굴 검출 / 표정 추론 파이프라인 (MediaPipe Face) | 진행 예정 |
+| 13 | MCU 연동 (STM32U585 + LED / 모터 + heartbeat) | 진행 예정 |
+| 14 | GPU delegate 트러블슈팅 (선택) | 후순위 (CPU로 합격) |
 
 ---
 
@@ -110,19 +113,21 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 
 ### End-to-end (preprocess + inference + postprocess + draw, 실시간 루프 기준)
 
-| 환경 | latency p50 | latency p95 | **FPS** | 메모리 | 온도 |
+| 환경 | latency p50 | latency p95 | FPS | 메모리 | 온도 |
 |---|---|---|---|---|---|
 | 호스트 (Ryzen 7 6800HS, 컨테이너) | 13.5 ms | 14.8 ms | 73.09 | 123 MB | n/a |
-| **UNO Q (Cortex-A53 ×4, ai_edge_litert)** | **105 ms** | **133 ms** | **9.23** | 101 MB | 60.5°C |
+| UNO Q 단일 이미지 100회 | 105 ms | 133 ms | **9.23** | 101 MB | 60.5°C |
+| UNO Q 카메라 100프레임 | 109 ms | 146 ms | 8.52 | 108 MB | 59.2°C |
+| **UNO Q 카메라 운영 2184f / 285s (`--serve 8080`)** | **116 ms** | **156 ms** | **8.29** | 117 MB | **70.8°C** |
 
-100회 측정 (warmup 10 + measure 100), 멘토 docs 06 형식.
+멘토 docs 06 형식 (4기준: FPS mean / p95 / RSS / temp).
 
-작품 합격선:
+작품 합격선 — 모든 시나리오 통과:
 
-- FPS ≥ 8 → ✅ 통과 (9.23, 여유 1.23)
-- p95 FPS ≥ 6 → ✅ 통과 (7.53)
-- 메모리 ≪ 2.4 GB 가용 → ✅ 매우 여유 (4%)
-- 온도 ≤ 70°C → ✅ 안전 (60.5°C)
+- FPS ≥ 8 → 통과 (단일 9.23, 카메라 8.52 / 8.29)
+- p95 FPS ≥ 6 → 통과 (7.53 / 6.85 / 6.42)
+- 메모리 ≪ 2.4 GB 가용 → 매우 여유 (4 ~ 4.9%)
+- 온도 ≤ 70°C → 단일/카메라 100f 안전, 운영 285s에서 **70.8°C 도달** (임계 1도 초과, soak test 권고)
 
 상세 분석:
 
@@ -179,11 +184,13 @@ unoq-companion-robot/
 
 ## 설계 결정 요약
 
-- **모델 1차 선택**: YOLOv8n int8 (TFLite). 본 작품 목적엔 기능적으로 충분
-- **속도 대안 사전 조사**: MediaPipe Face (UNO Q 실측 8 FPS 미만 시 전환)
-- **양자화 방식**: int8 (w8a8) — weight 4× 압축, 입출력은 float32로 유지
-- **재현성 정책**: `requirements.lock` 우선, `requirements.txt`는 의도 표현용
-- **UNO Q 접속**: `<UNO_Q_USER>` 변수 표준화 (기본 `arduino`), `scripts/env.sh`에서 관리
+- 모델 1차 선택: YOLOv8n int8 (TFLite). 본 작품 목적엔 기능적으로 충분 — 실측 합격으로 MediaPipe 전환 트리거 발동 안 됨
+- 속도 대안 사전 조사: MediaPipe Face (얼굴 / 표정 단계 진입 시 검토)
+- 양자화 방식: int8 (w8a8) — weight 4× 압축, 입출력은 float32로 유지
+- 재현성 정책: `requirements.lock` 우선, `requirements.txt`는 의도 표현용
+- UNO Q 접속: `<UNO_Q_USER>` 변수 표준화 (기본 `arduino`), `scripts/env.sh`에서 관리
+- 런타임: `ai-edge-litert` (Google AI Edge의 모던 TFLite) + XNNPACK + 4 thread CPU — GPU delegate는 `/dev/kgsl*` 미노출로 후순위
+- 카메라 라이브 디버그: `src/infer_camera.py --serve PORT` (HTTP MJPEG, DEBUG ONLY 로컬 LAN)
 
 ---
 
