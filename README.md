@@ -19,6 +19,7 @@
 | MCU (제어) | STM32U585 (Cortex-M33, 최대 160 MHz) |
 | RAM / 저장소 | 4 GB LPDDR4 / 32 GB eMMC |
 | OS | Linux Debian (사전 설치됨) |
+| 카메라 | SU200 USB UVC mini (720p native, 2.8 mm 렌즈, DC 5 V) — 640×480 캡처 |
 
 ---
 
