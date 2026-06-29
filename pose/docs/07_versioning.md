@@ -1,102 +1,94 @@
-# 버전관리 (Pose 라인)
+# 버전관리 (작품 전체)
 
-본 문서는 본 라인의 버전 부여 규칙 + v1 베이스라인 정의. 2026-06-27 멘토 미팅 결정 기반.
+본 문서는 본 작품 전체(monorepo)의 semver 버전 부여 규칙 + 현재 베이스라인 + 계획된 후속 버전. 2026-06-29 monorepo 통합 + 단일 버전 패턴(A) 채택.
 
-## 0. v1 베이스라인 (2026-06-27 동결)
+## 0. 현재 — v0.1.0 (2026-06-29 첫 GitHub release)
 
-| 항목 | v1 시점 상태 |
+`MAJOR.MINOR.PATCH` semver 표준.
+
+| 항목 | v0.1.0 시점 상태 |
 |---|---|
-| 모델 | MoveNet Thunder INT8 TFLite (6.80 MB, Apache-2.0 + CC BY 4.0) |
-| 디바이스 | Arduino UNO Q (QRB2210, Cortex-A53 ×4, 4 GB RAM, 32 GB eMMC) |
-| 런타임 | `ai-edge-litert` 2.1.5 + XNNPACK CPU |
-| 입력 | 카메라 640×480 → letterbox 256×256 uint8 |
-| 출력 | [1, 1, 17, 3] float32 — 17 keypoint × (y_norm, x_norm, conf) |
-| 알고리즘 | 무릎 각도 (hip-knee-ankle) + 좌/우 better 선택 + Hysteresis FSM (down_th=100°, up_th=140°, dwell=200ms) |
-| 카운팅 검증 | 실측 9~13 rep, deepest 28~66° |
-| 측정 (디바이스) | e2e 9.55~9.69 FPS, invoke p50 80ms, CPU 311~316%, RSS 95 MB, thermal plateau ~71°C |
-| 운영 모드 | ADB (자동화) + SSH (카메라 라이브 + HTTP serve) |
-| 자료 | docs 00~07 + history 11 + issues 5 |
+| 구조 | Monorepo — `vision/`, `asr/`, `pose/` sub-folders |
+| **Vision** | YOLOv8n int8 TFLite, e2e 9.23 FPS, thermal 70.8°C |
+| **ASR** | Whisper Tiny.en TFLite, e2e 3.18 s, 6/7 단어 정확 |
+| **Pose** | MoveNet Thunder INT8 TFLite, e2e 9.69 FPS, 13 rep 카운팅 |
+| 디바이스 | Arduino UNO Q (QRB2210, Cortex-A53 ×4) |
+| docs | 라인별 가이드 + history 19 + issues 5 + 멘토 보고서 1 |
+| 진행 안 됨 | PTZ 하드웨어 측정, 하우징, ASR KWS 교체, 시연 영상 |
 
-## 1. 버전 부여 규칙
+→ semver 0.x = "활발한 개발 중, breaking 가능". 본 작품 마감(1.0.0)까지 추가 진행 예정.
 
-| 버전 변경 | 트리거 |
-|---|---|
-| **major (v1 → v2)** | 모델 교체, 입력/출력 형식 변경, 디바이스 변경, stack 교체 |
-| **minor (v1 → v1.1)** | 알고리즘 신호 추가 (A/B/C 통합 등), 새 모드 추가 (감시 모드 등), 큰 옵션 추가 |
-| **patch (v1 → v1.0.1)** | 임계값 조정, 함정 수정, docs 갱신, 측정 누적 |
+## 1. semver 적용 규칙 (본 작품)
 
-## 2. 계획된 후속 버전
+| 변경 | MAJOR | MINOR | PATCH |
+|---|---|---|---|
+| 모델 교체 (Whisper → KWS 등), 입출력 형식 변경, 디바이스 변경 | **+1** | reset 0 | reset 0 |
+| 새 기능 추가 — PTZ 통합, 다중 신호 카운터, 새 모드 | — | **+1** | reset 0 |
+| 버그 수정 / 함정 fix / docs 갱신 / 측정 누적 | — | — | **+1** |
 
-| 버전 | 내용 | 시점 |
+`v1.0.0` 도달 = 본 작품 마감 = 시연 가능 stable. 그 전까지 `v0.x.y`.
+
+## 2. 계획된 후속 버전 (단일 버전 패턴 A)
+
+| 버전 | 시점 | 주요 변경 |
 |---|---|---|
-| **v1** | 본 시점 — 현재 베이스라인 | **2026-06-27 동결** |
-| v1.1 | A+B+C 다중 신호 카운터 통합 | 본 사이클 안 (소프트웨어, UNO Q 단독) |
-| v1.2 | PTZ 서보 통합 (STM32U585 + UART) | 본 작품 마무리 |
-| v1.3 | MCU 트리거 (rep → LED/효과음) | PTZ 통합 후 |
-| v1.4 | 감시 모드 추가 (keypoint 다른 해석) | 시연 시점 |
-| v2 | (잠재) 모델 교체 / 운동 종류 다양화 | 멘토 보고 사이클 외 |
+| **v0.1.0** ★ | **2026-06-29 (현재)** | 첫 GitHub release — 3 라인 PoC + monorepo + docs |
+| v0.2.0 | 다음 사이클 | PTZ PoC 검증 + Pose A+B+C 다중 신호 카운터 |
+| v0.3.0 | 후속 | ASR Whisper → KWS 교체 + 인터럽트 |
+| v0.4.0 | 후속 | 하우징 시제품 + STM32U585 통합 |
+| **v1.0.0** | **본 작품 마감 — 시연 가능** | 첫 stable release |
+| v1.1.0 | 마감 후 | 감시 모드 등 시연 보조 모드 |
 
-## 3. 동결 자료 (v1)
+## 3. 단일 vs 라인별 버전 — 본 작품은 단일
 
-본 시점 자료 동결 위치 (변경 시 다른 사본으로):
+monorepo 안 라인별 진척 차이가 있지만, **본 작품은 단일 작품(UNO Q 교감로봇)**으로 시연/평가. 작품 전체 단일 버전.
 
-### 코드
-- `scripts/inspect_movenet_thunder.py`
-- `scripts/infer_camera_pose.py`
-- `scripts/squat_counter.py`
+| 패턴 | 본 작품 |
+|---|---|
+| **A. 단일 버전** ★ | `v0.1.0` 1개. 라인별 milestone은 `docs/history/`에 누적 |
+| B. 라인별 독립 | 본 작품 부적합 — 도구 의존 + 복잡 |
+| C. 하이브리드 (root + sub-tag) | 본 작품 부적합 — 작품 단일 시연 |
 
-### 모델
-- `models/movenet_thunder_int8.tflite` (6.80 MB)
+라인별 진척 추적:
+- Vision: `vision/docs/history/` — 거의 동결 (v1 시점 변경 없음)
+- ASR: `asr/docs/history/` — 활성 (KWS 교체 결정)
+- Pose: `pose/docs/history/` — 가장 활발 (PTZ PoC 진행)
 
-### docs
-- `docs/00_project_blueprint.md`
-- `docs/01_model_candidates.md`
-- `docs/02_quickstart_pose.md`
-- `docs/03_runbook_camera_serve.md`
-- `docs/04_squat_algorithm.md`
-- `docs/05_mentor_report_pose_line.md`
-- `docs/06_hardware_housing_design.md`
-- `docs/07_versioning.md` (본 문서)
-
-### 측정 자료
-- `docs/history/2026-06-27_03_movenet_thunder_int8_device_pass.md`
-- `docs/history/2026-06-27_04_pose_camera_e2e_pass.md`
-- `docs/history/2026-06-27_06_squat_counter_realtest_pass_with_thermal_note.md`
-
-## 4. 동결 ZIP 권장
-
-v1 시점 동결을 명시적 ZIP으로 보관:
-
-```powershell
-cd C:\Project\unoq-companion-robot\pose
-Compress-Archive -Path docs, scripts, models, docker, SESSION_SUMMARY_*.md `
-                 -DestinationPath ..\unoq-pose-v1-2026-06-27.zip
-```
-
-또는 git init 시작 + tag:
+## 4. git tag 부여
 
 ```bash
-cd /c/Project/unoq-pose
-git init
-git add .
-git commit -m "v1 baseline (2026-06-27 mentor meeting)"
-git tag v1
+# 신규 release 시
+cd /c/Project/unoq-companion-robot
+git tag -a v0.X.Y -m "v0.X.Y: 변경 요약 ..."
+git push origin --tags
 ```
 
-## 5. 다른 라인과의 동기
+annotated tag (`-a`) 권장 — release 메시지 보존.
 
-v1 베이스라인은 3 라인 동시 동결:
+## 5. 동결 자료 (v0.1.0)
 
-| 라인 | v1 시점 상태 |
-|---|---|
-| Vision (`unoq-companion-robot`) | YOLOv8n int8, e2e 9.23 FPS, 70.8°C |
-| ASR (`unoq-asr`) | Whisper Tiny.en TFLite, e2e 3.18 s |
-| **Pose (`unoq-pose`, 본 라인)** | **MoveNet Thunder INT8, e2e 9.6 FPS, 13 rep 카운팅** |
+본 시점 자료는 git tag로 자동 동결. 별도 ZIP 백업 권장 (선택):
 
-ASR 라인은 멘토 미팅에서 **가벼운 모델 교체 + 인터럽트 지원** 결정 — v2 진입 후보 (별도 라인 history 참조).
+```powershell
+cd C:\Project\unoq-companion-robot
+git archive --format=zip v0.1.0 -o ..\unoq-companion-robot-v0.1.0.zip
+```
 
-## 6. 관련
+추가 백업: `c:\Project\backup-2026-06-29\` (monorepo 직전 평행 3 폴더)
 
-- 멘토 미팅 결과: [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
-- 청사진: [`00_project_blueprint.md`](00_project_blueprint.md)
-- 멘토 보고: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+## 6. 옛 tag 정리 (2026-06-29)
+
+옛 비표준 tag 정리됨:
+- ~`v1`~ (옛 vision merge commit) — 삭제 (v0.1.0이 새 베이스라인)
+- ~`v1-monorepo`~ (monorepo 통합 commit) — 삭제 (역시 v0.1.0에 포함)
+
+## 7. 다른 라인과의 동기
+
+모든 라인(vision/asr/pose) 동시에 v0.1.0 시점. 후속 release도 작품 전체 동기.
+
+## 8. 관련
+
+- 본 사이클 history (semver 채택): [`history/2026-06-29_05_*`](history/) (작성 예정)
+- 멘토 미팅 (v1 베이스라인 결정 원본): [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
+- 본 작품 청사진: [`00_project_blueprint.md`](00_project_blueprint.md)
+- 멘토 보고서: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
