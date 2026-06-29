@@ -1,0 +1,8 @@
+# PTZ PoC — Python (UNO Q Cortex-A53) deps
+# 기반: ShawnHymel/face-expression-detection-robot (MIT)
+# YOLO ONNX → MoveNet TFLite 교체
+
+ai-edge-litert>=2.1
+opencv-python-headless==4.12.0.88
+numpy>=2.1,<3
+pillow>=10

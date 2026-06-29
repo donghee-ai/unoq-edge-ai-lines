@@ -1,0 +1,27 @@
+# Models / data / benchmarks
+*.tflite
+*.task
+*.onnx
+*.pt
+models/audio/
+models/pose/
+data/samples/
+data/recorded/
+benchmarks/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+.markdownlint.jsonc
+
+# Logs
+*.log

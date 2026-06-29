@@ -36,7 +36,7 @@
 ## 3. 디렉토리 구조
 
 ```text
-unoq-companion-robot/
+vision/
 ├── Dockerfile             환경 정의
 ├── requirements.txt       의도 표현 (15 패키지)
 ├── requirements.lock      byte-exact 설치 (94 패키지)

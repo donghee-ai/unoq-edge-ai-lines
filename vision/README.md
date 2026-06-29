@@ -143,7 +143,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 ## 프로젝트 구조
 
 ```
-unoq-companion-robot/
+vision/
 ├── Dockerfile              컨테이너 이미지 정의
 ├── requirements.txt        Python 의존성 (사람 친화적 의도)
 ├── requirements.lock       94 패키지 byte-exact 핀 (Docker가 이걸로 설치)

@@ -1,0 +1,28 @@
+# asr-dev — intent file (human-readable)
+# After first build, generate byte-exact lock: pip freeze > requirements-asr.lock
+
+# Core scientific
+numpy>=1.26,<3
+scipy>=1.14
+
+# Audio I/O
+sounddevice>=0.5
+soundfile>=0.12
+
+# Feature extraction — host can use librosa (heavy), device uses python_speech_features
+librosa>=0.10
+python_speech_features>=0.6
+
+# Whisper tokenizer (HuggingFace, Rust binding — aarch64 wheel available)
+tokenizers>=0.15
+
+# TFLite runtime — same family as device (ai-edge-litert)
+ai-edge-litert>=2.1
+
+# Model conversion / validation
+tensorflow>=2.16,<2.20
+tf_keras>=2.16
+protobuf>=4,<6
+
+# Plotting / debug
+matplotlib>=3.8

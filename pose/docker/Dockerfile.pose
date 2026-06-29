@@ -1,0 +1,54 @@
+# unoq-pose container
+# Host-side: TFLite Pose 모델 introspection + 호스트 baseline latency + 디바이스 호환성 검증.
+# Device-side runtime: venv-unoq + ai-edge-litert (TFLite 직접 추론).
+
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive \
+    PIP_NO_CACHE_DIR=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1
+
+# System packages — 본 라인 최소 의존성
+#   python3.10 / pip / venv = base runtime (vision/asr와 일치)
+#   libgl1-mesa-glx, libglib2.0-0, libsm6, libxext6, libxrender1 = opencv-python 의존
+#   wget + curl = 모델 다운로드 (TFHub MoveNet 등)
+#   ca-certificates = HTTPS
+# 제거됨 (본 라인 미사용):
+#   ffmpeg, git, build-essential — qai-hub-models/torch 의존 제거 후 불필요
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        python3.10 \
+        python3-pip \
+        python3.10-venv \
+        libgl1-mesa-glx \
+        libglib2.0-0 \
+        libsm6 \
+        libxext6 \
+        libxrender1 \
+        wget \
+        curl \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Non-root user matching host UID/GID
+ARG USER_NAME=dev
+ARG USER_UID=1000
+ARG USER_GID=1000
+RUN groupadd -g ${USER_GID} ${USER_NAME} && \
+    useradd -m -u ${USER_UID} -g ${USER_GID} -s /bin/bash ${USER_NAME}
+
+# Python packages — install via lock file when available, else requirements.txt
+WORKDIR /tmp
+COPY requirements-pose.txt requirements-pose.lock* /tmp/
+RUN python3 -m pip install --upgrade pip setuptools wheel && \
+    if [ -f /tmp/requirements-pose.lock ]; then \
+        python3 -m pip install -r /tmp/requirements-pose.lock ; \
+    else \
+        python3 -m pip install -r /tmp/requirements-pose.txt ; \
+    fi && \
+    rm -f /tmp/requirements-pose.txt /tmp/requirements-pose.lock
+
+USER ${USER_NAME}
+WORKDIR /work
+
+CMD ["bash"]

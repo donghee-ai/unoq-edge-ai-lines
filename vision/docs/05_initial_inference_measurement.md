@@ -276,9 +276,9 @@ python3 ~/validate_model.py /opt/unoq-yolo/models/yolov8n_int8.tflite \
   --json ~/benchmarks/device_validate_int8_$(date +%Y%m%d).json
 
 # 호스트 WSL에서 회수
-mkdir -p /mnt/c/Project/unoq-companion-robot/benchmarks
+mkdir -p /mnt/c/Project/vision/benchmarks
 scp arduino@192.168.0.45:~/benchmarks/device_validate_int8_*.json \
-    /mnt/c/Project/unoq-companion-robot/benchmarks/
+    /mnt/c/Project/vision/benchmarks/
 ```
 
 ### 8-4. 다른 변종 모델로 호스트 비교

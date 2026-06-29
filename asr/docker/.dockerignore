@@ -1,0 +1,34 @@
+# asr-dev build context hygiene
+# Only the docker/ folder is sent as build context (run-asr.sh uses docker/ as context)
+# so most exclusions are redundant — kept here for clarity if context ever expands.
+
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+.venv/
+venv/
+.markdownlint.jsonc
+
+# Models / data / benchmarks should never enter the image
+*.tflite
+*.wav
+*.mp3
+*.flac
+*.onnx
+*.pt
+models/
+data/
+benchmarks/
+
+# Docs / sessions
+docs/
+SESSION_*.md
+*.log
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

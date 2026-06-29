@@ -155,9 +155,9 @@ scp -r src/ arduino@192.168.0.45:~/code/
 
 ```bash
 # 호스트 WSL에서
-mkdir -p /mnt/c/Project/unoq-companion-robot/benchmarks
+mkdir -p /mnt/c/Project/vision/benchmarks
 scp arduino@192.168.0.45:~/benchmarks/*.json \
-    /mnt/c/Project/unoq-companion-robot/benchmarks/
+    /mnt/c/Project/vision/benchmarks/
 ```
 
 ### 4-3. 원격 실행 (SSH 안 들어가고 한 줄로)

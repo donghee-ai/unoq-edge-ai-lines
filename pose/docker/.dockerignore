@@ -1,0 +1,36 @@
+# Build context hygiene — only docker/ folder is build context (run-pose.sh)
+
+__pycache__/
+*.pyc
+*.pyo
+.git/
+.gitignore
+.venv/
+venv/
+.markdownlint.jsonc
+
+# Models / data / benchmarks (never enter image)
+*.tflite
+*.task
+*.onnx
+*.pt
+*.wav
+*.mp4
+*.jpg
+*.png
+models/
+data/
+benchmarks/
+
+# Docs / sessions
+docs/
+SESSION_*.md
+*.log
+issues/
+history/
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

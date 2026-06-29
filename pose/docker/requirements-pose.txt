@@ -1,0 +1,22 @@
+# unoq-pose-dev — 의도 표현 (human-readable)
+# After first build: pip freeze > requirements-pose.lock
+
+# Core scientific — asr-dev와 동일 핀 (호환 검증됨)
+numpy>=1.26,<3
+scipy>=1.14
+
+# Computer vision (이미지 입출력 + 카메라 + draw)
+opencv-python>=4.10
+pillow>=10
+
+# TFLite runtime — 디바이스(venv-unoq)와 정확 일치 보장
+ai-edge-litert>=2.1
+
+# Plotting / debug 시각화 (포즈 keypoint overlay)
+matplotlib>=3.8
+
+# === 제거된 패키지 (사용 안 함) ===
+#   mediapipe        — 본 라인은 MoveNet TFLite 사용, mediapipe Solutions 사용 X
+#   tensorflow / tf_keras / protobuf — 모델 변환은 외부 (TFHub 직접 다운로드)
+#   qai-hub / qai-hub-models[*]      — AI Hub QNN ONNX는 QRB2210 비호환 (issues/2026-06-27_01)
+#   torch / torchvision              — qai-hub-models 의존이었으나 본 라인 미사용

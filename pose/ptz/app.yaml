@@ -1,0 +1,11 @@
+name: PTZ PoC — Pose-based Camera Tracking
+icon: 🎯
+description: MoveNet pose + visibility score + STM32 servo PID. PoC for pose-aware camera angle tracking.
+
+# Arduino UNO Q 내장 bricks
+bricks:
+  - arduino:web_ui
+
+# 카메라 device를 Python 컨테이너에 마운트
+requires_devices:
+  - camera
