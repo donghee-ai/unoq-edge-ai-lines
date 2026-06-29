@@ -2,7 +2,7 @@
 """validate_kws.py — KWS TFLite model introspection + optional latency benchmark.
 
 vision/validate_model.py 패턴을 audio 도메인으로 옮긴 것.
-mentor_style/04 §1 introspection + §4 benchmark_kws.
+05 §1 introspection + §4 benchmark_kws.
 
 Usage:
     # introspection만
@@ -29,7 +29,7 @@ import sys
 import time
 from pathlib import Path
 
-# 3단 import 폴백 — mentor_style/04 §3 패턴
+# 3단 import 폴백 — 05 §3 패턴
 try:
     from ai_edge_litert.interpreter import Interpreter  # type: ignore
     _RUNTIME = "ai_edge_litert"
@@ -47,7 +47,7 @@ import numpy as np
 
 
 # ---------------------------------------------------------------------------
-# Helpers (mentor_style/04 §1)
+# Helpers (05 §1)
 # ---------------------------------------------------------------------------
 
 def _clean_value(v):
@@ -76,7 +76,7 @@ def _clean_detail(d):
 
 
 def classify_input(shape, dtype):
-    """KWS input 형태 분류 — frontend 위치 결정용 (mentor_style/04 §1)."""
+    """KWS input 형태 분류 — frontend 위치 결정용 (05 §1)."""
     rank = len(shape)
     if rank == 2 and shape[1] >= 8000:
         return (
@@ -139,7 +139,7 @@ def introspect(interpreter, model_path):
 
 
 # ---------------------------------------------------------------------------
-# Latency benchmark (mentor_style/04 §4)
+# Latency benchmark (05 §4)
 # ---------------------------------------------------------------------------
 
 def benchmark_latency(interpreter, runs=50, warmup=5):

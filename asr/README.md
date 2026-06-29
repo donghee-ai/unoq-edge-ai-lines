@@ -143,11 +143,13 @@ asr/
 │   └── samples/recorded/           디바이스 녹음 회수
 ├── benchmarks/audio/               (측정 결과 JSON)
 ├── docs/
-│   ├── 00_project_blueprint.md     한 페이지 청사진
-│   ├── 01_preflight_notes.md       작업 시작 전 체크리스트 + 함정
-│   ├── 02_quickstart_asr.md        본 README의 상세 절차 (디버깅 항목 포함)
-│   ├── 03_implementation_log.md    실제 진행 + 함정 8건 + 해결
-│   └── mentor_style/               (멘토 9개 양식 매핑, KWS 시기 자료 보존)
+│   ├── 00_project_blueprint.md                      한 페이지 청사진
+│   ├── 01_preflight_notes.md                        작업 시작 전 체크리스트 + 함정
+│   ├── 02_quickstart_asr.md                         본 README의 상세 절차 (디버깅 항목 포함)
+│   ├── 03_implementation_log.md                     실제 진행 + 함정 8건 + 해결
+│   ├── 04_quickstart_kws_tflite_unoq.md             KWS 진입 절차 (v0.3.0 후보 모델)
+│   ├── 05_robust_kws_inference_code.md              KWS 추론 코드 가이드
+│   └── 06_testing_benchmarking_reliability_kws.md   KWS 측정/신뢰도 가이드
 └── (예정) src/audio_io.py, src/vad.py, src/infer_mic.py, src/benchmark_asr.py
 ```
 

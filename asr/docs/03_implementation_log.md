@@ -24,7 +24,7 @@
 | Google Speech Commands v2 (35 단어) | 1차 채택 (~300 KB, Apache-2.0) |
 | micro_speech (4 단어, silence/unknown/yes/no) | 다운로드 URL 확정, 2-stage 구조 (preprocessor + main) 발견 |
 
-문서: `docs/00_project_blueprint.md` 초안, `docs/01_preflight_notes.md`, `docs/mentor_style/02_quickstart_kws_tflite_unoq.md`, `04_robust_kws_inference_code.md`, `06_testing_benchmarking_reliability_kws.md` 작성.
+문서: `docs/00_project_blueprint.md` 초안, `docs/01_preflight_notes.md`, `docs/04_quickstart_kws_tflite_unoq.md`, `04_robust_kws_inference_code.md`, `06_testing_benchmarking_reliability_kws.md` 작성.
 
 ### Phase 2 — 사용자 의도 명확화 → 진짜 ASR 전환
 
