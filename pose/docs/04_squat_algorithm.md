@@ -246,6 +246,19 @@ def hip_angle(kp, side):
 
 서있음 → ~180°, 스쿼트 → ~90~120° (상체 앞으로 숙임 + 무릎 굽힘).
 
+### 7-3-A. 본 알고리즘과 PTZ — 현재 별개 / 통합 진로
+
+본 알고리즘(`squat_counter.py` + `infer_camera_pose.py`)은 **메인 라인 v1**. PTZ 검증 코드(`ptz/`)는 **현재 별도 프로세스** — 동시 운영 X.
+
+| 단계 | 통합 상태 |
+|---|---|
+| **현재 (PoC 검증)** | 분리 — PTZ 단독 동작 확인이 PoC 목적. 메인 v1 정지 후 PTZ 측정 |
+| **v1.2 (PoC 통과 후)** | 통합 — 카메라 1회 capture + MoveNet 1회 invoke → `squat_counter.update()` + `Bridge.call("track_pose", ...)` 동시 호출 |
+| **PoC 실패 시** | 메인 v1 단독 유지. PTZ 코드는 `ptz/` 보관 (확장 토픽) |
+
+통합 시 효과: CPU/메모리 1회 추론으로 절약 + 단일 HTTP UI + 시연 한 흐름.
+상세 통합 흐름 + 작업 추정: [`08_ptz_camera_angle_validation.md`](08_ptz_camera_angle_validation.md) §6-A/6-B/6-C
+
 ### 7-4. 별도 축 — 카메라/본체 추적으로 신호 부족 일부 해결
 
 본 라인 알고리즘이 신호 부족이라 보완(A/B/C)을 추가하는 게 §7-1~7-3. 그러나 **물리적으로 카메라를 좋은 위치에 두는 것**도 해결책 — 측면/후면 자세에서도 사람이 frame 안 정면에 가깝게 들어오면 무릎 각도 신호 자체가 정확해짐.
