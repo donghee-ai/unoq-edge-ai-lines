@@ -10,7 +10,7 @@
 │  /mnt/c/Project/unoq-companion-robot │
 └──────────────────────────────────────┘
         │
-        │ bash run.sh (15분 첫 빌드, 5초 재진입)
+        │ bash docker/run-vision.sh (15분 첫 빌드, 5초 재진입)
         ↓
 ┌──────────────────────────────────────┐
 │  Docker 컨테이너 (Ubuntu 22.04)       │  ML 작업 전용
@@ -40,7 +40,7 @@
 # WSL 셸 안에서
 git clone https://github.com/donghee-ai/unoq-companion-robot.git
 cd unoq-companion-robot
-bash run.sh                  # 첫 빌드 약 15분
+bash docker/run-vision.sh                  # 첫 빌드 약 15분
 # → 컨테이너 진입 (dev@unoq-yolo-dev:/work$)
 ```
 
@@ -48,13 +48,13 @@ bash run.sh                  # 첫 빌드 약 15분
 
 ```bash
 cd /mnt/c/Project/unoq-companion-robot
-bash run.sh                  # 캐시된 이미지로 5초 진입
+bash docker/run-vision.sh                  # 캐시된 이미지로 5초 진입
 ```
 
 ### 2-3. 환경 재빌드 (Dockerfile / requirements.txt 변경 후)
 
 ```bash
-bash run.sh --rebuild        # 약 15분
+bash docker/run-vision.sh --rebuild        # 약 15분
 ```
 
 ### 2-4. 컨테이너 안에서 모델 export (1회만 또는 모델 갱신 시)
@@ -246,7 +246,7 @@ GitHub 인증은 첫 회 `gh auth login` 한 번만, 이후 자동.
 | `ssh: Permission denied` (즉시 거부) | 사용자명 틀림 | 디바이스 hostname ≠ username 주의. `arduino` 사용 |
 | `ssh: Permission denied` (비번 입력 후) | 비번 틀림 또는 한 / 영 IME 한글 | 한 / 영 키로 영어 확인 후 재시도 |
 | `ModuleNotFoundError: ai_edge_litert` (디바이스) | venv 활성화 안 됨 | `source ~/venv-unoq/bin/activate` |
-| 호스트 컨테이너에서 `python validate_model.py` 실패 | 컨테이너 진입 안 됨 | `bash run.sh`로 진입 먼저 |
+| 호스트 컨테이너에서 `python validate_model.py` 실패 | 컨테이너 진입 안 됨 | `bash docker/run-vision.sh`로 진입 먼저 |
 | 디바이스 디스크 부족 | 큰 패키지 설치 시 | `df -h /` 확인, 불필요 파일 정리 |
 
 ## 9. 측정 수집 표준 워크플로우

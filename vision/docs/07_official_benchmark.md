@@ -199,7 +199,7 @@ ai_edge_litert는 Google AI Edge의 모던 런타임. tensorflow.lite와 동일 
 ### 8-1. 호스트 (Docker 컨테이너 안)
 
 ```bash
-bash run.sh                              # 컨테이너 진입
+bash docker/run-vision.sh                              # 컨테이너 진입
 mkdir -p benchmarks
 python src/benchmark_e2e.py \
   models/yolov8n_saved_model/yolov8n_int8.tflite \

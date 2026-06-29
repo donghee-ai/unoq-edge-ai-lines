@@ -256,7 +256,7 @@ end-to-end (위 단계들 포함) 시 추가 비용 예상:
 
 ```bash
 cd /mnt/c/Project/unoq-companion-robot
-bash run.sh                                                 # 컨테이너 진입
+bash docker/run-vision.sh                                                 # 컨테이너 진입
 python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 ```
 

@@ -145,7 +145,7 @@ bbox 좌표는 **정규화 [0, 1] 범위** (Ultralytics int8 TFLite export의 �
 ```bash
 git clone https://github.com/donghee-ai/unoq-companion-robot.git
 cd unoq-companion-robot
-bash run.sh                      # 컨테이너 진입 (첫 빌드 ~15분)
+bash docker/run-vision.sh                      # 컨테이너 진입 (첫 빌드 ~15분)
 ```
 
 자세한 절차는 01 참조.

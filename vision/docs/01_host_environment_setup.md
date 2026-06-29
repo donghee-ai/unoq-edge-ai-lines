@@ -12,11 +12,11 @@
 | **컨테이너 Python** | 3.10.12 |
 | **AI 런타임** | TFLite (LiteRT), TensorFlow 핀 |
 | **사용 목적** | 모델 변환, 검증, 벤치마크 (디바이스 추론은 별도) |
-| **공유 방식** | 5개 텍스트 파일(Dockerfile, requirements.txt/lock, .dockerignore, run.sh) git 푸시 → `bash run.sh`로 byte-exact 재현 |
+| **공유 방식** | 5개 텍스트 파일(Dockerfile, requirements.txt/lock, .dockerignore, run.sh) git 푸시 → `bash docker/run-vision.sh`로 byte-exact 재현 |
 
 ## 1. 왜 Docker인가
 
-호스트 환경(WSL Ubuntu 24.04 + conda)의 상태와 독립적으로 동작합니다. 호스트 패키지 오염이 프로젝트에 영향을 주지 않고, 협업자 측에서 동일한 5개 파일을 받아 `bash run.sh` 한 줄로 재현할 수 있습니다.
+호스트 환경(WSL Ubuntu 24.04 + conda)의 상태와 독립적으로 동작합니다. 호스트 패키지 오염이 프로젝트에 영향을 주지 않고, 협업자 측에서 동일한 5개 파일을 받아 `bash docker/run-vision.sh` 한 줄로 재현할 수 있습니다.
 
 ## 2. 아키텍처
 
@@ -76,7 +76,7 @@ cd /mnt/c/Project/unoq-companion-robot
 ### 5-3. 빌드 + 컨테이너 진입
 
 ```bash
-bash run.sh
+bash docker/run-vision.sh
 ```
 
 첫 빌드는 시스템 패키지 + Python 패키지 다운로드로 10~15분. 이후 캐시 활용으로 재진입은 5초 이내.
@@ -85,7 +85,7 @@ bash run.sh
 
 ```text
 (base) a@DESKTOP-...:/mnt/c/Project/unoq-companion-robot$
-                                  ↓ bash run.sh
+                                  ↓ bash docker/run-vision.sh
 dev@unoq-yolo-dev:/work$
 ```
 
@@ -108,13 +108,13 @@ print('OpenCV', cv2.__version__); print('NumPy', numpy.__version__)"
 
 ```bash
 cd /mnt/c/Project/unoq-companion-robot
-bash run.sh
+bash docker/run-vision.sh
 ```
 
 ### 강제 재빌드 (Dockerfile / requirements 변경 후)
 
 ```bash
-bash run.sh --rebuild
+bash docker/run-vision.sh --rebuild
 ```
 
 ### 종료
@@ -130,7 +130,7 @@ exit                          # 또는 Ctrl+D
 ```bash
 git clone <repo_url>
 cd unoq-companion-robot
-bash run.sh
+bash docker/run-vision.sh
 ```
 
 전제 조건: Docker (Desktop 또는 Engine), bash 셸. 호스트 OS 무관 (Linux, macOS, Windows+WSL2).
@@ -216,7 +216,7 @@ RUN pip3 install --user -r /tmp/requirements.lock
 의도적으로 의존성 업그레이드할 때만:
 
 1. `requirements.txt` 갱신
-2. `bash run.sh --rebuild`
+2. `bash docker/run-vision.sh --rebuild`
 3. 컨테이너 안에서 `pip freeze > requirements.lock`
 4. 커밋
 
@@ -234,7 +234,7 @@ Lock 파일은 직접 손으로 편집하지 않습니다 (생성 결과물).
 
 ```bash
 # 호스트(WSL)에서 진입
-cd /mnt/c/Project/unoq-companion-robot && bash run.sh
+cd /mnt/c/Project/unoq-companion-robot && bash docker/run-vision.sh
 
 # 컨테이너 안에서 Python 버전/패키지 확인
 python --version
@@ -269,4 +269,4 @@ docker rmi unoq-yolo-dev:22.04
 - `../../requirements.txt` (의도 표현)
 - `../../requirements.lock` (byte-exact 설치, 94 패키지)
 - `../../.dockerignore`
-- `../../run.sh`
+- `../../docker/run-vision.sh`

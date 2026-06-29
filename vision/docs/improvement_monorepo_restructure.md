@@ -208,7 +208,7 @@ rm -rf ../unoq-asr
 다음 중 **하나 이상** 충족 시 본 계획 발동:
 
 1. **fusion 코드 작성 시점** — vision 결과 + audio 결과를 호스트에서 동시 시뮬레이션 필요
-2. **Public 전환 / 시연** — 외부에 단일 진입점(`bash run.sh`) 제공
+2. **Public 전환 / 시연** — 외부에 단일 진입점(`bash docker/run-vision.sh`) 제공
 3. **CI/CD 구축** — 통합 빌드로 vision + audio 회귀 테스트
 4. **멘토 최종 인계** — 한 묶음 작품으로 정리
 

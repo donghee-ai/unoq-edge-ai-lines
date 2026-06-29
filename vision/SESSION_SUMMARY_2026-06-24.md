@@ -78,7 +78,7 @@
 | `run.sh` | 원샷 빌드+실행, 이미지 없으면 빌드 / 있으면 재사용, `--rebuild`로 강제 재빌드 | 준비됨 |
 | `requirements.lock` | 94 패키지 byte-exact 핀 | 준비됨 |
 
-멘토 측 실행: 압축 풀고 `bash run.sh` 한 줄로 컨테이너 진입.
+멘토 측 실행: 압축 풀고 `bash docker/run-vision.sh` 한 줄로 컨테이너 진입.
 
 전제: Docker (Desktop or Engine) + bash 셸 (Windows는 WSL2 / Git Bash) + 디스크 약 5 GB.
 

@@ -49,7 +49,7 @@
 ```bash
 git clone https://github.com/donghee-ai/unoq-companion-robot.git
 cd unoq-companion-robot
-bash run.sh
+bash docker/run-vision.sh
 ```
 
 성공 시 컨테이너 안 프롬프트로 진입:
