@@ -311,9 +311,18 @@ $ADB = "$env:LOCALAPPDATA\Arduino15\packages\arduino\tools\adb\32.0.0\adb.exe"
 
 | # | 단계 | 부담 |
 |---|---|---|
-| 5 | **PTZ 서보** (위/아래/양옆) ($15, 0.5~1일) | 사람 frame 중심 유지. 본체 정지 |
+| 5 | **PTZ PoC 검증** (Shawn fork, `ptz/` 폴더) — H1~H4 가설 측정 | $15, 3~4일 |
+| 5.5 | **PoC 통과 시 v1.2 통합** — 메인 라인과 PTZ 한 프로세스로 합침 | 2일 |
 | 6 | **MCU 트리거** (rep → LED/효과음/모터 반응) | 위 펌웨어에 추가만 |
 | (폐기) | ~본체 자율 추적~ | 멘토 미팅에서 본 작품 범위 외 |
+
+### 7-2-A. PTZ와 메인 라인 — 현재 별개 / 통합 진로
+
+**현재 (PoC 검증 단계)**: PTZ(`ptz/`)와 메인 라인(Pose v1, `scripts/infer_camera_pose.py`)은 **완전 분리된 별도 프로세스**. 동시 운영 X (카메라 device 충돌). PoC 측정 시 메인 정지 필수.
+
+**통합 후 (v1.2)**: 한 프로세스에서 카메라 1회 capture + MoveNet 1회 invoke → `squat_counter.update()` + `Bridge.call("track_pose", ...)` 동시. CPU/메모리 절약 + 단일 HTTP UI.
+
+자세히: [`08_ptz_camera_angle_validation.md`](08_ptz_camera_angle_validation.md) §6-A/6-B/6-C
 
 ### 7-3. 시연 모드 확장 (멘토 미팅 추가 결정)
 

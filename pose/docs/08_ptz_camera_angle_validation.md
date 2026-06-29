@@ -122,6 +122,89 @@ H1·H2·H3 모두 통과 = **PoC 검증 성공**. H4까지 통과 = 본 작품 �
 
 본 작품 통합 결정 후 추가 작업 (LED 표현 / 다른 모드 통합 등)은 별도.
 
+## 6-A. 현재 — PTZ와 메인 라인(Pose v1) 별개 시스템
+
+본 PoC는 메인 라인 v1과 **완전히 분리된 별도 프로세스**. 동시 운영 불가능.
+
+### 현재 두 시스템 비교
+
+| 항목 | 메인 라인 (Pose v1) | PTZ PoC |
+|---|---|---|
+| 파일 | `scripts/infer_camera_pose.py` | `ptz/python/main.py` |
+| 운영 방식 | venv-unoq + SSH script | Arduino UNO Q App |
+| 카메라 | `cv2.VideoCapture(0)` | 동일 — `cv2.VideoCapture(0)` |
+| 모델 | MoveNet Thunder INT8 | 동일 |
+| 출력 | 스쿼트 rep 카운트 + HTTP MJPEG (8080) | visibility + STM32 서보 명령 |
+| 스쿼트 카운터 | ✓ `squat_counter.py` 사용 | ✗ 본 PoC는 추적만 |
+
+### 동시 운영 불가능 — 3 이유
+
+1. **카메라 device 충돌** — `/dev/video0`을 두 프로세스가 동시 점유 X
+2. **모델 추론 2회 = CPU 낭비** — 같은 keypoint를 둘 다 계산
+3. **운영 환경 다름** — 한쪽은 venv-unoq SSH script, 다른 한쪽은 Arduino UNO Q Apps
+
+→ PoC 측정 시 메인 script 정지 필수 (`docs/09_quickstart_ptz_poc.md §9`).
+
+### 왜 지금 분리 운영이 맞는가
+
+| 단계 | 분리/통합 |
+|---|---|
+| **현재 (PoC 검증)** | **별개가 맞음** — PTZ 단독 동작 확인이 목적. 통합 시 "PTZ 자체 문제 vs 카운터 충돌" 분리 진단 불가 |
+| 통합 (PoC 통과 후 v1.2) | 한 프로세스로 합침 |
+
+## 6-B. 통합 진로 (PoC 통과 시 v1.2)
+
+PoC 검증 성공 시 한 프로세스로 합침:
+
+```
+v1.2 통합본 (예상):
+  ┌──────────────────────────────────────┐
+  │ 카메라 1회 capture                    │
+  │   ↓                                  │
+  │ MoveNet invoke (1회)                  │
+  │   ↓                                  │
+  │ keypoint [17, 3]                     │
+  │   ├─→ squat_counter.update()         │ ← 스쿼트 rep
+  │   ├─→ visibility_score()             │
+  │   │     ↓                            │
+  │   │   Bridge.call("track_pose", ...) │ ← 서보 PTZ
+  │   ├─→ skeleton draw + 오버레이        │
+  │   └─→ HTTP MJPEG serve               │
+  └──────────────────────────────────────┘
+```
+
+### 통합 시 가치
+
+- 카메라 1회, 모델 1회 → **CPU/메모리 절약** (현재 분리 운영 시 2배 비용)
+- 카운터 + PTZ **동시 동작** — 한 시연 흐름에서 둘 다
+- 단일 HTTP UI로 둘 다 모니터링
+- 본 작품 메인 라인 v1.2로 정식 통합
+
+### 통합 작업 시간 추정 (PoC 통과 가정)
+
+| 단계 | 시간 |
+|---|---|
+| 메인 `infer_camera_pose.py`에 `visibility_score()` + `Bridge.call("track_pose", ...)` 추가 | 0.5일 |
+| Arduino UNO Q App 통합 (또는 SSH script 패턴 유지) 결정 | 0.5일 |
+| HTTP UI 통합 (squat stats + PTZ stats 한 페이지) | 0.5일 |
+| 통합 테스트 + 디버깅 | 0.5일 |
+| **합계** | **2일** |
+
+### 통합 시 시연 시나리오
+
+- **카운터 + PTZ 동시 동작** 단일 데모
+- 사용자 자세 인식 → 카운터 카운트 + 사용자가 frame 옆으로 가면 카메라 자동 추적
+- 단일 프로세스 + 단일 HTTP UI
+
+## 6-C. PoC 실패 시 — 메인 v1 단독 진로
+
+PoC 검증 실패 (H1~H4 미충족) 시:
+- 본 PoC 코드는 `pose/ptz/` 안 보관 — 향후 확장 토픽
+- 메인 라인 v1 그대로 시연 (카메라 고정, 사용자가 정면 위치)
+- 멘토 보고: "추적 검증 시도 + 결과 정량 + 미통합 사유" 명시
+
+본 작품 핵심 기능(스쿼트 카운팅 + 자세 측정)은 어느 경우든 v1으로 시연 가능.
+
 ## 7. 자료 위치
 
 ### 본 작업 fork 폴더 (계획)
