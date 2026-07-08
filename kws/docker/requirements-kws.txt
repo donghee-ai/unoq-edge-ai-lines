@@ -1,0 +1,25 @@
+# unoq-kws-dev — 의도 표현 (human-readable)
+# After first build: pip freeze > requirements-kws.lock
+
+# Core scientific — pose/asr 라인과 동일 핀 (호환 검증됨)
+numpy>=1.26,<3
+scipy>=1.14
+
+# TFLite runtime — 디바이스 venv-unoq 와 정확 일치 보장
+ai-edge-litert>=2.1
+
+# Audio I/O — sounddevice(마이크 캡처) + soundfile(wav 파일)
+sounddevice>=0.4
+soundfile>=0.12
+
+# Audio feature — MFCC 전처리 (KWS 모델 학습 시점과 파라미터 일치 필수)
+#   python_speech_features: 경량 (numpy only), 디바이스에서도 동작
+#   librosa: 호스트 골든 wav 검증용 (파라미터 검증에 편함)
+python_speech_features>=0.6
+librosa>=0.10
+
+# === 명시 제외 (본 라인 미사용) ===
+#   tensorflow / tf_keras — 모델 재훈련은 별도 파이프라인 (본 라인은 사전학습 모델 사용)
+#   torch / torchvision — KWS 사전학습 모델은 TFLite 직접 사용
+#   qai-hub / qai-hub-models — Qualcomm AI Hub KWS 는 QRB2210 비호환 (pose 라인 동일 사유)
+#   onnxruntime — openWakeWord 등 ONNX KWS 는 stack 불일치로 기각

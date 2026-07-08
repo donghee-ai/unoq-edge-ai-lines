@@ -9,7 +9,8 @@
 | Arduino UNO Q | PC와 같은 LAN |
 | Arduino App Lab 1회 실행 | 펌웨어 최신 |
 | SSH 접속 | `ssh arduino@<UNO_Q_IP>` 가능 |
-| 하드웨어 | SG90 서보 2개 (pan/tilt) + WS2812B LED ring 12 + USB UVC 카메라 + 3D 프린팅 마운트 |
+| 하드웨어 (최소 셋) | SG90 서보 2개 (pan/tilt) + 외부 5V 어댑터 ≥1A + 점퍼 와이어 ~10 + 양면테이프(데모용 카메라 고정) + USB UVC 카메라 (보유 SU200) + 3D 프린팅 STL 7개 |
+| 하드웨어 (선택) | WS2812B LED ring 12 (visibility 색상 시각화 — 없어도 회전 동작 OK) |
 | 모델 | `models/movenet_thunder_int8.tflite` (Pose v1 자산) |
 
 서보 + LED 핀 매핑 (sketch.ino):
@@ -17,14 +18,25 @@
 - TILT servo: GPIO 10
 - WS2812B LED ring: ws2812b-bitbang.h 기본 핀 (코드 확인)
 
-## 1. 3D 프린팅 (선택 — 하드웨어 사전 준비)
+부품 비용 (대략): SG90 ×2 (~$6) + 5V 어댑터 (~$5) + 점퍼 (~$1) + 3D 출력 = **~$12 + 출력 비용**.
+서보 토크 부족 시 MG90S (메탈기어, 2.5 kg·cm, ~$5/개) 업그레이드.
 
-본 PoC가 활용하는 STL: **ShawnHymel mechanical/** (MIT)
-- `base.stl`, `camera-mount.stl`, `gears.stl`, `holder.stl`
-- `top-with-led-ring.stl`, `spacers-*.stl` (3종)
-- 원본: <https://github.com/ShawnHymel/face-expression-detection-robot/tree/main/mechanical>
+## 1. 3D 프린팅 (PoC 단계 — Shawn 원본 7개 다 출력)
 
-본 작품 SU200 카메라가 Shawn webcam과 다르면 `camera-mount.stl`만 FreeCAD 원본(`spacers.FCStd` 참조 → 본 작품 카메라용 신규 작성) 수정 필요.
+본 PoC가 활용하는 STL: **ShawnHymel mechanical/** (MIT) — 원본: <https://github.com/ShawnHymel/face-expression-detection-robot/tree/main/mechanical>
+
+| STL | 출력? | 비고 |
+|---|---|---|
+| `base.stl` | 필수 | 바닥 받침 |
+| `holder.stl` | 필수 | 서보 고정 프레임 |
+| `gears.stl` | 필수 | tilt 회전 기어 |
+| `top-with-led-ring.stl` | 출력 | LED 생략 시에도 평면 top 역할 |
+| `camera-mount.stl` | 출력 | SU200 비호환 시 데모용으로 테이프 고정 |
+| `spacers-*.stl` (3종) | 출력 | 높이 맞춤 |
+
+**PoC 단계 FreeCAD 작업 생략** — `camera-mount.stl`을 SU200 치수에 맞춰 재모델링하는 시간을 데모로 회수. 출력 후 안 맞으면 데모용으로 테이프 고정. 정식 v1.x 통합 시 SU200 전용 mount STL 신규 작성 검토.
+
+상세 의사결정: [`history/2026-06-29_06_ptz_pragmatic_poc_pivot.md`](history/2026-06-29_06_ptz_pragmatic_poc_pivot.md)
 
 ## 2. 모델 파일 복사
 
@@ -124,13 +136,67 @@ ssh arduino@<UNO_Q_IP> 'arduino-app-cli app logs ~/ArduinoApps/ptz-poc' > ptz-po
 
 결과는 [`history/2026-06-29_*.md`](history/) 신규 파일에 기록 — H1~H4 합격 여부 + 측정 trace + 결정 (v1.2 통합 / 보류 / 폐기).
 
-## 9. 본 작품 메인 라인과 동시 운영
+## 9. 본 작품 메인 라인과의 관계 — 통합 우선 진로 (2026-06-29 변경)
 
-본 PoC는 Arduino UNO Q App. 본 작품 메인 라인 (`scripts/infer_camera_pose.py`)은 venv-unoq + SSH script.
+### 9-1. 진로 변경
 
-**동시 운영 금지** — 같은 카메라 device를 두 프로세스가 사용 시도하면 충돌. 본 PoC 측정 중에는 메인 라인 script 정지.
+직전 계획: 분리 PoC (`pose/ptz/`)에서 H1~H4 검증 → 성공 시 본 작품 통합.
 
-PoC 측정 후 즉시 본 작품 메인 시연 가능 — `arduino-app-cli app stop` 후 `python3 infer_camera_pose.py ...` 실행.
+**본 결정**: 분리 PoC 단계 생략 — `pose/scripts/infer_camera_pose.py`에 처음부터 직접 통합. `ENABLE_PTZ` 토글로 PTZ ON/OFF.
+
+근거: MoveNet은 분리 App 안에도 이미 내장되어 카메라 점유 충돌이 발생. 통합하면 MoveNet 1회 invoke로 카운팅 + PTZ 둘 다 처리. 토글 한 줄로 분리 PoC의 "실패 시 무손상" 가치도 보장.
+
+### 9-2. 통합 코드 진입점
+
+```python
+# pose/scripts/infer_camera_pose.py (통합 후)
+from ptz_helpers import visibility_score, person_center_normalized
+
+ENABLE_PTZ = True   # False면 PTZ 비활성, 기존 카운팅만
+
+while True:
+    frame = capture()
+    kp = movenet.invoke(letterbox(frame, 256))   # 1회 invoke
+
+    # 스쿼트 카운터 (기존)
+    angle = knee_angle(kp, side="better")
+    rep_event = counter.update(angle, time.time() * 1000)
+
+    # PTZ (신규)
+    if ENABLE_PTZ:
+        vis = visibility_score(kp)
+        x_n, y_n = person_center_normalized(kp, h, w)
+        should_track = vis < 0.7
+        if x_n is not None:
+            Bridge.call("track_pose", x_n, y_n, vis, should_track)
+```
+
+### 9-3. 자산 재사용
+
+`pose/ptz/python/main.py`의 helper 함수는 `pose/scripts/ptz_helpers.py`로 추출:
+
+- `letterbox_square()`
+- `unletterbox_kp()`
+- `visibility_score()`
+- `person_center_normalized()`
+
+STM32 측 `sketch.ino`는 **변경 없음** — Python 측만 통합.
+
+`pose/ptz/python/main.py`는 보존 — fork 출처 표기 + 비교 검증용.
+
+### 9-4. H4 측정 — 토글로 직접 비교
+
+```bash
+# PTZ OFF — 기존 카운팅만
+ENABLE_PTZ=False python3 infer_camera_pose.py ...
+
+# PTZ ON — 추적 + 카운팅
+ENABLE_PTZ=True python3 infer_camera_pose.py ...
+```
+
+같은 환경에서 즉시 비교 측정 가능 — 분리 PoC 대비 측정 효율 향상.
+
+상세 의사결정 + 트레이드오프 표: [`history/2026-06-29_06_ptz_pragmatic_poc_pivot.md`](history/2026-06-29_06_ptz_pragmatic_poc_pivot.md)
 
 ## 10. 관련
 
