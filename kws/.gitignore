@@ -1,0 +1,31 @@
+# KWS 라인 — models/data/benchmarks/Python/editor 제외 (pose 라인과 동일 패턴)
+
+# 모델 파일 (다운로드 대상, git 무거움)
+models/*.tflite
+models/*.onnx
+!models/.gitkeep
+
+# 벤치마크 (측정 결과, git 무거움 + 로컬)
+benchmarks/*.json
+benchmarks/*.log
+!benchmarks/.gitkeep
+
+# 골든 wav (검증 데이터, git 무거움)
+data/*.wav
+data/*.tar.gz
+!data/.gitkeep
+
+# 파이썬 캐시
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# 에디터
+.vscode/
+.idea/
+*.swp
+*~
+
+# lock 파일 (첫 빌드 시점에 생성)
+docker/requirements-kws.lock

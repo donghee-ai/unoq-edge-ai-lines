@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTZ 조립 가이드 — Shawn Hymel 기반</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Pretendard', sans-serif;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f5f7fa;
+    color: #1f2937;
+    line-height: 1.6;
+  }
+  h1 {
+    color: #1e40af;
+    border-bottom: 3px solid #3b82f6;
+    padding-bottom: 10px;
+  }
+  h2 {
+    color: #1e40af;
+    margin-top: 40px;
+    padding-left: 12px;
+    border-left: 5px solid #3b82f6;
+  }
+  h3 { color: #374151; margin-top: 24px; }
+  .lead {
+    background: #dbeafe;
+    border-left: 4px solid #3b82f6;
+    padding: 14px 18px;
+    border-radius: 6px;
+    margin: 20px 0;
+  }
+  .gear-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .gear-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: transform 0.15s;
+  }
+  .gear-card:hover { transform: translateY(-4px); box-shadow: 0 6px 16px rgba(0,0,0,0.12); }
+  .gear-card svg { display: block; margin: 0 auto 12px; }
+  .gear-num {
+    display: inline-block;
+    background: #3b82f6;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 28px;
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  .gear-name { font-size: 1.1em; font-weight: 600; color: #1e40af; }
+  .gear-role { color: #059669; font-weight: 600; margin: 8px 0; font-size: 0.95em; }
+  .gear-desc { color: #4b5563; font-size: 0.9em; }
+  .diagram-box {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    margin: 20px 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    margin: 16px 0;
+  }
+  th { background: #1e40af; color: white; padding: 12px; text-align: left; }
+  td { padding: 12px; border-top: 1px solid #e5e7eb; }
+  tr:nth-child(even) td { background: #f9fafb; }
+  .step {
+    background: white;
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    transition: background 0.2s;
+  }
+  .step:has(input:checked) {
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+  }
+  .step:has(input:checked) .step-text { text-decoration: line-through; color: #9ca3af; }
+  .step input { transform: scale(1.4); margin-top: 4px; cursor: pointer; }
+  .step-num {
+    background: #3b82f6;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 36px;
+    font-weight: bold;
+    flex-shrink: 0;
+  }
+  .step-text { flex: 1; }
+  .step-text strong { color: #1e40af; }
+  .badge {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 0.85em;
+    font-weight: 600;
+    margin: 0 4px;
+  }
+  .badge-pan { background: #dbeafe; color: #1e40af; }
+  .badge-tilt { background: #fce7f3; color: #be185d; }
+  .badge-warn { background: #fef3c7; color: #92400e; }
+  .check-list { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+  .check-list li { margin: 8px 0; }
+  .pin-table td:first-child { font-family: monospace; font-weight: bold; color: #be185d; }
+  footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #e5e7eb;
+    text-align: center;
+    color: #6b7280;
+    font-size: 0.9em;
+  }
+  @media print {
+    body { background: white; }
+    .gear-card, .diagram-box, table, .step, .check-list {
+      box-shadow: none;
+      border: 1px solid #d1d5db;
+      break-inside: avoid;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>🤖 PTZ 조립 가이드 — UNO Q 교감로봇 v0.2.0</h1>
+
+<div class="lead">
+<strong>기반</strong>: ShawnHymel/face-expression-detection-robot (MIT) — Pan 서보 + Tilt 서보 + 4 기어 + USB UVC 카메라 + WS2812B LED ring + UNO Q + STM32U585<br>
+<strong>핵심 핀</strong>: PAN=D9, TILT=D10, LED=D4 / 외부 5V USB-C 허브로 전원 통합 공급
+</div>
+
+<h2>① 4개 기어 정체</h2>
+
+<div class="gear-grid">
+
+  <div class="gear-card">
+    <svg width="120" height="140" viewBox="0 0 120 140">
+      <!-- TALL cup gear: side view, hollow cylinder with teeth -->
+      <ellipse cx="60" cy="20" rx="50" ry="12" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+      <ellipse cx="60" cy="20" rx="35" ry="8" fill="#1e3a8a"/>
+      <rect x="10" y="20" width="100" height="90" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+      <!-- vertical teeth lines -->
+      <g stroke="#1e40af" stroke-width="1.5">
+        <line x1="20" y1="20" x2="20" y2="110"/>
+        <line x1="30" y1="20" x2="30" y2="110"/>
+        <line x1="40" y1="20" x2="40" y2="110"/>
+        <line x1="50" y1="20" x2="50" y2="110"/>
+        <line x1="60" y1="20" x2="60" y2="110"/>
+        <line x1="70" y1="20" x2="70" y2="110"/>
+        <line x1="80" y1="20" x2="80" y2="110"/>
+        <line x1="90" y1="20" x2="90" y2="110"/>
+        <line x1="100" y1="20" x2="100" y2="110"/>
+      </g>
+      <ellipse cx="60" cy="110" rx="50" ry="12" fill="#3b82f6" stroke="#1e40af" stroke-width="2"/>
+    </svg>
+    <div class="gear-name"><span class="gear-num">①</span>TALL cup 기어</div>
+    <div class="gear-role">PAN driven <span class="badge badge-pan">PAN</span></div>
+    <div class="gear-desc">큰 cavity 안에 axle을 품음. base 중앙 수직축에 끼워져 holder + 상부 전체 무게를 지탱하며 좌우 회전.</div>
+  </div>
+
+  <div class="gear-card">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <!-- flat gear with small hole -->
+      <g transform="translate(60,60)">
+        <g fill="#60a5fa" stroke="#1e40af" stroke-width="1.5">
+          <!-- approximate gear teeth -->
+          <circle r="42"/>
+          <g>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(0)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(20)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(40)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(60)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(80)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(100)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(120)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(140)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(160)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(180)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(200)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(220)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(240)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(260)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(280)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(300)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(320)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(340)"/>
+          </g>
+        </g>
+        <circle r="5" fill="#1e3a8a"/>
+      </g>
+    </svg>
+    <div class="gear-name"><span class="gear-num">②</span>얇은 flat 기어 (작은 hole)</div>
+    <div class="gear-role">PAN driver <span class="badge badge-pan">PAN</span></div>
+    <div class="gear-desc">pan 서보 horn에 직결. ①의 외부 톱니와 맞물려 ①을 회전시킴 → holder 좌우 pan.</div>
+  </div>
+
+  <div class="gear-card">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <g transform="translate(60,60)">
+        <g fill="#60a5fa" stroke="#1e40af" stroke-width="1.5">
+          <circle r="42"/>
+          <g>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(0)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(20)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(40)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(60)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(80)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(100)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(120)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(140)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(160)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(180)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(200)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(220)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(240)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(260)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(280)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(300)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(320)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(340)"/>
+          </g>
+        </g>
+        <circle r="5" fill="#1e3a8a"/>
+        <text y="2" text-anchor="middle" font-size="9" fill="#dc2626">+</text>
+      </g>
+    </svg>
+    <div class="gear-name"><span class="gear-num">③</span>두꺼운 flat 기어 (작은 hole)</div>
+    <div class="gear-role">TILT driver <span class="badge badge-tilt">TILT</span></div>
+    <div class="gear-desc">tilt 서보 horn에 직결. ④와 맞물려 카메라 박스 위/아래 끄덕임 입력.</div>
+  </div>
+
+  <div class="gear-card">
+    <svg width="120" height="120" viewBox="0 0 120 120">
+      <g transform="translate(60,60)">
+        <g fill="#60a5fa" stroke="#1e40af" stroke-width="1.5">
+          <circle r="42"/>
+          <g>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(0)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(20)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(40)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(60)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(80)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(100)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(120)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(140)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(160)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(180)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(200)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(220)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(240)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(260)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(280)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(300)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(320)"/>
+            <rect x="-3" y="-50" width="6" height="10" transform="rotate(340)"/>
+          </g>
+        </g>
+        <circle r="11" fill="#1e3a8a"/>
+      </g>
+    </svg>
+    <div class="gear-name"><span class="gear-num">④</span>flat 기어 (큰 hole)</div>
+    <div class="gear-role">TILT driven <span class="badge badge-tilt">TILT</span></div>
+    <div class="gear-desc">카메라 박스 측면 pivot. 큰 hole로 M3 나사 또는 axle 관통. ③의 회전을 받아 카메라 끄덕임.</div>
+  </div>
+
+</div>
+
+<h2>② PAN 메커니즘 단면도</h2>
+
+<div class="diagram-box">
+<svg width="500" height="320" viewBox="0 0 500 320" font-family="sans-serif" font-size="13">
+  <!-- holder.stl on top -->
+  <rect x="80" y="30" width="220" height="50" fill="#cbd5e1" stroke="#475569" stroke-width="2" rx="6"/>
+  <text x="190" y="60" text-anchor="middle" font-weight="bold">holder.stl</text>
+
+  <!-- TALL cup gear (1) -->
+  <rect x="120" y="80" width="140" height="90" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+  <g stroke="#1e3a8a" stroke-width="1">
+    <line x1="125" y1="80" x2="125" y2="170"/>
+    <line x1="135" y1="80" x2="135" y2="170"/>
+    <line x1="145" y1="80" x2="145" y2="170"/>
+    <line x1="155" y1="80" x2="155" y2="170"/>
+    <line x1="165" y1="80" x2="165" y2="170"/>
+    <line x1="175" y1="80" x2="175" y2="170"/>
+    <line x1="195" y1="80" x2="195" y2="170"/>
+    <line x1="205" y1="80" x2="205" y2="170"/>
+    <line x1="215" y1="80" x2="215" y2="170"/>
+    <line x1="225" y1="80" x2="225" y2="170"/>
+    <line x1="235" y1="80" x2="235" y2="170"/>
+    <line x1="245" y1="80" x2="245" y2="170"/>
+    <line x1="255" y1="80" x2="255" y2="170"/>
+  </g>
+  <text x="190" y="130" text-anchor="middle" font-weight="bold" fill="white">① TALL</text>
+  <!-- axle in cavity -->
+  <line x1="190" y1="80" x2="190" y2="280" stroke="#dc2626" stroke-width="3" stroke-dasharray="4 2"/>
+  <text x="200" y="78" fill="#dc2626" font-size="11">axle</text>
+
+  <!-- PAN driver gear (2) -->
+  <circle cx="380" cy="125" r="30" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+  <g stroke="#1e3a8a" stroke-width="1.5" fill="#60a5fa">
+    <rect x="377" y="92" width="6" height="6"/>
+    <rect x="377" y="152" width="6" height="6"/>
+    <rect x="347" y="122" width="6" height="6"/>
+    <rect x="407" y="122" width="6" height="6"/>
+    <rect x="358" y="100" width="6" height="6" transform="rotate(-45 361 103)"/>
+    <rect x="396" y="100" width="6" height="6" transform="rotate(45 399 103)"/>
+    <rect x="358" y="146" width="6" height="6" transform="rotate(45 361 149)"/>
+    <rect x="396" y="146" width="6" height="6" transform="rotate(-45 399 149)"/>
+  </g>
+  <circle cx="380" cy="125" r="4" fill="#1e3a8a"/>
+  <text x="380" y="180" text-anchor="middle" font-weight="bold">② driver</text>
+
+  <!-- Pan servo body -->
+  <rect x="355" y="190" width="50" height="60" fill="#374151" stroke="black" stroke-width="2"/>
+  <text x="380" y="225" text-anchor="middle" fill="white" font-size="11">Pan</text>
+  <text x="380" y="240" text-anchor="middle" fill="white" font-size="11">SG90</text>
+  <text x="380" y="265" text-anchor="middle" font-size="11">D9</text>
+
+  <!-- base -->
+  <rect x="60" y="250" width="380" height="50" fill="#94a3b8" stroke="#334155" stroke-width="2" rx="6"/>
+  <text x="250" y="280" text-anchor="middle" font-weight="bold">base.stl</text>
+
+  <!-- gear mesh arrow -->
+  <text x="320" y="125" font-size="20" fill="#dc2626">⚙</text>
+
+  <!-- rotation arrows -->
+  <path d="M 80 30 Q 50 60 80 80" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="35" y="60" fill="#059669" font-weight="bold">PAN</text>
+
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#059669"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+<p><strong>핵심</strong>: ① TALL 기어는 base의 axle을 안에 품고 자유 회전. ② driver가 ①의 외부 톱니를 돌려 holder + 상부 전체가 좌우 회전. 서보 horn이 직접 holder를 받지 않으므로 무게 부담 ↓.</p>
+
+<h2>③ TILT 메커니즘 측면도</h2>
+
+<div class="diagram-box">
+<svg width="500" height="280" viewBox="0 0 500 280" font-family="sans-serif" font-size="13">
+  <!-- holder side -->
+  <rect x="30" y="100" width="80" height="120" fill="#cbd5e1" stroke="#475569" stroke-width="2" rx="6"/>
+  <text x="70" y="170" text-anchor="middle" font-weight="bold">holder</text>
+
+  <!-- tilt servo in holder -->
+  <rect x="50" y="115" width="50" height="55" fill="#374151" stroke="black" stroke-width="2"/>
+  <text x="75" y="138" text-anchor="middle" fill="white" font-size="11">Tilt</text>
+  <text x="75" y="152" text-anchor="middle" fill="white" font-size="11">SG90</text>
+  <text x="75" y="180" text-anchor="middle" font-size="11">D10</text>
+
+  <!-- tilt driver gear (3) -->
+  <circle cx="155" cy="140" r="35" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+  <g stroke="#1e3a8a" stroke-width="1.5" fill="#60a5fa">
+    <rect x="152" y="102" width="6" height="8"/>
+    <rect x="152" y="170" width="6" height="8"/>
+    <rect x="117" y="137" width="8" height="6"/>
+    <rect x="185" y="137" width="8" height="6"/>
+  </g>
+  <circle cx="155" cy="140" r="4" fill="#1e3a8a"/>
+  <text x="155" y="200" text-anchor="middle" font-weight="bold">③ driver</text>
+
+  <!-- gear mesh -->
+  <text x="200" y="148" font-size="22" fill="#dc2626">⚙</text>
+
+  <!-- tilt driven gear (4) -->
+  <circle cx="245" cy="140" r="35" fill="#60a5fa" stroke="#1e40af" stroke-width="2"/>
+  <g stroke="#1e3a8a" stroke-width="1.5" fill="#60a5fa">
+    <rect x="242" y="102" width="6" height="8"/>
+    <rect x="242" y="170" width="6" height="8"/>
+    <rect x="207" y="137" width="8" height="6"/>
+    <rect x="275" y="137" width="8" height="6"/>
+  </g>
+  <circle cx="245" cy="140" r="11" fill="#1e3a8a"/>
+  <text x="245" y="200" text-anchor="middle" font-weight="bold">④ driven</text>
+
+  <!-- camera box -->
+  <rect x="290" y="80" width="160" height="120" fill="#1f2937" stroke="black" stroke-width="2" rx="6"/>
+  <circle cx="370" cy="140" r="30" fill="#ec4899" stroke="white" stroke-width="3"/>
+  <circle cx="370" cy="140" r="14" fill="#0f172a"/>
+  <text x="370" y="220" text-anchor="middle" fill="white" font-size="11">camera-mount + LED ring</text>
+
+  <!-- axle connecting (4) to camera -->
+  <line x1="260" y1="140" x2="305" y2="140" stroke="#dc2626" stroke-width="3" stroke-dasharray="4 2"/>
+  <text x="265" y="130" fill="#dc2626" font-size="10">axle (M3)</text>
+
+  <!-- TILT rotation arrow -->
+  <path d="M 460 110 Q 480 140 460 170" stroke="#059669" stroke-width="2" fill="none" marker-end="url(#arrow2)"/>
+  <text x="460" y="100" fill="#059669" font-weight="bold">TILT</text>
+
+  <defs>
+    <marker id="arrow2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#059669"/>
+    </marker>
+  </defs>
+</svg>
+</div>
+
+<p><strong>핵심</strong>: ③ tilt 서보가 회전 → 맞물린 ④가 회전 → ④에 결합된 카메라 박스가 위/아래 끄덕임. ④의 큰 hole로 axle(M3 나사 또는 금속 핀) 관통하여 holder와 결합.</p>
+
+<h2>④ 핀 매핑 (sketch.ino 기반)</h2>
+
+<table class="pin-table">
+<thead>
+<tr><th>부품</th><th>UNO Q 핀</th><th>전원</th><th>비고</th></tr>
+</thead>
+<tbody>
+<tr><td>Pan 서보 신호</td><td>D9</td><td>5V + GND</td><td>SG90 ①+②</td></tr>
+<tr><td>Tilt 서보 신호</td><td>D10</td><td>5V + GND</td><td>SG90 ③+④</td></tr>
+<tr><td>WS2812B LED ring</td><td>D4</td><td>5V + GND</td><td>12 LED NeoPixel</td></tr>
+<tr><td>USB UVC 카메라</td><td>USB Hub</td><td>Hub 5V</td><td>SU200 등</td></tr>
+<tr><td>외부 전원</td><td>Hub PD 포트</td><td>USB-C 5V/3A+</td><td>허브가 UNO Q + 카메라 + 서보 + LED 통합 공급</td></tr>
+</tbody>
+</table>
+
+<h2>⑤ 조립 순서 (체크박스로 진행 표시)</h2>
+
+<p style="color:#6b7280;font-size:0.9em;">체크박스는 새로고침 시에도 유지됩니다 (브라우저 localStorage).</p>
+
+<div id="steps">
+  <label class="step">
+    <input type="checkbox" data-step="1">
+    <div class="step-num">1</div>
+    <div class="step-text"><strong>Base 준비 + 수직 axle 세우기</strong><br>
+    <code>base.stl</code> 중앙에 M3 긴 나사 또는 금속 핀을 수직으로 세움. 이 axle이 PAN 회전축.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="2">
+    <div class="step-num">2</div>
+    <div class="step-text"><strong>① TALL 기어를 axle에 끼움</strong> <span class="badge badge-pan">PAN</span><br>
+    cavity가 axle에 헐겁게 끼워져 자유 회전 가능해야 함. 손으로 돌렸을 때 부드러워야 함.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="3">
+    <div class="step-num">3</div>
+    <div class="step-text"><strong>Pan 서보를 base 한쪽에 수직 고정</strong> <span class="badge badge-pan">PAN</span><br>
+    SG90 #1을 base 측면 slot에 M2 나사 2개로 고정. horn이 위쪽 향함.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="4">
+    <div class="step-num">4</div>
+    <div class="step-text"><strong>② driver 기어를 pan 서보 horn에 결합</strong> <span class="badge badge-pan">PAN</span><br>
+    ②의 외부 톱니가 ①의 외부 톱니와 정확히 맞물리는 위치로 정렬. 서보 동봉 자루나사로 잠금.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="5">
+    <div class="step-num">5</div>
+    <div class="step-text"><strong>holder.stl을 ① 위에 결합</strong><br>
+    holder가 ① 위에 얹혀서 함께 회전하도록 snap-fit 또는 M3 나사로 고정. 이제 holder + 위 모든 게 좌우 PAN.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="6">
+    <div class="step-num">6</div>
+    <div class="step-text"><strong>Tilt 서보를 holder 한쪽 측면에 고정</strong> <span class="badge badge-tilt">TILT</span><br>
+    SG90 #2를 holder 측면 slot에 수평 방향으로 M2 나사 2개로 고정. horn이 옆으로 돌출.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="7">
+    <div class="step-num">7</div>
+    <div class="step-text"><strong>③ driver 기어를 tilt 서보 horn에 결합</strong> <span class="badge badge-tilt">TILT</span><br>
+    자루나사로 잠금. 가벼우니 손가락 토크로 충분.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="8">
+    <div class="step-num">8</div>
+    <div class="step-text"><strong>④ driven 기어를 카메라 박스 측면 axle에 끼움</strong> <span class="badge badge-tilt">TILT</span><br>
+    M3 나사를 ④의 큰 hole + camera-mount 측면 hole + holder 측면 hole 관통하여 결합. 너트로 잠금.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="9">
+    <div class="step-num">9</div>
+    <div class="step-text"><strong>③과 ④ 맞물림 위치 정렬</strong> <span class="badge badge-tilt">TILT</span><br>
+    톱니가 정확히 맞물려야 회전 전달됨. 헐거우면 모양 어긋남, 너무 끼면 회전 막힘. 중립 위치 (카메라 정면)에서 ③과 ④ 모두 90° 중간 정렬.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="10">
+    <div class="step-num">10</div>
+    <div class="step-text"><strong>케이블 라우팅</strong><br>
+    Pan 서보 케이블 (3선) → base 안쪽 hole 통과 → UNO Q.<br>
+    Tilt 서보 케이블 (3선) → holder 안쪽 통과 → axle 옆으로 빠져 base → UNO Q.<br>
+    LED ring 데이터+5V+GND → camera-mount 후면 → tilt axle 옆 → base → UNO Q D4.<br>
+    카메라 USB → 허브.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="11">
+    <div class="step-num">11</div>
+    <div class="step-text"><strong>외부 5V USB-C 어댑터를 허브 PD 포트에 연결</strong><br>
+    허브가 UNO Q + 카메라 + 서보 + LED 전체 전원 공급. UNO Q 자체 5V 핀 부족 가능.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="12">
+    <div class="step-num">12</div>
+    <div class="step-text"><strong>서보 0번 위치 정렬 (소프트 우회 가능)</strong> <span class="badge badge-warn">선택</span><br>
+    sketch.ino 업로드 전에 <code>servo-test/</code>로 양쪽 서보를 90° 중간 위치로 보낸 후 기어를 맞물려 끼우면 시작 위치 어긋남 ↓.</div>
+  </label>
+
+  <label class="step">
+    <input type="checkbox" data-step="13">
+    <div class="step-num">13</div>
+    <div class="step-text"><strong>sketch.ino + python/main.py App Lab 업로드</strong><br>
+    <code>arduino-app-cli app start ~/ArduinoApps/ptz-poc</code><br>
+    로그에 <code>"Model loaded"</code> + <code>"Camera native: 640x480"</code> 나오면 성공.</div>
+  </label>
+
+</div>
+
+<h2>⑥ Hole 크기로 기어 구분 (출력물 정리용)</h2>
+
+<table>
+<thead><tr><th>구분</th><th>특징</th><th>대응 기어</th></tr></thead>
+<tbody>
+<tr><td>깊은 cylinder cavity</td><td>안쪽 빈 공간 + 외부 톱니</td><td>① TALL (PAN driven)</td></tr>
+<tr><td>작은 hole + 십자/원형 음각</td><td>서보 horn 결합</td><td>② driver, ③ driver</td></tr>
+<tr><td>큰 hole (관통)</td><td>M3 나사 또는 axle 통과</td><td>④ driven</td></tr>
+</tbody>
+</table>
+
+<p>②와 ③ 구분은 <strong>두께</strong>로: 더 얇은 게 ② PAN driver, 더 두꺼운 게 ③ TILT driver (토크 부담 ↑).</p>
+
+<h2>⑦ 조립 후 검증 체크리스트</h2>
+
+<div class="check-list">
+<ul>
+  <li>✅ 손으로 holder를 좌우로 살짝 돌렸을 때 <strong>저항(저음)</strong> 느낌이 들어야 함 (pan 서보가 잡고 있음)</li>
+  <li>✅ 손으로 카메라 박스를 위/아래로 살짝 기울였을 때 동일한 저항</li>
+  <li>✅ 양쪽 다 너무 헐겁거나 빠지면 → 기어 맞물림 어긋남 (다시 정렬)</li>
+  <li>✅ 너무 빡빡해서 손으로 안 돌아가면 → 기어가 너무 꽉 끼움 (사포로 톱니 살짝 갈기)</li>
+  <li>✅ <code>servo-test</code> 펌웨어로 양 서보 0~180° 스윕 시 정상 회전</li>
+  <li>✅ 케이블이 회전 시 꼬이지 않음 (loose loop로 여유 있게)</li>
+  <li>✅ LED ring 켜짐 (D4 + 5V + GND 확인)</li>
+  <li>✅ 카메라 인식 (<code>ls /dev/video*</code>로 확인)</li>
+  <li>✅ <code>main.py</code> 실행 시 web UI에서 라이브 영상 + skeleton 표시</li>
+</ul>
+</div>
+
+<h2>⑧ 자주 만나는 함정</h2>
+
+<table>
+<thead><tr><th>증상</th><th>원인</th><th>해결</th></tr></thead>
+<tbody>
+<tr><td>서보 떨림</td><td>5V 전류 부족</td><td>외부 어댑터 3A+ 사용</td></tr>
+<tr><td>기어가 안 맞물림</td><td>출력물 톱니 균일 X</td><td>사포로 미세 정리 or 재출력 (강도 50%+)</td></tr>
+<tr><td>Bridge.call error</td><td>sketch.ino 업로드 안 됨</td><td>App Lab 재시작</td></tr>
+<tr><td>LED 안 켜짐</td><td>D4 핀 또는 전원 누락</td><td>핀 매핑 확인 + 5V 직결</td></tr>
+<tr><td>카메라 안 잡힘</td><td>허브 호환성</td><td>USB 허브 교체 or 직결 시도</td></tr>
+<tr><td>tilt 너무 짧게 움직임</td><td>HORIZONTAL_FOV 값 작음</td><td>sketch.ino L31 HORIZONTAL_FOV 키움 (기본 60)</td></tr>
+</tbody>
+</table>
+
+<footer>
+  UNO Q Companion Robot · Pose 라인 · PTZ PoC v0.2.0<br>
+  기반: <a href="https://github.com/ShawnHymel/face-expression-detection-robot">ShawnHymel/face-expression-detection-robot</a> (MIT)<br>
+  본 문서: <code>pose/ptz/assembly_guide.html</code>
+</footer>
+
+<script>
+// 체크박스 상태 localStorage 저장
+const steps = document.querySelectorAll('input[data-step]');
+steps.forEach(cb => {
+  const key = 'ptz_step_' + cb.dataset.step;
+  cb.checked = localStorage.getItem(key) === '1';
+  cb.addEventListener('change', () => {
+    localStorage.setItem(key, cb.checked ? '1' : '0');
+  });
+});
+</script>
+
+</body>
+</html>

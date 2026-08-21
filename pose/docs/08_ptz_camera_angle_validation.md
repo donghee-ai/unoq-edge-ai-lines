@@ -110,17 +110,40 @@ H1·H2·H3 모두 통과 = **PoC 검증 성공**. H4까지 통과 = 본 작품 �
 
 검증 실패해도 본 작품 핵심(헬스케어 봇 + 스쿼트 카운팅 v1)은 그대로 시연 가능.
 
-## 6. 작업 일정 (PoC만)
+## 6. 작업 일정 — 통합 우선 진로 (2026-06-29 변경)
 
-| 단계 | 시간 |
-|---|---|
-| STL 호환성 확인 + 출력 + 조립 | 1~2일 |
-| `python/main.py` MoveNet 이식 | 0.5일 |
-| `sketch.ino` visibility stop 3줄 추가 + PID 게인 튜닝 | 0.5~1일 |
-| 통합 + H1~H4 측정 | 1일 |
-| **합계 (PoC만)** | **3~4일** |
+### 6-0. 진로 변경 요약
 
-본 작품 통합 결정 후 추가 작업 (LED 표현 / 다른 모드 통합 등)은 별도.
+직전 계획: 분리 PoC (`pose/ptz/`)에서 H1~H4 검증 → 성공 시 본 작품 통합 (v0.2.0).
+
+**본 결정 (2026-06-29)**: 분리 PoC 단계 생략 — `pose/scripts/infer_camera_pose.py`에 처음부터 직접 통합, `ENABLE_PTZ` 토글로 PTZ ON/OFF. 분리의 "실패 시 무손상" 가치도 토글로 보장.
+
+상세 결정 기록: [`history/2026-06-29_06_ptz_pragmatic_poc_pivot.md`](history/2026-06-29_06_ptz_pragmatic_poc_pivot.md)
+
+### 6-1. 통합 일정
+
+| 단계 | 시간 | 비고 |
+|---|---|---|
+| SG90 서보 2개 + 5V 어댑터 주문 + 배송 | 2~5일 | critical path |
+| STL 7개 출력 (배송과 병렬) | 1~2일 | Shawn 원본 그대로, FreeCAD 수정 생략 |
+| 서보 + 카메라 조립 (camera-mount 안 맞으면 데모용으로 테이프 고정) | 0.5일 | |
+| `pose/ptz/python/main.py`의 helper 함수 → `pose/scripts/ptz_helpers.py`로 추출 | 0.3일 | HW 무관, 즉시 가능 |
+| `infer_camera_pose.py`에 `visibility_score` + `Bridge.call("track_pose")` + `ENABLE_PTZ` 토글 추가 | 0.5일 | HW 무관, 즉시 가능 |
+| STM32 `sketch.ino` 빌드 + Arduino App Lab 업로드 + RouterBridge 연결 확인 | 0.5일 | |
+| H1~H4 측정 (PTZ ON/OFF 토글로 직접 비교) | 1일 | |
+| **합계 (배송 제외)** | **4일** | 분리 PoC 대비 1~2일 절약 |
+
+### 6-2. 분리 PoC 대비 차이
+
+| 항목 | 분리 PoC (직전 계획) | 통합 우선 (본 결정) |
+|---|---|---|
+| MoveNet invoke | 2회 (분리 App마다 1회) | **1회** (공유) |
+| 카메라 점유 | 동시 불가 — App 전환 필요 | 단일 프로세스로 자연 해결 |
+| 본 작품 메인 무손상 | 자동 보장 | `ENABLE_PTZ = False` 토글로 보장 |
+| H4 측정 (카운팅 향상) | 별도 비교 측정 | 토글로 즉시 비교 |
+| 작업 시간 | 5~7일 | 4일 |
+| 펌웨어 | 동일 | 동일 |
+| 시연 | App 전환 | 단일 진입점 |
 
 ## 6-A. 현재 — PTZ와 메인 라인(Pose v1) 별개 시스템
 
