@@ -105,8 +105,4 @@ deregister. 카메라까지 같이 사라진다.
 
 → 원문: [`pose/docs/issues/2026-06-27_02`](../pose/docs/issues/2026-06-27_02_powershell_rename_item_created_stray_empty_folder.md)
 
-## 7. 기록 규칙
-
-새 함정을 밟으면 **해당 라인의 `docs/issues/`에 한 사건 한 파일**로 먼저 쓰고
-(`YYYY-MM-DD_NN_주제.md`), 재사용 가치가 있다고 판단되면 이 문서 §0 표에 한 줄 추가한다.
-이 문서는 색인이고, 원본은 고치지 않는다.
+이 문서는 색인이고, 상세 경위는 각 라인의 `docs/issues/`에 한 사건 한 파일로 남아 있다.

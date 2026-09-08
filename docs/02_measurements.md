@@ -66,7 +66,7 @@ letterbox·후처리·draw·JPEG 인코딩·HTTP 서빙 전부다. **invoke 78 %
 
 > **thermal은 여유가 없다.** 위 68.6 °C는 136초 측정값이고, 장시간 구동에서는
 > **71.4 °C까지 올라 합격선 70 °C를 1.4 °C 넘겼다** —
-> [`04_traps.md`](04_traps.md) §5. soak 측정은 아직 안 했다.
+> [`04_traps.md`](04_traps.md) §4. soak 측정은 하지 않았다.
 
 ## 3. ASR — Whisper Tiny.en (DRQ)
 
@@ -101,7 +101,7 @@ Quantization)** 확정.
 디바이스 latency·RSS·thermal·오탐률은 **아직 재지 않았다.** 측정 절차와 합격 기준은
 [`kws/docs/03_ssh_to_benchmark_walkthrough.md`](../kws/docs/03_ssh_to_benchmark_walkthrough.md) §10에 있다.
 
-측정하면 값은 `kws/benchmarks/`의 JSON에 남기고 이 문서 §0 표를 갱신한다.
+`kws/benchmarks/`는 비어 있다.
 
 ## 5. 라인 간 비교
 
@@ -117,9 +117,9 @@ Quantization)** 확정.
 
 ## 6. 이 숫자들을 읽을 때
 
-- **thermal 표기가 문서마다 다르다.** vision JSON은 60.5 °C, 루트 README는 70.8 °C로
-  적혀 있는데 서로 다른 런이다. 지속 구동에서 71.4 °C까지 간 기록이 별도로 있다
-  (§2 주석). soak 측정을 하기 전까지 thermal은 "합격선 근처"로만 읽을 것.
+- **thermal 값이 런마다 다르다.** vision JSON 60.5 °C, pose 136초 측정 68.6 °C,
+  지속 구동 71.4 °C — 전부 다른 런이다. soak 측정을 하지 않았으므로 thermal은
+  "합격선 근처, 지속 시 초과"로 읽는 것이 정확하다.
 - **CPU % 는 4코어 합산 기준**이다. 316 % = 코어당 79 %.
 - **KWS 열은 비어 있는 게 맞다.** 안 쟀으니 안 쓴다.
 
@@ -132,5 +132,5 @@ Quantization)** 확정.
 | ASR | `asr/docs/history/2026-06-27_01` |
 | KWS | 없음 (미측정) |
 
-> Vision을 뺀 나머지는 측정값이 history 문서 안에만 있고 JSON 산출물이 없다.
-> 다시 측정할 일이 있으면 `--json` 저장을 꼭 켤 것.
+> Vision만 기계 판독 가능한 JSON이 남았다. Pose·ASR은 측정값이 history 문서 본문
+> 안에만 있어서, 이 문서의 표가 사실상 유일한 정리본이다.

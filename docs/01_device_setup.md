@@ -90,11 +90,11 @@ cat /sys/class/thermal/thermal_zone0/temp   # ÷1000 = °C
 - **온도를 짧게 재고 판정하지 말 것** — 136초 68.6 °C였다가 지속 구동에서 71.4 °C로
   합격선을 넘겼다 ([`04_traps.md`](04_traps.md) §4).
 
-## 6. 측정할 때
+## 6. 측정 산출물이 남은 형태
 
-측정값은 **반드시 JSON으로 저장한다.** vision만 `benchmarks/*.json`이 남아 있고
-나머지 세 라인은 숫자가 history 문서 안에만 있어서 기계 판독이 안 된다. 같은 실수를
-반복하지 말 것 — [`02_measurements.md`](02_measurements.md) §7.
+Vision만 `--json` 저장을 켜고 돌려서 `vision/benchmarks/*.json`이 남았다. Pose·ASR은
+숫자가 history 문서 본문 안에만 있어 기계 판독이 안 된다 —
+[`02_measurements.md`](02_measurements.md)의 표가 그 정리본이다.
 
 ## 7. 원본 문서
 
