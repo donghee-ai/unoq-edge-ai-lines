@@ -38,8 +38,8 @@
 
 ```bash
 # WSL 셸 안에서
-git clone https://github.com/donghee-ai/unoq-companion-robot.git
-cd unoq-companion-robot
+git clone https://github.com/donghee-ai/unoq-edge-ai-lines.git
+cd unoq-edge-ai-lines
 bash docker/run-vision.sh                  # 첫 빌드 약 15분
 # → 컨테이너 진입 (dev@unoq-yolo-dev:/work$)
 ```

@@ -92,7 +92,7 @@ vision/
 ### Phase 0 — 롤백 보험
 
 ```bash
-cd unoq-companion-robot
+cd unoq-edge-ai-lines
 git tag pre-monorepo-restructure
 git push --tags
 ```

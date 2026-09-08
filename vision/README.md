@@ -1,4 +1,4 @@
-# UNO Q Companion Robot
+# UNO Q Edge AI Lines — Vision 라인
 
 > Arduino UNO Q (Qualcomm Dragonwing QRB2210) 위에서 동작하는 책상용 교감로봇 프로젝트.
 > TFLite로 얼굴/표정을 실시간 분석하여 LED·모터·소리로 반응합니다.
@@ -47,8 +47,8 @@
 ### 1. 클론 + 환경 빌드 (1회, 약 15분)
 
 ```bash
-git clone https://github.com/donghee-ai/unoq-companion-robot.git
-cd unoq-companion-robot
+git clone https://github.com/donghee-ai/unoq-edge-ai-lines.git
+cd unoq-edge-ai-lines
 bash docker/run-vision.sh
 ```
 

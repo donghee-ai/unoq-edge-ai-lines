@@ -143,8 +143,8 @@ bbox 좌표는 **정규화 [0, 1] 범위** (Ultralytics int8 TFLite export의 �
 ### 7-3. 시작 명령 (호스트 WSL에서)
 
 ```bash
-git clone https://github.com/donghee-ai/unoq-companion-robot.git
-cd unoq-companion-robot
+git clone https://github.com/donghee-ai/unoq-edge-ai-lines.git
+cd unoq-edge-ai-lines
 bash docker/run-vision.sh                      # 컨테이너 진입 (첫 빌드 ~15분)
 ```
 

@@ -45,7 +45,7 @@ Vision · ASR · Pose 3 라인이 디바이스에서 합격선 통과. KWS는 �
 ## 작품 구조 (Monorepo)
 
 ```
-unoq-companion-robot/
+unoq-edge-ai-lines/
 ├── vision/                       Vision YOLOv8n int8 라인
 │   ├── docker/   docs/   models/   scripts/   src/
 ├── asr/                          ASR Whisper Tiny.en 라인
@@ -150,4 +150,4 @@ USB-C 1포트 + 허브 토폴로지 제약으로 2 모드 분리:
 
 ---
 
-**작자**: DongHee Kim (한성대) | **레포**: `donghee-ai/unoq-companion-robot` (Private)
+**작자**: DongHee Kim (한성대) | **레포**: `donghee-ai/unoq-edge-ai-lines` (Private)

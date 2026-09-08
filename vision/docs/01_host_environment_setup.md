@@ -129,7 +129,7 @@ exit                          # 또는 Ctrl+D
 
 ```bash
 git clone <repo_url>
-cd unoq-companion-robot
+cd unoq-edge-ai-lines
 bash docker/run-vision.sh
 ```
 
