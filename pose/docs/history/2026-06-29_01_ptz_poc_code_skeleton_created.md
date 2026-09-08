@@ -1,7 +1,7 @@
 # 2026-06-29 — PTZ PoC 코드 골격 작성 (Shawn fork)
 
 ## 시점
-2026-06-29 (멘토 미팅 결과 [2026-06-27 §11] + 기반 결정 [2026-06-27 §12] 후 코드 진입)
+2026-06-29 (리뷰 미팅 결과 [2026-06-27 §11] + 기반 결정 [2026-06-27 §12] 후 코드 진입)
 
 ## 사건
 PTZ 검증 PoC 코드 골격 작성 — Linux측 Python (MoveNet + visibility) + STM32측 Arduino sketch (PID + LED). ShawnHymel/face-expression-detection-robot (MIT) fork.
@@ -87,7 +87,7 @@ ptz/
 
 ## 관련
 
-- 멘토 미팅 결정 (PTZ만 진행): [`2026-06-27_11_mentor_meeting_outcomes.md`](2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결정 (PTZ만 진행): [`2026-06-27_11_review_meeting_outcomes.md`](2026-06-27_11_review_meeting_outcomes.md)
 - Shawn 기반 결정: [`2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md`](2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md)
 - PoC 정의 + 가설: [`../08_ptz_camera_angle_validation.md`](../08_ptz_camera_angle_validation.md)
 - 빌드 + 측정 절차: [`../09_quickstart_ptz_poc.md`](../09_quickstart_ptz_poc.md)

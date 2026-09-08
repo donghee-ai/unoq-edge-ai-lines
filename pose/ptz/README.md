@@ -115,6 +115,6 @@ arduino-app-cli app logs ~/ArduinoApps/ptz-poc
 
 - 본 PoC 정의 + 가설: [`../docs/08_ptz_camera_angle_validation.md`](../docs/08_ptz_camera_angle_validation.md)
 - Quickstart: [`../docs/09_quickstart_ptz_poc.md`](../docs/09_quickstart_ptz_poc.md)
-- 멘토 미팅 결과 (PTZ만 진행 결정): [`../docs/history/2026-06-27_11_mentor_meeting_outcomes.md`](../docs/history/2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결과 (PTZ만 진행 결정): [`../docs/history/2026-06-27_11_review_meeting_outcomes.md`](../docs/history/2026-06-27_11_review_meeting_outcomes.md)
 - 기반 프로젝트 결정 history: [`../docs/history/2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md`](../docs/history/2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md)
 - Pose v1 알고리즘 (PoC와 무관): [`../docs/04_squat_algorithm.md`](../docs/04_squat_algorithm.md)

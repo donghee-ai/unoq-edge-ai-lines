@@ -307,7 +307,7 @@ Ctrl+C 종료 후 SUMMARY 출력.
 
 ## 8. 소음/노이즈 조건 false trigger 측정
 
-멘토 결정 사항 (`memory/project_unoq_next_cycle_constraints.md`): **clean + 생활노이즈 양쪽 측정**.
+리뷰 결정 사항 (`memory/project_unoq_next_cycle_constraints.md`): **clean + 생활노이즈 양쪽 측정**.
 
 ### 8-1. Clean 환경 (조용한 방)
 

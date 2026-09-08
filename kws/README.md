@@ -44,7 +44,7 @@ kws/                              ← 본 라인 루트
 
 - Pose (통합 대상): [`../pose/`](../pose/) — MoveNet Thunder INT8, 9.69 FPS
 - ASR (기존, Whisper 대체 예정): [`../asr/`](../asr/) — 본 라인은 ASR **경량화 후속**
-- 결정 근거: [`../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md`](../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md)
+- 결정 근거: [`../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md`](../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md)
 
 ## v0.3.0 트랙
 

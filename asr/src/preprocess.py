@@ -1,7 +1,7 @@
 """preprocess.py — wav PCM → Whisper mel spectrogram.
 
 Numpy 자작 — librosa 의존 없이 호스트/디바이스 동일 동작 보장.
-멘토 리뷰 단점 2 (feature 추출 학습 일치) 해결: Whisper 공식 알고리즘 복제.
+설계 리뷰 단점 2 (feature 추출 학습 일치) 해결: Whisper 공식 알고리즘 복제.
 
 Reference: openai/whisper whisper/audio.py
 Whisper params: sr=16000, n_fft=400, hop=160, n_mels=80, fmin=0, fmax=8000.

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 """
-End-to-End 벤치마크 스크립트 (멘토 docs 06 권고 형식 + RSS/온도 모니터링).
+End-to-End 벤치마크 스크립트 (벤치마크 표준 권고 형식 + RSS/온도 모니터링).
 
-단일 이미지를 N회 반복 추론하여 멘토 docs `06_testing_benchmarking_reliability.md`
+단일 이미지를 N회 반복 추론하여 참고자료 `06_testing_benchmarking_reliability.md`
 Section 3의 JSON 형식으로 결과 저장.
 
 수집 항목:
 - latency_ms_p50, p95, mean, median, min, max (각 단계 + total)
 - fps_mean
-- preprocess_ms_mean, postprocess_ms_mean (멘토 요구)
+- preprocess_ms_mean, postprocess_ms_mean (리뷰어 요구)
 - inference_ms_mean, draw_ms_mean (추가 상세)
 - max_rss_mb (피크 메모리, /proc/self/status VmRSS)
 - max_temp_c (피크 온도, /sys/class/thermal/*)
@@ -156,10 +156,10 @@ def stats(arr):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="YOLOv8 e2e benchmark (mentor docs 06 format)")
+    ap = argparse.ArgumentParser(description="YOLOv8 e2e benchmark (benchmark standard format)")
     ap.add_argument("model", help=".tflite 파일 경로")
     ap.add_argument("image", help="입력 이미지 경로")
-    ap.add_argument("--runs", type=int, default=100, help="측정 반복 횟수 (기본 100, 멘토 권고)")
+    ap.add_argument("--runs", type=int, default=100, help="측정 반복 횟수 (기본 100, 리뷰어 권고)")
     ap.add_argument("--warmup", type=int, default=10, help="워밍업 반복 횟수 (기본 10)")
     ap.add_argument("--threads", type=int, default=4, help="CPU 스레드 수")
     ap.add_argument("--conf", type=float, default=0.25, help="confidence threshold")
@@ -174,7 +174,7 @@ def main():
     if not image_path.exists():
         sys.exit(f"ERROR: image not found: {image_path}")
 
-    print("== E2E Benchmark (mentor docs 06 format) ==")
+    print("== E2E Benchmark (benchmark standard format) ==")
     print(f"  runtime: {RUNTIME}")
     print(f"  model:   {model_path}")
     print(f"  image:   {image_path}")
@@ -253,7 +253,7 @@ def main():
 
     if args.json:
         report = {
-            # 멘토 docs 06 Section 3 형식
+            # 벤치마크 표준 Section 3 형식
             "model": str(model_path),
             "runtime": f"{RUNTIME}:{args.threads}",
             "input_shape": [int(x) for x in input_detail['shape']],

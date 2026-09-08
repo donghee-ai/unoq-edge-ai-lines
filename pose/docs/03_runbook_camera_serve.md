@@ -180,6 +180,6 @@ python3 scripts/infer_camera_pose.py \
 - 모델 결정: [`01_model_candidates.md`](01_model_candidates.md)
 - Quickstart: [`02_quickstart_pose.md`](02_quickstart_pose.md)
 - 알고리즘: [`04_squat_algorithm.md`](04_squat_algorithm.md)
-- 멘토 보고: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+- 보고: [`05_pose_line_report.md`](05_pose_line_report.md)
 - 함정 모음: [`issues/`](issues/)
 - 측정 누적: [`history/`](history/)

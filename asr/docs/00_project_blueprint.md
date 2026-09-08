@@ -8,7 +8,7 @@ Arduino UNO Q (Qualcomm Dragonwing QRB2210, CPU only) 위에서 **Whisper Tiny.e
 
 운영 모드: **이벤트 기반 (event-driven)** — Silero VAD가 발화 감지 시에만 Whisper 호출. 평소엔 vision YOLO 9 FPS 그대로 유지.
 
-본 모듈은 멘토 요청("음성 모델 ASR 하나 올려봐, 음성으로 조정하거나 해야하잖아, 작은 모델로")에 대한 직접 응답이며, 본인 교감로봇 작품의 음성 입력 채널을 담당합니다.
+본 모듈은 요구사항("음성 모델 ASR 하나 올려봐, 음성으로 조정하거나 해야하잖아, 작은 모델로")에 대한 직접 응답이며, 본인 교감로봇 작품의 음성 입력 채널을 담당합니다.
 
 ## 1. UNO Q 디바이스 스펙
 
@@ -45,7 +45,7 @@ Arduino UNO Q (Qualcomm Dragonwing QRB2210, CPU only) 위에서 **Whisper Tiny.e
 
 1. **TFLite 즉시 사용** — vision YOLO와 같은 `ai-edge-litert` 런타임, 추가 변환 작업 0
 2. **3중 라이선스 클린** — 모델 Apache-2.0 / 데이터 CC BY 4.0 / 코드 Apache-2.0 → 상업 배포 안전
-3. **0.3 MB 모델** = YOLOv8n int8 (3.19 MB)의 1/10 → 멘토 "작은 모델로" 의도 정확히 일치
+3. **0.3 MB 모델** = YOLOv8n int8 (3.19 MB)의 1/10 → 요구사항 "작은 모델로" 의도 정확히 일치
 4. **본 작품 컨셉 정합** = 교감로봇 명령 트리거 ("이리와 / 정지 / 따라와") — 자유발화 불필요, KWS가 본질적으로 적합
 5. **YOLO 동시 실행 부담 없음** — < 30 ms KWS + ~100 ms YOLO를 별 스레드로 돌려도 thermal margin 영향 미미
 
@@ -108,9 +108,9 @@ Arduino UNO Q (Qualcomm Dragonwing QRB2210, CPU only) 위에서 **Whisper Tiny.e
 - `src/audio_io.py` — `sounddevice` 래퍼, 16 kHz PCM 캡처
 - `src/validate_kws.py` — 모델 검증 + latency 측정 (vision `validate_model.py` 패턴)
 - `src/infer_mic.py` — 실시간 마이크 → KWS → 라벨 루프
-- `src/benchmark_kws.py` — 100회 벤치마크 (멘토 06 JSON 포맷)
+- `src/benchmark_kws.py` — 100회 벤치마크 (벤치마크 표준 JSON 포맷)
 
-## 5. 합격선 — 4기준 + 참고 1 (멘토 06 형식 준수)
+## 5. 합격선 — 4기준 + 참고 1 (벤치마크 표준 형식 준수)
 
 vision 라인 합격 패턴 + ASR(Whisper) 특화 임계값. **2026-06-25 실측으로 latency 부분 통과 확정**.
 
@@ -138,7 +138,7 @@ Whisper Tiny.en은 vision (108 ms / 100 MB)보다 ~20배 무겁지만, **이벤�
 | 04 | `04_device_audio.md` | USB 마이크 인식 + `arecord -l` + `sounddevice` smoke test | 작성 예정 |
 | 05 | `05_validation.md` | 모델 검증 + 호스트/디바이스 latency 측정 | 작성 예정 |
 | 06 | `06_realtime_mic.md` | 실시간 마이크 → KWS → 라벨 출력 | 작성 예정 |
-| 07 | `07_official_benchmark.md` | 100회 벤치마크 + 멘토 06 JSON | 작성 예정 |
+| 07 | `07_official_benchmark.md` | 100회 벤치마크 + 벤치마크 표준 JSON | 작성 예정 |
 
 ## 7. 사전 조건 (외부 진입자용 체크리스트)
 
@@ -181,7 +181,7 @@ c:\Project\
 ```
 
 분리 사유:
-- 시간 압박 (멘토 보고 데드라인)
+- 시간 압박 (보고 데드라인)
 - 의존성 충돌 회피 (`librosa` · `scipy` ↔ `torch` · `numpy` ABI)
 - vision 자산 보존 (안정화 상태 흔들지 않게)
 
@@ -193,7 +193,7 @@ c:\Project\
 - fusion 코드 작성 (vision 검출 + audio 명령 결합)
 - Public 전환 / 시연 단일 진입점 필요
 - CI/CD 구축
-- 멘토 최종 인계
+- 최종 인계
 
 통합 시 본 폴더 → `vision/src/unoq/audio/` + `docs/audio/` + `docker/audio/` 등으로 흡수.
 
@@ -201,7 +201,7 @@ c:\Project\
 
 UNO Q `~/venv-unoq` 한 환경에 vision + audio 의존성 모두 설치. 호스트 측만 분리된 상태이며, 디바이스 측 작업은 vision 라인과 같은 venv / 경로 그대로 사용.
 
-## 9. 멘토 가이드 채택 원칙 (출처 비표기)
+## 9. 참고 가이드 채택 원칙 (출처 비표기)
 
 vision 라인에서 채택한 원칙들을 그대로 본 모듈에도 적용:
 
@@ -235,7 +235,7 @@ vision 라인에서 채택한 원칙들을 그대로 본 모듈에도 적용:
 
 ## 10. 본 모듈의 작품 / 보고 가치
 
-- 멘토 요청("음성으로 조정") 직접 응답
+- 요구사항("음성으로 조정") 직접 응답
 - Edge AI 멀티모달 (vision + audio) 단일 디바이스 구현 사례
 - 모든 모델·데이터·코드 라이선스 상업 호환 (Apache-2.0 / CC BY 4.0)
 - vision 라인 합격 측정 자산(9.23 FPS) 보존 + audio 라인 독립 검증

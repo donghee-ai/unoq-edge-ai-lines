@@ -70,7 +70,7 @@ invoke가 78% — vision YOLO와 동일하게 추론이 명확한 병목. 카메
 | **스쿼트 카운터** | 90° 통과 이벤트 카운팅 (사용처 즉시 활용) |
 | **vision + Pose 동시 운영 자원 청사진** | CPU 합산 286+316 = 602% (4코어 max 400) → 경합 발생, 측정 필요 |
 | **MCU 트리거** (STM32U585 LED/모터) | knee angle/depth state → 반응 시그널 |
-| **JSON benchmark 저장** (`--json` 옵션 미구현) | vision에 있는 멘토 06 형식 JSON 출력 추가 가능 |
+| **JSON benchmark 저장** (`--json` 옵션 미구현) | vision에 있는 벤치마크 표준 형식 JSON 출력 추가 가능 |
 
 ## 자산
 
@@ -78,7 +78,7 @@ invoke가 78% — vision YOLO와 동일하게 추론이 명확한 병목. 카메
 - `docs/01_model_candidates.md` (1/2/3순위 + 각도 분석)
 - 본 측정 raw — `(venv-unoq) ... SUMMARY` 콘솔 출력만 (JSON 저장 미수집)
 
-## 멘토 보고용 한 줄 갱신안
+## 보고용 한 줄 갱신안
 
 > Arduino UNO Q (QRB2210 Cortex-A53 ×4 CPU only) 위 — **vision YOLOv8n int8 (e2e 9.23 FPS / 70.8°C) + ASR Whisper Tiny.en (e2e 3.18 s, 6/7 정확) + Pose MoveNet Thunder int8 (e2e 9.69 FPS / 68.6°C, 좌/우 무릎 각도 실시간 측정) 3 라인 1차 PoC 합격**. 양 라인 issues/history 실시간 기록, ADB+SSH 이중 워크플로우, HTTP MJPEG 라이브 디버그 + JSON stats 구축.
 

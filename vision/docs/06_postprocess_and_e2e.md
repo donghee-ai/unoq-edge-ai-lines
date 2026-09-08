@@ -149,7 +149,7 @@ boxes_in, scores, class_ids = decode_yolov8(
 
 ### 3-5. 교훈
 
-모델 export 경로마다 출력 좌표 형식이 다를 수 있음. 멘토 docs `04_robust_tflite_inference_code.md` Section 5에서 권고한 "출력 shape 먼저 기록 후 디코더 선택"의 정신. PyTorch checkpoint 또는 ONNX 모델 사용 시 본 decode 함수의 정규화 변환 라인 제거 필요.
+모델 export 경로마다 출력 좌표 형식이 다를 수 있음. 참고자료 `04_robust_tflite_inference_code.md` Section 5에서 권고한 "출력 shape 먼저 기록 후 디코더 선택"의 정신. PyTorch checkpoint 또는 ONNX 모델 사용 시 본 decode 함수의 정규화 변환 라인 제거 필요.
 
 ## 4. 함정 2 — cv2 drawing cold start
 

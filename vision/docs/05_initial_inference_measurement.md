@@ -232,7 +232,7 @@ end-to-end (위 단계들 포함) 시 추가 비용 예상:
 - 측정 1회 (시간대 / 온도 / 시스템 부하 다른 조건 미검증).
 - 메모리 RSS, 온도 미측정.
 
-### 7-2. 추가 측정 권장 (멘토 docs 06번 기준)
+### 7-2. 추가 측정 권장 (벤치마크 표준번 기준)
 
 본 측정에 미수집된 항목:
 
@@ -295,5 +295,5 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_float16.tflite
 
 - 인터넷 미공개 데이터 포인트: "QRB2210 + YOLOv8n int8 320×320, CPU 4 thread XNNPACK = 9.88 FPS" 정확한 숫자가 공개 자료에 거의 없음.
 - 본인 작품의 unique contribution — 측정 자체가 가치.
-- 멘토 / Qualcomm 보고 시 "추정이 아니라 실측 데이터" 제시 가능.
+- Qualcomm 보고 시 "추정이 아니라 실측 데이터" 제시 가능.
 - 향후 다른 모델(MediaPipe 등) 시도 시 비교 baseline.

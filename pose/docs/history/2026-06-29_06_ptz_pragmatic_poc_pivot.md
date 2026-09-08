@@ -146,6 +146,6 @@ LED ring 생략 시 `sketch.ino`의 `set_led_visibility()` 호출만 주석 처�
 
 - 기반 코드 골격: [`2026-06-29_01_ptz_poc_code_skeleton_created.md`](2026-06-29_01_ptz_poc_code_skeleton_created.md)
 - 통합 진로 직전 분석: [`2026-06-29_03_ptz_pose_integration_path_documented.md`](2026-06-29_03_ptz_pose_integration_path_documented.md)
-- 멘토 미팅 PTZ 진행 결정: [`2026-06-27_11_mentor_meeting_outcomes.md`](2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 PTZ 진행 결정: [`2026-06-27_11_review_meeting_outcomes.md`](2026-06-27_11_review_meeting_outcomes.md)
 - PoC 정의 + 가설 H1~H4: [`../08_ptz_camera_angle_validation.md`](../08_ptz_camera_angle_validation.md)
 - 부품 + 실행 절차: [`../09_quickstart_ptz_poc.md`](../09_quickstart_ptz_poc.md)

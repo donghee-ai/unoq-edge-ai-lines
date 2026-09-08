@@ -1,10 +1,10 @@
-# 2026-06-27 — 멘토 미팅 결정 — 가벼운 ASR 모델 + 인터럽트 지원 (또는 버튼 fallback)
+# 2026-06-27 — 리뷰 미팅 결정 — 가벼운 ASR 모델 + 인터럽트 지원 (또는 버튼 fallback)
 
 ## 시점
-2026-06-27 (멘토 미팅 — 본 작품 마무리 방향)
+2026-06-27 (리뷰 미팅 — 본 작품 마무리 방향)
 
 ## 사건
-멘토와의 미팅에서 본 라인(ASR)에 대한 두 가지 결정:
+리뷰 미팅에서 본 라인(ASR)에 대한 두 가지 결정:
 1. 현재 Whisper Tiny.en TFLite (40 MB)보다 **가벼운 모델**로 교체
 2. **인터럽트 가능한 ASR** — 사용자가 발화 중간에 명령 끊을 수 있어야 함
 3. 인터럽트 기술적 어려우면 **물리 버튼**으로 fallback
@@ -21,7 +21,7 @@
 | 라이선스 | MIT |
 | 합격 평가 | 1차 PoC 합격 (4+1 기준) |
 
-## 2. 멘토 미팅 결정 사항
+## 2. 리뷰 미팅 결정 사항
 
 ### 2-1. 가벼운 모델 교체
 
@@ -90,9 +90,9 @@ KWS도 못 쓰면 fallback. KWS 잘 동작하면 버튼 불필요.
 
 ## 5. 자료
 
-본 history (멘토 미팅 결과 ASR 라인 관련).
+본 history (리뷰 미팅 결과 ASR 라인 관련).
 
-Pose 라인 동시 결정: [`../../pose/docs/history/2026-06-27_11_mentor_meeting_outcomes.md`](../../pose/docs/history/2026-06-27_11_mentor_meeting_outcomes.md)
+Pose 라인 동시 결정: [`../../pose/docs/history/2026-06-27_11_review_meeting_outcomes.md`](../../pose/docs/history/2026-06-27_11_review_meeting_outcomes.md)
 
 ## 6. 관련
 

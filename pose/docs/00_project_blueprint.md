@@ -12,7 +12,7 @@
   - 스쿼트 depth state (Standing/Quarter/Half/Parallel/ATG)
   - (선택) 스쿼트 rep counter (UP→DOWN→UP 사이클)
 - **사용처 (메인)**: **헬스케어 봇** — 스쿼트 자세 측정/카운팅 + 자세 코칭. 다른 운동(팔굽혀펴기 등) 동일 알고리즘으로 확장 가능
-- **사용처 (시연 보조)**: 감시 모드 — 같은 keypoint 신호의 다른 해석 (사람 검출 + 위치 추적 + 비정상 동작 알람) — 2026-06-27 멘토 미팅 결정
+- **사용처 (시연 보조)**: 감시 모드 — 같은 keypoint 신호의 다른 해석 (사람 검출 + 위치 추적 + 비정상 동작 알람) — 2026-06-27 리뷰 미팅 결정
 - **합격선** (vision/ASR 라인과 일치):
   - 디바이스 e2e FPS ≥ 8
   - 디바이스 RSS ≪ 2.4 GB (총 4 GB의 60% 이내)
@@ -152,9 +152,9 @@ vision/ASR 라인과 동일 패턴 — [unoq-companion-robot 결정](../../visio
 | 2 | **Soak test** ≥10 min — thermal plateau + 합격 마진 정량 확정 (현재 71°C로 1°C 초과) |
 | 3 | **--threads 3** 또는 환기 개선 — 합격 마진 -2~3°C 확보 |
 | 4 | Vision + Pose 동시 운영 자원 청사진 (CPU 합산 602% 경합) |
-| 5 | JSON benchmark 저장 (`--json` 옵션 — 멘토 06 형식) |
+| 5 | JSON benchmark 저장 (`--json` 옵션 — 벤치마크 표준 형식) |
 
-### 8-2. 하드웨어 통합 (STM32U585) — 2026-06-27 멘토 미팅 후 확정
+### 8-2. 하드웨어 통합 (STM32U585) — 2026-06-27 리뷰 미팅 후 확정
 
 본 작품 마무리 단계로 **카메라 PTZ 추적 → 사람 위치 자동 인식** 진행. 자율 추적(본체 이동)은 폐기.
 
@@ -163,13 +163,13 @@ vision/ASR 라인과 동일 패턴 — [unoq-companion-robot 결정](../../visio
 | **검증 PoC** | **PTZ 서보 + visibility 기반 추적** (Shawn Hymel 프로젝트 기반) | $15, 3~4일 | "Pose 추적용 카메라 각도 자동 탐색 가능?" 가설 검증. **본 작품 메인 외 임시 작업** |
 | (PoC 통과 시) 정식 통합 | PTZ를 본 작품 v1.2로 통합 | — | 본 작품 마무리 기능 |
 | MCU 트리거 추가 | rep 이벤트 → LED/효과음/모터 반응 | (펌웨어에 추가만) | 교감 인터랙션 |
-| (폐기) | ~본체 자율 추적~ | — | 멘토 미팅에서 본 작품 범위 외 결정 |
+| (폐기) | ~본체 자율 추적~ | — | 리뷰 미팅에서 본 작품 범위 외 결정 |
 
 PTZ 검증 작업은 **본 작품 핵심 기능 추가가 아니라 검증 단계**. 자세한 정의 + 가설 + 검증 기준: [`08_ptz_camera_angle_validation.md`](08_ptz_camera_angle_validation.md).
 
 검증 실패 시 본 작품(헬스케어 봇 + 스쿼트 카운팅 v1)은 PTZ 없이 그대로 시연 가능.
 
-자세한 결정 과정: [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md), [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md).
+자세한 결정 과정: [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md), [`history/2026-06-27_11_review_meeting_outcomes.md`](history/2026-06-27_11_review_meeting_outcomes.md).
 
 ## 9. 관련
 
@@ -177,5 +177,5 @@ PTZ 검증 작업은 **본 작품 핵심 기능 추가가 아니라 검증 단�
 - Quickstart: [`02_quickstart_pose.md`](02_quickstart_pose.md)
 - 운영 런북: [`03_runbook_camera_serve.md`](03_runbook_camera_serve.md)
 - 알고리즘 가이드: [`04_squat_algorithm.md`](04_squat_algorithm.md)
-- 멘토 보고서: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+- 보고서: [`05_pose_line_report.md`](05_pose_line_report.md)
 - 세션 컨텍스트: [`../SESSION_SUMMARY_2026-06-27.md`](../SESSION_SUMMARY_2026-06-27.md)

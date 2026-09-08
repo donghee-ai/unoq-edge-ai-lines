@@ -220,7 +220,7 @@ ssh ${UNO_Q_USER}@${UNO_Q_HOST} 'source ~/venv-unoq/bin/activate && python3 ~/tr
 - invoke ~2000~3500 ms (cold start 영향 있음, 2회째부터 ~2000 ms steady)
 - total ~3000~3800 ms
 
-→ **통과 시 호스트 ↔ 디바이스 feature 추출 알고리즘 bit-exact 일치 확정** (멘토 리뷰 단점 2 해결).
+→ **통과 시 호스트 ↔ 디바이스 feature 추출 알고리즘 bit-exact 일치 확정** (설계 리뷰 단점 2 해결).
 
 ## 7. 마이크 녹음 + 인식 (실시간 시연)
 
@@ -313,7 +313,7 @@ explorer.exe data/samples/recorded/
 
 | 단계 | 작업 |
 |---|---|
-| Phase 3-1 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp + 멘토 06 JSON |
+| Phase 3-1 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp + 벤치마크 표준 JSON |
 | Phase 3-2 | LibriSpeech / 본인 녹음 WER 측정 (정확도 정량) |
 | Phase 4 | Silero VAD 추가 + 이벤트 기반 운영 (vision 동시 운영 핵심) |
 | Phase 5 | Vision YOLO + ASR 동시 thermal soak test 8h+ |

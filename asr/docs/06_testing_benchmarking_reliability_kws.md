@@ -106,7 +106,7 @@ python3 src/benchmark_kws.py \
   --json-report ~/benchmarks/device_kws_$(date +%Y%m%d).json
 ```
 
-Benchmark report 예시 (멘토 06 권고 JSON 형식 그대로 + audio 확장):
+Benchmark report 예시 (벤치마크 표준 권고 JSON 형식 그대로 + audio 확장):
 
 ```json
 {
@@ -207,7 +207,7 @@ KWS는 vision보다 가벼우므로 1순위가 다름:
 | Latency p95 | ≤ ~165 ms (6 FPS 기준) | ≤ 80 ms |
 | Max RSS | ≪ 가용 2.4 GB | < 100 MB |
 | Max temp | ≤ 70°C | ≤ 70°C (vision과 공유) |
-| Accuracy 기준 (참고) | bbox IoU ≥ 0.40 (멘토 §2 권고) | top-1 ≥ 80% (golden wav) |
+| Accuracy 기준 (참고) | bbox IoU ≥ 0.40 (리뷰어 §2 권고) | top-1 ≥ 80% (golden wav) |
 | 합격선 | 4기준 (실측 9.23 FPS / 132 ms p95 / 100 MB / 60.5°C 통과) | 4기준 + 참고 accuracy |
 
 audio가 더 가볍지만 thermal은 vision과 공유 (한 SoC) — vision + audio 동시 실행 시 thermal 검증 필수 (vision 단독 285초에 70.8°C 도달했으므로).
@@ -246,7 +246,7 @@ python3 src/benchmark_kws.py ... --json benchmarks/audio/host_kws_<MODEL>_<YYYYM
 
 JSON 파일명 규칙: `<host|device>_kws_<model_short>_<YYYYMMDD>.json` (vision의 `host_e2e_*.json` / `device_e2e_*.json` 패턴 일관).
 
-## 10. 멘토 보고 시 1줄 핵심 (예시)
+## 10. 보고 시 1줄 핵심 (예시)
 
 > **Arduino UNO Q (QRB2210) 위에서 Speech Commands v2 KWS (raw_pcm 16 kHz, ai_edge_litert + XNNPACK 4 thread) end-to-end ~X ms, p95 latency ~Y ms, 최대 메모리 ~Z MB, 최대 온도 ~T°C, 골든 wav 정확도 ~A% 실측 — 본 작품 합격선(50 ms / 80 ms p95 / <100 MB / ≤70°C / ≥80% accuracy) 통과.**
 
@@ -267,4 +267,4 @@ vision 보고 한 줄("YOLOv8n int8 320×320 ... e2e 9.23 FPS, p95 latency 132 m
 
 ## 한 줄 요약
 
-> **테스트 피라미드 4층 + golden wav 셋 + 멘토 06 JSON 형식(audio 확장 5필드) + 8h soak + watchdog + 성능 최적화 10단계 + vision 동시 운영 검증 — vision 라인 testing 표준 그대로, audio 도메인 특화 항목(false trigger / mic reconnect / VAD) 보강.**
+> **테스트 피라미드 4층 + golden wav 셋 + 벤치마크 표준 JSON 형식(audio 확장 5필드) + 8h soak + watchdog + 성능 최적화 10단계 + vision 동시 운영 검증 — vision 라인 testing 표준 그대로, audio 도메인 특화 항목(false trigger / mic reconnect / VAD) 보강.**

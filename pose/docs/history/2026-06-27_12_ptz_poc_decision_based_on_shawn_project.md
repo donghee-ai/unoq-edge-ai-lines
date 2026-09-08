@@ -1,10 +1,10 @@
 # 2026-06-27 — PTZ 검증 PoC 결정 (Shawn Hymel 프로젝트 기반)
 
 ## 시점
-2026-06-27 (멘토 미팅 직후 PTZ 진로 구체화 사이클)
+2026-06-27 (리뷰 미팅 직후 PTZ 진로 구체화 사이클)
 
 ## 사건
-멘토 미팅에서 PTZ만 진행하기로 결정 후, 외부 자료 검증 — **ShawnHymel/face-expression-detection-robot** (MIT) 프로젝트가 본 작품 하드웨어 구조와 100% 일치 (Arduino UNO Q + 서보 pan/tilt + LED ring). 본 작품 PTZ 작업을 **검증 PoC**로 정의하고 Shawn 코드 기반으로 진행 결정.
+리뷰 미팅에서 PTZ만 진행하기로 결정 후, 외부 자료 검증 — **ShawnHymel/face-expression-detection-robot** (MIT) 프로젝트가 본 작품 하드웨어 구조와 100% 일치 (Arduino UNO Q + 서보 pan/tilt + LED ring). 본 작품 PTZ 작업을 **검증 PoC**로 정의하고 Shawn 코드 기반으로 진행 결정.
 
 ## 핵심 결정
 
@@ -77,7 +77,7 @@ docs/
 ├── 02_quickstart_pose.md
 ├── 03_runbook_camera_serve.md
 ├── 04_squat_algorithm.md
-├── 05_mentor_report_pose_line.md
+├── 05_pose_line_report.md
 ├── 06_hardware_housing_design.md   Shawn 출처 명시
 ├── 07_versioning.md
 ├── 08_ptz_camera_angle_validation.md  ★ 신규 — 본 PoC
@@ -102,7 +102,7 @@ PoC 성공 시 v1.2로 정식 통합. 실패 시 본 작품 v1 그대로 시연 
 
 - Shawn 원본 repo: <https://github.com/ShawnHymel/face-expression-detection-robot> (MIT, 2025 Shawn Hymel)
 - 본 작품 PTZ 결정 근거: [`../issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](../issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md)
-- 멘토 미팅 결과 (자율 추적 폐기, PTZ만): [`2026-06-27_11_mentor_meeting_outcomes.md`](2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결과 (자율 추적 폐기, PTZ만): [`2026-06-27_11_review_meeting_outcomes.md`](2026-06-27_11_review_meeting_outcomes.md)
 
 ## 본 사이클 의의
 

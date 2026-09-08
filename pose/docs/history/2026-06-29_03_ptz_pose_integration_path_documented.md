@@ -42,7 +42,7 @@ PTZ 코드는 `ptz/` 보관 (확장 토픽). 메인 v1 그대로 시연.
 | 파일 | 추가/변경 |
 |---|---|
 | `docs/08_ptz_camera_angle_validation.md` | **§6-A 신규** (현재 별개) / **§6-B 신규** (통합 진로) / **§6-C 신규** (PoC 실패 시 진로) |
-| `docs/05_mentor_report_pose_line.md` | §7-2 표에 PoC + v1.2 통합 단계 추가 / **§7-2-A 신규** 통합 진로 요약 |
+| `docs/05_pose_line_report.md` | §7-2 표에 PoC + v1.2 통합 단계 추가 / **§7-2-A 신규** 통합 진로 요약 |
 | `docs/04_squat_algorithm.md` | **§7-3-A 신규** 본 알고리즘과 PTZ 관계 명시 + 통합 시점 표 |
 
 ## 본 사이클 의의

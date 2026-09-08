@@ -1,10 +1,10 @@
-# 2026-06-27 — docs 일괄 갱신 + 멘토 보고서 작성
+# 2026-06-27 — docs 일괄 갱신 + 보고서 작성
 
 ## 시점
 2026-06-27 (3회 측정 + 알고리즘 설명 사이클 정리)
 
 ## 사건
-사용자 지침으로 본 사이클 누적 자료를 docs에 반영 + 멘토 보고용 단독 문서 작성. 본 라인 docs 구조 완성 (00~05 + history/issues).
+사용자 지침으로 본 사이클 누적 자료를 docs에 반영 + 보고용 단독 문서 작성. 본 라인 docs 구조 완성 (00~05 + history/issues).
 
 ## 진행
 
@@ -38,7 +38,7 @@
 - thermal 단기 vs sustained 차이 명시
 - §9 관련 링크 04, 05 추가
 
-### 4. docs/05_mentor_report_pose_line.md 신규 (멘토 보고용 단독)
+### 4. docs/05_pose_line_report.md 신규 (보고용 단독)
 구조:
 1. 모델 선정 — Thunder INT8 채택 4 근거 + AI Hub QNN ONNX 기각 사유
 2. 성능 측정 — 3회 디바이스 e2e + thermal plateau + 호스트 baseline + 3 라인 자원 합산
@@ -49,7 +49,7 @@
 7. 다음 단계 (우선순위)
 부록 — 자료 위치 + 코드 위치
 
-본 보고서는 멘토 자료 인용 없이 본인 측정/결정만 기반 (대외비 워크플로우 준수).
+본 보고서는 참고자료 인용 없이 본인 측정/결정만 기반 (대외비 워크플로우 준수).
 
 ### 5. docs 구조 최종
 
@@ -60,7 +60,7 @@ docs/
 ├── 02_quickstart_pose.md        0→30분 진입 절차
 ├── 03_runbook_camera_serve.md   시나리오별 운영 명령 + 실측 사례
 ├── 04_squat_algorithm.md        알고리즘 자세 (320줄) ★ 신규
-├── 05_mentor_report_pose_line.md 멘토 보고용 단독 문서 ★ 신규
+├── 05_pose_line_report.md 보고용 단독 문서 ★ 신규
 ├── history/  9 파일 (본 history 포함)
 └── issues/   5 파일
 ```
@@ -68,7 +68,7 @@ docs/
 ## 결과
 - 본 라인 docs 가이드 5개 + 보고서 1개 + 누적 14 파일(history+issues) 완성
 - 외부 진입자가 docs/만 보면 가이드 + 측정 + 트러블 + 보고서까지 전부 파악
-- 멘토 보고용 ZIP 패키지화: `git archive --format=zip HEAD docs/` 한 줄로 완료
+- 보고용 ZIP 패키지화: `git archive --format=zip HEAD docs/` 한 줄로 완료
 
 ## 다음 단계
 - A+B+C 다중 신호 카운터 통합 코드 작업 (다음 사이클)

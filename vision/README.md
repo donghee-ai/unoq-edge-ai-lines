@@ -93,7 +93,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 | 5 | UNO Q 추론 실행 + 실측 | 완료 (101 ms / 9.88 FPS) |
 | 6 | 후처리 모듈 (NMS, 박스 디코딩) | 완료 (`src/postprocess.py`) |
 | 7 | 실제 이미지 추론 + 시각화 + e2e | 완료 (`src/infer_image.py`, 9.3 FPS warm) |
-| 8 | 공식 100회 벤치마크 (멘토 06 형식) | 완료 (`src/benchmark_e2e.py`, 9.23 FPS / 60.5°C) |
+| 8 | 공식 100회 벤치마크 (벤치마크 표준 형식) | 완료 (`src/benchmark_e2e.py`, 9.23 FPS / 60.5°C) |
 | 9 | 카메라 입력 + 실시간 루프 + HTTP 디버그 | 완료 (`src/infer_camera.py --serve 8080`, 운영 8.29 FPS, **temp 70.8°C**) |
 | 10 | Soak test (8h+) — thermal plateau | 다음 최우선 |
 | 11 | `--serve` 부담 분리 측정 | 다음 (30분 작업) |
@@ -121,7 +121,7 @@ python src/validate_model.py models/yolov8n_saved_model/yolov8n_int8.tflite
 | UNO Q 카메라 100프레임 | 109 ms | 146 ms | 8.52 | 108 MB | 59.2°C |
 | **UNO Q 카메라 운영 2184f / 285s (`--serve 8080`)** | **116 ms** | **156 ms** | **8.29** | 117 MB | **70.8°C** |
 
-멘토 docs 06 형식 (4기준: FPS mean / p95 / RSS / temp).
+벤치마크 표준 형식 (4기준: FPS mean / p95 / RSS / temp).
 
 작품 합격선 — 모든 시나리오 통과:
 
@@ -152,7 +152,7 @@ vision/
 ├── .markdownlint.jsonc     markdown lint 설정 (한국어 + 표 환경 룰 조정)
 ├── run.sh                  원샷 빌드+실행 스크립트
 ├── docs/                   프로젝트 의사결정 로그 (한국어, 00~09, 10개)
-│   └── mentor/             외부 대외비 (gitignored)
+│   └── _private_refs/             외부 대외비 (gitignored)
 ├── scripts/
 │   ├── env.sh              UNO Q 접속 환경 변수
 │   └── setup_device.sh     UNO Q 디바이스 셋업 자동화 (idempotent)

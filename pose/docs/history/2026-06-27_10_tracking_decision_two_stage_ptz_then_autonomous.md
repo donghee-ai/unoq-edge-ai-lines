@@ -58,8 +58,8 @@ else:
 |---|---|
 | `docs/00_project_blueprint.md` §8 | §8-1 소프트웨어 + §8-2 하드웨어 통합으로 이중 분리 |
 | `docs/04_squat_algorithm.md` §7 | §7-4 신규 — "물리적으로 카메라 좋은 위치 두기" 별도 축 + A/B/C와 독립·보완 관계 명시 |
-| `docs/05_mentor_report_pose_line.md` §5-4 | 단기/중기/장기 표를 단계별 부담/효과 표로 갱신 + 1·2단계 인프라 공유 명시 |
-| `docs/05_mentor_report_pose_line.md` §7 | §7-1 소프트웨어 + §7-2 하드웨어 단계로 분리 + 5→6→7 단계적 진행 명시 |
+| `docs/05_pose_line_report.md` §5-4 | 단기/중기/장기 표를 단계별 부담/효과 표로 갱신 + 1·2단계 인프라 공유 명시 |
+| `docs/05_pose_line_report.md` §7 | §7-1 소프트웨어 + §7-2 하드웨어 단계로 분리 + 5→6→7 단계적 진행 명시 |
 | `docs/issues/2026-06-27_05_*.md` | 1안 내용을 stop condition 자율 추적으로 교체 + 2안 ★ 선행 / 1안 ★ 확장 표기 + 권장 진로 표 재정렬 (이전 사이클에 진행) |
 
 ## 결정 도움 필요 항목 (사용자에게 확인 대기)
@@ -86,6 +86,6 @@ else:
 
 ## 관련
 
-- 직전 docs 갱신 사이클: [`2026-06-27_09_docs_update_and_mentor_report.md`](2026-06-27_09_docs_update_and_mentor_report.md)
+- 직전 docs 갱신 사이클: [`2026-06-27_09_docs_update_and_line_report.md`](2026-06-27_09_docs_update_and_line_report.md)
 - 본 결정 근거: [`../issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](../issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md)
 - 알고리즘 신호 보완: [`../04_squat_algorithm.md`](../04_squat_algorithm.md) §7~8

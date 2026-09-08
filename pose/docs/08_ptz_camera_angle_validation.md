@@ -224,7 +224,7 @@ v1.2 통합본 (예상):
 PoC 검증 실패 (H1~H4 미충족) 시:
 - 본 PoC 코드는 `pose/ptz/` 안 보관 — 향후 확장 토픽
 - 메인 라인 v1 그대로 시연 (카메라 고정, 사용자가 정면 위치)
-- 멘토 보고: "추적 검증 시도 + 결과 정량 + 미통합 사유" 명시
+- 보고: "추적 검증 시도 + 결과 정량 + 미통합 사유" 명시
 
 본 작품 핵심 기능(스쿼트 카운팅 + 자세 측정)은 어느 경우든 v1으로 시연 가능.
 
@@ -259,9 +259,9 @@ PoC 검증 실패 (H1~H4 미충족) 시:
 
 ## 9. 관련
 
-- 추적 진로 결정 (1안 폐기, PTZ만 유지): [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
+- 추적 진로 결정 (1안 폐기, PTZ만 유지): [`history/2026-06-27_11_review_meeting_outcomes.md`](history/2026-06-27_11_review_meeting_outcomes.md)
 - 카메라 한계 분석 (출발점): [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md)
 - 하우징 디자인: [`06_hardware_housing_design.md`](06_hardware_housing_design.md)
 - 버전관리 (v1 베이스라인): [`07_versioning.md`](07_versioning.md)
 - 본 작품 메인 알고리즘 (PTZ와 독립): [`04_squat_algorithm.md`](04_squat_algorithm.md)
-- 멘토 보고: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+- 보고: [`05_pose_line_report.md`](05_pose_line_report.md)

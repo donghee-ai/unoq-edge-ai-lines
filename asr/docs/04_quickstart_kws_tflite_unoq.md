@@ -182,7 +182,7 @@ PY
 - output shape이 기록된다.
 - 마이크 캡처 1초 16 kHz mono PCM이 성공한다.
 - 캡처 → feature 추출(또는 raw) → invoke → top-1 라벨 출력의 한 사이클이 동작한다.
-- 호스트와 디바이스의 같은 golden wav 1개에 대해 top-1 라벨 일치를 확인한다 (feature 일치 검증, 멘토 리뷰 단점 2).
+- 호스트와 디바이스의 같은 golden wav 1개에 대해 top-1 라벨 일치를 확인한다 (feature 일치 검증, 설계 리뷰 단점 2).
 - 평균 latency와 p95 latency를 기록한다 (target: mean ≤ 50 ms / p95 ≤ 80 ms).
 
 ## 7. 실패 시 우선순위
@@ -205,7 +205,7 @@ PY
 | `02_model_selection_log.md` | 후보 비교 / 라이선스는 본 문서 §2에서 표면만 — 상세는 본문 |
 | `03_host_env_setup.md` | Dockerfile / requirements.lock 상세는 본문 |
 | `04_device_audio.md` | 마이크 진단 / `arecord -l` 결과 / `lsusb` 함정은 본문 |
-| `05_validation.md` | latency 50회 측정 / 멘토 06 JSON / golden wav 검증은 본문 |
+| `05_validation.md` | latency 50회 측정 / 벤치마크 표준 JSON / golden wav 검증은 본문 |
 | `06_realtime_mic.md` | ring buffer / sliding window / VAD / N-frame confirm은 본문 |
 | `07_official_benchmark.md` | 100회 벤치 / max RSS / max temp는 본문 |
 
@@ -231,4 +231,4 @@ PY
 3. `04_device_audio.md` — 마이크 진단 + 함정 기록
 4. `05_validation.md` — 호스트/디바이스 50회 latency + golden wav 검증
 5. `06_realtime_mic.md` — 실시간 스트리밍 설계
-6. `07_official_benchmark.md` — 100회 벤치 + 멘토 06 JSON
+6. `07_official_benchmark.md` — 100회 벤치 + 벤치마크 표준 JSON

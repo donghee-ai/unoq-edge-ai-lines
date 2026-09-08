@@ -15,10 +15,10 @@
 | 3 라인 1차 PoC 합격 | ✓ (vision 9.23 FPS, ASR 3.18 s, Pose 9.69 FPS + 13 rep) |
 | Monorepo 통합 | ✓ |
 | docs 정비 | ✓ |
-| 멘토 미팅 결정 반영 | ✓ |
+| 리뷰 미팅 결정 반영 | ✓ |
 | **PTZ 하드웨어 측정** | **✗** (코드만, 검증 미실시) |
 | **하우징 시제품** | **✗** |
-| **ASR KWS 교체** | **✗** (멘토 결정만, 미실시) |
+| **ASR KWS 교체** | **✗** (리뷰 결정만, 미실시) |
 | **시연 영상 / 포트폴리오 README** | **✗** |
 
 → 약 7/11 완료. semver `1.0.0`은 "stable, 시연 가능"이라는 의미라 본 작품 마감 시점이 정통. 현재는 "활발한 개발 중, breaking 가능"의 `0.x.y` 영역.
@@ -83,7 +83,7 @@ git tag -a v0.1.0 -m "v0.1.0: 첫 GitHub release — 3 라인 PoC + monorepo (20
 - 단지 tag 이름 변경 (`v1` → `v0.1.0`)
 - 향후 release 시 semver 따름
 
-### 멘토/포트폴리오 보고
+### 포트폴리오 보고
 - "v0.1.0 첫 GitHub release" — 학생 작품 정직 표기
 - 본 작품 마감 시 "v1.0.0 stable release"로 자연스럽게 승격
 - 채용 담당자 / 다른 학생에게 익숙한 표준 형식
@@ -107,5 +107,5 @@ git push origin --tags
 
 - 직전 docker 일관: [`2026-06-29_04_vision_docker_folder_restructure_and_3_lines_check.md`](2026-06-29_04_vision_docker_folder_restructure_and_3_lines_check.md)
 - monorepo 통합: [`2026-06-29_02_monorepo_restructure.md`](2026-06-29_02_monorepo_restructure.md)
-- 멘토 미팅 결정: [`2026-06-27_11_mentor_meeting_outcomes.md`](2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결정: [`2026-06-27_11_review_meeting_outcomes.md`](2026-06-27_11_review_meeting_outcomes.md)
 - 갱신된 가이드: [`../07_versioning.md`](../07_versioning.md)

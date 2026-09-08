@@ -185,7 +185,7 @@ asr/
 | 우선순위 | 작업 | 상태 |
 |---|---|---|
 | 1 | Silero VAD 추가 → 이벤트 기반 운영 (vision 동시 운영 핵심) | 미실시 |
-| 2 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp + JSON (멘토 06 형식) | 미실시 |
+| 2 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp + JSON (벤치마크 표준 형식) | 미실시 |
 | 3 | LibriSpeech / 본인 녹음으로 WER 측정 (정량 정확도) | 미실시 |
 | 4 | Vision + ASR 동시 운영 thermal soak test 8h+ | 미실시 |
 | 5 | MCU(STM32U585) 통신 + fusion (음성 의도 → 동작 트리거) | 미실시 |
@@ -194,4 +194,4 @@ asr/
 ## 문의 / 기여
 
 - 작성자: DongHee Kim (donghee-ai), 한성대
-- 멘토 가이드 기반 원칙 적용 (출처는 본인 docs에 일반 원칙으로만 인용, 멘토 docs 자체는 별도 폴더 대외비 처리)
+- 참고 가이드 기반 원칙 적용 (출처는 본인 docs에 일반 원칙으로만 인용, 참고자료 자체는 별도 폴더 대외비 처리)

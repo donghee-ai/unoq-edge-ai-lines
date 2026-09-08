@@ -65,11 +65,11 @@
 
 GPU delegate 시도는 후순위. CPU 단독 경로가 안정적이며 본인 기대치(8~15 FPS)에 충분할 가능성.
 
-## 3. 멘토 docs 검토 결과 (pip 접근 정당성)
+## 3. 참고자료 검토 결과 (pip 접근 정당성)
 
-본 단계 진입 전, 멘토 패키지 docs 중 디바이스 측 런타임 관련 부분 정독.
+본 단계 진입 전, 외부 참고자료 중 디바이스 측 런타임 관련 부분 정독.
 
-### 3-1. 멘토 docs의 가정
+### 3-1. 참고자료의 가정
 
 - 디바이스에 `tflite_runtime` (또는 `tensorflow`) 사전 설치되어 있음을 전제.
 - 설치 방법은 명시되지 않음.
@@ -78,20 +78,20 @@ GPU delegate 시도는 후순위. CPU 단독 경로가 안정적이며 본인 �
 ### 3-2. 본인 디바이스 현실과의 차이
 
 - 사전 설치된 런타임 없음 → 본인이 설치해야 함.
-- 멘토가 가정한 사전 설치 도구들 (`gst-ai-object-detection`, `benchmark_model`) 모두 없음.
+- 참고자료가 가정한 사전 설치 도구들 (`gst-ai-object-detection`, `benchmark_model`) 모두 없음.
 
 ### 3-3. pip 접근 적합성 평가
 
 | 항목 | 적합성 |
 |---|---|
-| pip 사용 | OK — 멘토 docs가 설치 방법을 명시하지 않으므로 충돌 없음 |
+| pip 사용 | OK — 참고자료가 설치 방법을 명시하지 않으므로 충돌 없음 |
 | venv 사용 | 권장 — Debian 12+ PEP 668 정책상 시스템 Python 직접 수정 차단 |
 | 런타임 패키지 선택 | `ai-edge-litert` 권장 — Python 3.13 / aarch64 환경에서 `tflite-runtime` 대비 호환성 우수 |
-| 멘토 코드 패턴 적용 | 가능 (import 폴백 패턴에 `ai_edge_litert.interpreter` 추가하여 3단 폴백) |
+| 참고 코드 패턴 적용 | 가능 (import 폴백 패턴에 `ai_edge_litert.interpreter` 추가하여 3단 폴백) |
 
 ### 3-4. 결론
 
-pip + venv + ai-edge-litert 채택. 멘토 docs의 정신(TFLite 사용)에 충실하며, Python 3.13 + aarch64 + Debian 12+ 환경 제약에 부합.
+pip + venv + ai-edge-litert 채택. 참고자료의 정신(TFLite 사용)에 충실하며, Python 3.13 + aarch64 + Debian 12+ 환경 제약에 부합.
 
 ## 4. 런타임 선택 — `ai-edge-litert` vs `tflite-runtime`
 

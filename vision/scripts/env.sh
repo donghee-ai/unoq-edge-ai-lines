@@ -18,7 +18,7 @@
 export UNO_Q_USER="${UNO_Q_USER:-arduino}"
 export UNO_Q_HOST="${UNO_Q_HOST:-arduino.local}"
 
-# UNO Q 디바이스 측 앱 루트 (멘토 docs 권고 디렉토리 구조)
+# UNO Q 디바이스 측 앱 루트 (참고자료 권고 디렉토리 구조)
 #   하위: models/, labels/, media/, configs/, logs/
 export APP_ROOT="${APP_ROOT:-/opt/unoq-yolo}"
 

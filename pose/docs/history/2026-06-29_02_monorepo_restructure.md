@@ -11,7 +11,7 @@
 | 가치 | 효과 |
 |---|---|
 | 본 작품 = 'UNO Q 교감로봇' 단일 작품 정체성 | 라인은 sub-system, 작품은 하나 |
-| 단일 URL (포트폴리오/멘토 보고) | `donghee-ai/unoq-companion-robot` 하나로 모든 라인 접근 |
+| 단일 URL (포트폴리오/보고) | `donghee-ai/unoq-companion-robot` 하나로 모든 라인 접근 |
 | cross-line 참조 깔끔 | `pose/docs/.../...` → `../../vision/docs/...` 자연스러움 |
 | 통합 versioning | 작품 전체 v1 / v1-monorepo / 향후 v1.x |
 | git history 보존 | vision은 git mv로 옛 commit 유지 |
@@ -91,6 +91,6 @@ git push origin main --tags
 ## 관련
 
 - PTZ PoC 코드 골격 (직전): [`2026-06-29_01_ptz_poc_code_skeleton_created.md`](2026-06-29_01_ptz_poc_code_skeleton_created.md)
-- 멘토 미팅 결과 (monorepo 결정 영향): [`2026-06-27_11_mentor_meeting_outcomes.md`](2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결과 (monorepo 결정 영향): [`2026-06-27_11_review_meeting_outcomes.md`](2026-06-27_11_review_meeting_outcomes.md)
 - 버전관리 가이드: [`../07_versioning.md`](../07_versioning.md)
 - 사전 검토 (vision 라인에 있었던): `../../vision/docs/improvement_monorepo_restructure.md` (참고)

@@ -103,7 +103,7 @@ USB-C 1포트 + 허브 토폴로지 제약으로 2 모드 분리:
 
 자세한 버전 규칙: [`pose/docs/07_versioning.md`](pose/docs/07_versioning.md)
 
-## 본 작품 특징 (멘토 미팅 결정, 2026-06-27)
+## 본 작품 특징 (리뷰 미팅 결정, 2026-06-27)
 
 - **NPU 없는 CPU 환경**에서 3 라인 동시 운영 가능성 입증 (Qualcomm 보고용)
 - **AI Hub precompiled QNN ONNX 비호환** 정량 진단 + TFLite 우회 진로
@@ -117,7 +117,7 @@ USB-C 1포트 + 허브 토폴로지 제약으로 2 모드 분리:
 |---|---|
 | 라인별 청사진 | `vision/docs/00_project_blueprint.md`, `asr/docs/00_*`, `pose/docs/00_*` |
 | 알고리즘 가이드 | [`pose/docs/04_squat_algorithm.md`](pose/docs/04_squat_algorithm.md) (스쿼트 카운터 자세) |
-| 멘토 보고서 | [`pose/docs/05_mentor_report_pose_line.md`](pose/docs/05_mentor_report_pose_line.md) |
+| 보고서 | [`pose/docs/05_pose_line_report.md`](pose/docs/05_pose_line_report.md) |
 | PTZ PoC 정의 | [`pose/docs/08_ptz_camera_angle_validation.md`](pose/docs/08_ptz_camera_angle_validation.md) |
 | 작업 기록 | 각 라인 `docs/history/` (총 19+) |
 | 함정 모음 | 각 라인 `docs/issues/` (총 5) |

@@ -78,7 +78,7 @@ audio 모듈 예정:
 
 ## 4. 측정 / 벤치마크 표준
 
-### 4-1. JSON 형식 (멘토 06 권고 그대로)
+### 4-1. JSON 형식 (벤치마크 표준 권고 그대로)
 
 ```json
 {
@@ -106,7 +106,7 @@ audio 확장 필드: `capture_ms_mean`, `accuracy_top1`, `accuracy_top5`, `false
 | 1. 모델 검증 (단발) | `validate_kws.py` | input/output shape, dtype, quantization 자동 출력 |
 | 2. Latency 측정 (50회) | `validate_kws.py --runs 50 --warmup 5` | mean / p50 / p95 / FPS |
 | 3. 실시간 마이크 (무한 루프) | `infer_mic.py` | 라벨 + confidence 콘솔 출력 |
-| 4. 공식 벤치 (100회) | `benchmark_kws.py --runs 100 --warmup 10 --json ...` | 멘토 06 JSON |
+| 4. 공식 벤치 (100회) | `benchmark_kws.py --runs 100 --warmup 10 --json ...` | 벤치마크 표준 JSON |
 
 ### 4-3. 합격선 4 + 1 기준
 
@@ -150,15 +150,15 @@ audio 확장 필드: `capture_ms_mean`, `accuracy_top1`, `accuracy_top5`, `false
 | `MPL-2.0` (Coqui STT) | 수정한 파일만 공개 (전체 프로젝트는 X) — 분리 관리 시 OK |
 | `LGPL` | 동적 링크 OK, 정적 결합은 GPL 전염 위험 |
 
-## 6. 멘토 docs 대외비 원칙
+## 6. 참고자료 대외비 원칙
 
 | 규칙 | 내용 |
 |---|---|
-| 인용 금지 | 멘토 패키지(`unoq_yolo_markdown_package/` 원본)의 파일명 · 섹션번호 · JIRA · CR 번호 절대 표기 X |
-| 한국어 번역본 위치 | `vision/docs/mentor/` (vision 라인에만 보관, `.gitignore` 처리) |
-| 본 `unoq-asr` 폴더 | **mentor 폴더 없음** — 멘토 가이드는 vision 라인에서 인용 |
+| 인용 금지 | 외부 참고자료 원본의 파일명 · 섹션번호 · JIRA · CR 번호 절대 표기 X |
+| 한국어 번역본 위치 | `vision/docs/_private_refs/` (vision 라인에만 보관, `.gitignore` 처리) |
+| 본 `unoq-asr` 폴더 | **참고자료 폴더 없음** — 참고 가이드는 vision 라인에서 인용 |
 | 본인 docs 인용 시 | "환경 변수 표준화", "벤치마크 JSON 형식" 같은 일반 원칙으로만 |
-| Public 전환 시 | 멘토 흔적(`setenforce 0` 같은) 재점검 + redact |
+| Public 전환 시 | 참고자료 흔적(`setenforce 0` 같은) 재점검 + redact |
 
 ## 7. vision 라인 함정의 ASR 적용
 
@@ -216,7 +216,7 @@ df -h /
 | secrets | `${APP_ROOT}/configs/secrets.env` 권한 600 |
 | 영상 + 음성 동시 운영 시 | Privacy 정책 결합 — debug frame + debug wav 모두 opt-in |
 
-## 10. 멘토 보고 시 표현 규약
+## 10. 보고 시 표현 규약
 
 ### 10-1. 단정적 표현 지양
 
@@ -229,7 +229,7 @@ df -h /
 
 ### 10-2. 의사결정 흐름 명시
 
-- 왜 KWS? — 멘토 "음성으로 조정" 의도 + 작은 모델 + 자유발화 불필요
+- 왜 KWS? — 요구사항 "음성으로 조정" 의도 + 작은 모델 + 자유발화 불필요
 - 왜 Speech Commands v2? — 3중 라이선스 클린 + TFLite 즉시 사용 + 0.3 MB
 - 왜 영어 1차? — 사전학습 즉시 사용, 한국어는 fine-tune 작업 분리
 - 왜 ai-edge-litert? — vision과 같은 런타임 일관성
@@ -267,7 +267,7 @@ df -h /
 - [ ] 본 청사진(`00`) + preflight(`01`) 1회 정독
 - [ ] vision 합격 측정 자산(9.23 FPS) 보존 확인 (`vision/benchmarks/` 그대로)
 - [ ] 라이선스 원칙 5절 숙지
-- [ ] 멘토 docs 대외비 원칙 6절 숙지
+- [ ] 참고자료 대외비 원칙 6절 숙지
 
 ## 12. 작업 시작 후 첫 게이트 (호스트 단계)
 
@@ -298,7 +298,7 @@ df -h /
 | numpy 메이저 호환성 (vision 2.5.0 + librosa 호환 여부) | `03_host_env_setup.md` 빌드 단계 실측 |
 | 디바이스 측 audio 모델 경로 (`/opt/unoq-yolo/models/audio/` 신설 vs 평탄) | 첫 전송 직전 |
 | git 관리 (별도 repo / unoq-companion-robot fork / unmanaged) | preflight 정독 후 즉시 |
-| 한국어 명령 fine-tune 시점 | 영어 1차 합격 + 멘토 피드백 후 |
+| 한국어 명령 fine-tune 시점 | 영어 1차 합격 + 리뷰 피드백 후 |
 | MCU(STM32U585) 통신 프로토콜 | fusion 단계 |
 | `docs/00 §6 후속 문서 번호 재배치` (본 파일 끼어들어 1씩 밀림) | 청사진 §6 갱신 시 같이 처리 |
 
@@ -312,4 +312,4 @@ df -h /
 
 ## 한 줄 요약
 
-> **CPU 단독 + ai-edge-litert + Speech Commands v2 (Apache-2.0) + 영어 1차 + 디바이스 venv 통합 + 멘토 06 JSON 합격선 4기준 + vision 함정 8개 중 audio 재발 패턴 2개(라이브러리 cold start / 입력 정규화 범위) + 라이선스 3중 점검 — 13개 사전 게이트 통과 후 본문 작업 진입.**
+> **CPU 단독 + ai-edge-litert + Speech Commands v2 (Apache-2.0) + 영어 1차 + 디바이스 venv 통합 + 벤치마크 표준 JSON 합격선 4기준 + vision 함정 8개 중 audio 재발 패턴 2개(라이브러리 cold start / 입력 정규화 범위) + 라이선스 3중 점검 — 13개 사전 게이트 통과 후 본문 작업 진입.**

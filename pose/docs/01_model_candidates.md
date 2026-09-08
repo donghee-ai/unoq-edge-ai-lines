@@ -122,7 +122,7 @@ right_hip_angle = angle_at(kp[6], kp[12], kp[14])    # shoulder-hip-knee
 | 5 | 합격 평가 (e2e ≥ 8 FPS, RSS, CPU%) | Claude |
 | 6 | 미달 시 Lightning으로 폴백 + 동일 사이클 재실행 | Claude |
 | 7 | 합격 시 각도 계산 데모 + 시각화 (옵션) | Claude / 사용자 결정 |
-| 8 | history 기록 + 멘토 보고용 한 줄 갱신 | Claude |
+| 8 | history 기록 + 보고용 한 줄 갱신 | Claude |
 
 ## 5. 관련
 

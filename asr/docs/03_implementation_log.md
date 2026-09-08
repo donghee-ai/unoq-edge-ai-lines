@@ -17,7 +17,7 @@
 
 세션 초기 → 중기 → 후기:
 
-### Phase 1 — KWS 검토 (멘토 "작은 모델" 의도 반영)
+### Phase 1 — KWS 검토 (요구사항 "작은 모델" 의도 반영)
 
 | 후보 | 결정 |
 |---|---|
@@ -38,7 +38,7 @@
 |---|---|
 | TFLite 호환 | YES (nyadla-sys 또는 DocWolle HF 변환된 .tflite 존재) |
 | 라이선스 | MIT (모델) + Apache-2.0 (tokenizer) + CC BY 4.0 (Whisper 학습 데이터) — 3중 클린 |
-| A53 latency | 2초/invoke (실측 후 확정) — 멘토 "작은 모델" 의도와 모순되는 무게이지만 CPU 감당 가능 |
+| A53 latency | 2초/invoke (실측 후 확정) — 요구사항 "작은 모델" 의도와 모순되는 무게이지만 CPU 감당 가능 |
 | 한국어 | English-only로 시작 (한국어는 multilingual 2차 보강) |
 | 운영 모드 | 이벤트 기반 (VAD trigger) — Vision YOLO 동시 운영 가능 |
 
@@ -94,7 +94,7 @@ Requirement already satisfied: numpy<2.8,>=2.0.0 in venv-unoq (2.5.0)
 Would install cffi-2.0.0 pycparser-3.0 python_speech_features-0.6 scipy-1.18.0 sounddevice-0.5.5
 ```
 
-→ **numpy 충돌 0, scipy 1.18 / sounddevice 모두 numpy 2.5.0 호환** (멘토 리뷰 단점 3 해소).
+→ **numpy 충돌 0, scipy 1.18 / sounddevice 모두 numpy 2.5.0 호환** (설계 리뷰 단점 3 해소).
 
 ### 3-3. 마이크 인식
 
@@ -114,9 +114,9 @@ snd_usb_audio 적재됨
 ~/venv-unoq            206 MB
 ```
 
-→ 2.6 GB 가용. Whisper 40 MB + audio deps ~100 MB 설치 충분. **vision 잔여물 우려는 실측으로 해소 — vision 모듈은 3.2 MB만 차지** (멘토 리뷰 단점 5 정정).
+→ 2.6 GB 가용. Whisper 40 MB + audio deps ~100 MB 설치 충분. **vision 잔여물 우려는 실측으로 해소 — vision 모듈은 3.2 MB만 차지** (설계 리뷰 단점 5 정정).
 
-### 3-5. 커널 (멘토 리뷰 단점 정정)
+### 3-5. 커널 (설계 리뷰 단점 정정)
 
 ```
 Linux unoq-korea01 7.0.0-g122c2c22d838 #1 SMP PREEMPT Fri May  8 12:10:20 UTC 2026 aarch64
@@ -230,7 +230,7 @@ total:     3555 ms
     ask what you can do for your country.
 ```
 
-→ **호스트와 100% 동일 텍스트**. mel 알고리즘 호스트 ↔ 디바이스 bit-exact 일치 확정. **멘토 리뷰 단점 2 (feature 일치) 통과**.
+→ **호스트와 100% 동일 텍스트**. mel 알고리즘 호스트 ↔ 디바이스 bit-exact 일치 확정. **설계 리뷰 단점 2 (feature 일치) 통과**.
 
 cold start 발견: 첫 invoke 3228 ms (warmup 후 벤치 2015 ms 대비 +1213 ms). 운영 시 부팅 직후 warmup 1~2회 필요.
 
@@ -336,18 +336,18 @@ vision 라인의 `docs/06 §3~§4` 패턴 적용.
 | 해결 | (1) `transcribe.py`의 print에 `flush=True` 추가, (2) 3-2-1 카운트다운 + 명시적 `sys.stdout.flush()`, (3) 실행 시 `python3 -u` (unbuffered) 옵션 |
 | 코드 | `src/transcribe.py` `record_audio()` 함수 카운트다운 추가 |
 
-## 7. 멘토 리뷰 정정 사항 (실측 기반)
+## 7. 설계 리뷰 정정 사항 (실측 기반)
 
-| 멘토 리뷰 지적 | 실측 결과 | 결론 |
+| 설계 리뷰 지적 | 실측 결과 | 결론 |
 |---|---|---|
-| "커널 6.16으로 수정" | `Linux 7.0.0-g122c2c22d838 ...` | **vision docs의 7.0 표기 정확** (Qualcomm vendor kernel) — 멘토 리뷰 잘못 |
+| "커널 6.16으로 수정" | `Linux 7.0.0-g122c2c22d838 ...` | **vision docs의 7.0 표기 정확** (Qualcomm vendor kernel) — 설계 리뷰 잘못 |
 | "eMMC 좁음 = vision 잔여물 자초" | `/opt/unoq-yolo/models` 3.2 MB만 차지 | **vision 잔여물 우려 부정확**. 70% 사용은 시스템 OS 자체 |
 | "librosa 디바이스 폭탄" | librosa 대신 numpy 자작 mel 채택 | **여전히 정당** (librosa 의존 회피로 디스크/CPU 절감) |
 | "numpy 호환 dry-run" | scipy 1.18 / sounddevice numpy 2.5.0 호환 확인 | **여전히 정당한 점검** — 실측으로 해소됨 |
 | "feature 추출 학습 일치 게이트" | 호스트 numpy mel ↔ 디바이스 numpy mel = JFK wav 텍스트 100% 동일 | **게이트 통과** (동일 알고리즘 사용) |
 | "실시간 스트리밍 설계 빈약" | 청사진에 이벤트 기반 운영 명시 + VAD trigger 설계 추가 | **반영 진행 중** (Phase 4 작업) |
 
-→ 멘토 리뷰 6개 중 5개 정당, 1개 (커널) 실측과 불일치.
+→ 설계 리뷰 6개 중 5개 정당, 1개 (커널) 실측과 불일치.
 
 ## 8. 측정 자산
 
@@ -364,7 +364,7 @@ vision 라인의 `docs/06 §3~§4` 패턴 적용.
 
 | 단계 | 시간 |
 |---|---|
-| KWS 검토 + docs 작성 (00, 01, mentor_style 3개) | ~2시간 |
+| KWS 검토 + docs 작성 (00, 01, standard_style 3개) | ~2시간 |
 | ASR 전환 결정 + 후보 재조사 | ~30분 |
 | Whisper TFLite 모델 URL 조사 + 다운로드 | ~10분 |
 | 호스트 asr-dev Docker 빌드 + smoke test | ~15분 |
@@ -381,7 +381,7 @@ vision 라인의 `docs/06 §3~§4` 패턴 적용.
 
 | Phase | 작업 | 산출물 |
 |---|---|---|
-| 3-1 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp | `benchmarks/audio/device_asr_<DATE>.json` (멘토 06 형식) |
+| 3-1 | `src/benchmark_asr.py` 100회 벤치 + RSS + temp | `benchmarks/audio/device_asr_<DATE>.json` (벤치마크 표준 형식) |
 | 3-2 | LibriSpeech / 본인 녹음 WER 측정 | `benchmarks/audio/wer_<DATE>.json` + jiwer 도구 |
 | 4 | Silero VAD + 이벤트 기반 운영 | `src/vad.py`, `src/audio_io.py`, `src/infer_mic.py` |
 | 5 | Vision + ASR 동시 thermal soak test 8h+ | soak 로그 + JSON |

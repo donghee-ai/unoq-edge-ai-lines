@@ -174,7 +174,7 @@ def prepare_input_for_model(pcm_1s, input_detail):
     raise ValueError(f'unsupported input shape: {shape}')
 ```
 
-핵심: **모델 input shape에 따라 raw PCM 경로 / MFCC 경로 분기**. MFCC 파라미터(winlen, winstep, nfilt, nfft)는 모델 카드에서 학습 시 사용한 값 정확히 복제 — 멘토 리뷰 단점 2 직접 대응.
+핵심: **모델 input shape에 따라 raw PCM 경로 / MFCC 경로 분기**. MFCC 파라미터(winlen, winstep, nfilt, nfft)는 모델 카드에서 학습 시 사용한 값 정확히 복제 — 설계 리뷰 단점 2 직접 대응.
 
 ## 3. Safe interpreter loader
 
@@ -382,7 +382,7 @@ def verify_feature_consistency(host_feature, device_feature, atol=1e-3):
     return True, f'OK (max diff {diff:.6f})'
 ```
 
-Golden wav 1개로 호스트(librosa 또는 본인 자작) ↔ 디바이스(python_speech_features 또는 자작) feature를 비교 — 멘토 리뷰 단점 2 게이트화.
+Golden wav 1개로 호스트(librosa 또는 본인 자작) ↔ 디바이스(python_speech_features 또는 자작) feature를 비교 — 설계 리뷰 단점 2 게이트화.
 
 ## 6. Production logging fields
 
@@ -417,7 +417,7 @@ vision 라인 logging fields에 audio 특화 추가: `capture_ms`, `input_kind`,
 
 본 패턴을 본 작품 `src/` 구조에 적용:
 
-| 파일 | 역할 | 멘토 04 매핑 |
+| 파일 | 역할 | 리뷰어 04 매핑 |
 |---|---|---|
 | `src/audio_io.py` | sounddevice 캡처 + ring buffer | §2 capture |
 | `src/preprocess.py` | PCM 정규화 + MFCC/log-Mel | §2 preprocess |
@@ -446,7 +446,7 @@ vision 라인 logging fields에 audio 특화 추가: `capture_ms`, `input_kind`,
 3. `src/preprocess.py` — 모델 input shape에 따라 raw PCM / MFCC 분기
 4. `src/validate_kws.py` — introspection + 50회 latency 측정
 5. `src/postprocess.py` — softmax + top-1 + threshold + N-frame confirm
-6. `src/benchmark_kws.py` — e2e 단계별 100회 + 멘토 06 JSON
+6. `src/benchmark_kws.py` — e2e 단계별 100회 + 벤치마크 표준 JSON
 7. `src/infer_mic.py` — 실시간 루프 통합
 
 각 모듈 작성 후 게이트 검증 (preflight §12·§13).

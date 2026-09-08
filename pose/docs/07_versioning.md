@@ -13,7 +13,7 @@
 | **ASR** | Whisper Tiny.en TFLite, e2e 3.18 s, 6/7 단어 정확 |
 | **Pose** | MoveNet Thunder INT8 TFLite, e2e 9.69 FPS, 13 rep 카운팅 |
 | 디바이스 | Arduino UNO Q (QRB2210, Cortex-A53 ×4) |
-| docs | 라인별 가이드 + history 19 + issues 5 + 멘토 보고서 1 |
+| docs | 라인별 가이드 + history 19 + issues 5 + 보고서 1 |
 | 진행 안 됨 | PTZ 하드웨어 측정, 하우징, ASR KWS 교체, 시연 영상 |
 
 → semver 0.x = "활발한 개발 중, breaking 가능". 본 작품 마감(1.0.0)까지 추가 진행 예정.
@@ -89,6 +89,6 @@ git archive --format=zip v0.1.0 -o ..\unoq-companion-robot-v0.1.0.zip
 ## 8. 관련
 
 - 본 사이클 history (semver 채택): [`history/2026-06-29_05_*`](history/) (작성 예정)
-- 멘토 미팅 (v1 베이스라인 결정 원본): [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 (v1 베이스라인 결정 원본): [`history/2026-06-27_11_review_meeting_outcomes.md`](history/2026-06-27_11_review_meeting_outcomes.md)
 - 본 작품 청사진: [`00_project_blueprint.md`](00_project_blueprint.md)
-- 멘토 보고서: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+- 보고서: [`05_pose_line_report.md`](05_pose_line_report.md)

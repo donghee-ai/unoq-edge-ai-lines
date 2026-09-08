@@ -338,8 +338,8 @@ scp 'arduino@192.168.0.45:/tmp/unoq-yolo/cam-debug/*.jpg' test_camera_output/
 | `src/postprocess.py` 작성 (NMS + 박스 디코딩) | 완료 |
 | 실제 이미지 추론 (`coco128/images/train2017/*.jpg`) | 완료 |
 | 박스 그려서 PNG 저장 (README 데모 자산) | 완료 |
-| 호스트 / 디바이스 양쪽에서 end-to-end FPS 측정 (100회 + 멘토 형식 JSON) | 완료 |
-| 카메라 입력 처리 (`src/infer_camera.py`, `--serve 8080` HTTP MJPEG 디버그 UI + 멘토 06 권고(dropped_frames / reconnect / RSS / temp) 포함) | 완료 |
+| 호스트 / 디바이스 양쪽에서 end-to-end FPS 측정 (100회 + 표준 형식 JSON) | 완료 |
+| 카메라 입력 처리 (`src/infer_camera.py`, `--serve 8080` HTTP MJPEG 디버그 UI + 벤치마크 표준 권고(dropped_frames / reconnect / RSS / temp) 포함) | 완료 |
 
 향후 진입:
 
@@ -351,4 +351,4 @@ scp 'arduino@192.168.0.45:/tmp/unoq-yolo/cam-debug/*.jpg' test_camera_output/
 | MCU 연동 (LED, 모터 PWM) | heartbeat / safe-state |
 | Watchdog | no-heartbeat 5s restart, no-camera 10s reinit |
 | Golden image set | 20~100장 |
-| Public 전환 준비 | LICENSE, SSH key, 비번 변경, 멘토 인용 redact |
+| Public 전환 준비 | LICENSE, SSH key, 비번 변경, 참고자료 인용 redact |

@@ -2,16 +2,16 @@
 """
 실시간 카메라 입력 YOLOv8 추론 (호스트/디바이스 공용).
 
-본 스크립트는 멘토 docs 06 권고 사항을 준수합니다:
+본 스크립트는 벤치마크 표준 권고 사항을 준수합니다:
   - 단계별 latency 측정 (preprocess / inference / postprocess / draw)
   - dropped_frames 카운트 (cap.read 실패)
   - 카메라 reconnect (연속 실패 N회 시 cap.release + 재오픈)
   - max_rss_mb, max_temp_c 모니터링 (benchmark_e2e.py 패턴)
-  - 종료 시 멘토 06 Section 3 형식 JSON 저장 (--json 옵션)
+  - 종료 시 벤치마크 표준 Section 3 형식 JSON 저장 (--json 옵션)
   - Privacy: 영상 저장 default off, --save-dir opt-in
 
 추가: --serve PORT 옵션으로 로컬 LAN에 MJPEG HTTP 스트림 + 통계 페이지 제공.
-      ⚠️  DEBUG ONLY, 인증 없음. 외부 네트워크 노출 금지 (멘토 07 권고).
+      ⚠️  DEBUG ONLY, 인증 없음. 외부 네트워크 노출 금지 (리뷰어 07 권고).
 
 흐름:
   1. cv2.VideoCapture로 카메라 오픈
@@ -77,7 +77,7 @@ except ImportError:
         RUNTIME = "tensorflow.lite"
 
 
-# === 멘토 06 권고: RSS / 온도 피크 모니터링 ===
+# === 벤치마크 표준 권고: RSS / 온도 피크 모니터링 ===
 
 def get_rss_mb():
     """현재 프로세스의 RSS 메모리 (MB). 못 읽으면 None."""
@@ -313,7 +313,7 @@ def start_http_server(port, bind='0.0.0.0'):
 
 
 def main():
-    ap = argparse.ArgumentParser(description="YOLOv8 실시간 카메라 추론 (멘토 06 권고 준수)")
+    ap = argparse.ArgumentParser(description="YOLOv8 실시간 카메라 추론 (벤치마크 표준 권고 준수)")
     ap.add_argument("model", help=".tflite 파일 경로")
     ap.add_argument("--camera", type=int, default=0,
                     help="카메라 device index (기본 0 = /dev/video0)")
@@ -335,7 +335,7 @@ def main():
     ap.add_argument("--reconnect-after", type=int, default=5,
                     help="cap.read 연속 N회 실패 시 카메라 재오픈 (기본 5)")
     ap.add_argument("--json", default=None,
-                    help="종료 시 멘토 06 형식 통계 JSON 저장 경로")
+                    help="종료 시 벤치마크 표준 형식 통계 JSON 저장 경로")
     ap.add_argument("--serve", type=int, default=0,
                     help="HTTP 라이브 스트리밍 포트 (예: 8080). 0 = 비활성. "
                          "⚠ DEBUG ONLY, 인증 없음. 로컬 LAN 외부 노출 금지")
@@ -406,7 +406,7 @@ def main():
     # === Rolling FPS (최근 30프레임 이동평균) ===
     loop_window = deque(maxlen=30)
 
-    # === 멘토 06 권고: 카운터 + 피크 모니터링 ===
+    # === 벤치마크 표준 권고: 카운터 + 피크 모니터링 ===
     frame_idx = 0
     dropped_frames = 0
     consecutive_read_failures = 0
@@ -631,10 +631,10 @@ def main():
         print(f"  FPS effective:        {frame_idx / elapsed:.2f}  (= frames / elapsed, includes drops)")
         print("=" * 64)
 
-        # === JSON 저장 (멘토 06 Section 3 형식) ===
+        # === JSON 저장 (벤치마크 표준 Section 3 형식) ===
         if args.json:
             report = {
-                # 멘토 06 표준 필드
+                # 벤치마크 표준 표준 필드
                 "model": str(model_path),
                 "runtime": f"{RUNTIME}:{args.threads}",
                 "input_shape": [int(x) for x in input_detail['shape']],

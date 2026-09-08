@@ -204,7 +204,7 @@ def main(argv=None):
             interpreter, runs=args.runs, warmup=args.warmup
         )
 
-    # 합격선 평가 (멘토 06 / preflight §11 — KWS target)
+    # 합격선 평가 (벤치마크 표준 / preflight §11 — KWS target)
     if args.runs > 0:
         lat = report["latency"]
         report["pass_fail"] = {

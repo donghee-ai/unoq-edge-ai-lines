@@ -10,7 +10,7 @@
 
 배경: 
 - ASR 라인 (Whisper 40MB) 은 **인터럽트 불가** (30초 청크 처리)
-- 멘토 미팅 (2026-06-27) 에서 **KWS 로 교체 + 인터럽트** 결정
+- 리뷰 미팅 (2026-06-27) 에서 **KWS 로 교체 + 인터럽트** 결정
 - 본 사이클에서 KWS 라인을 **v0.3.0 트랙** 으로 신설, pose 라인과 동시 실행 가능하도록 통합
 
 ## 진행
@@ -133,7 +133,7 @@ pose/scripts/
 
 ## 관련
 
-- ASR 라인 결정 원본: [`../../../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md`](../../../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md)
+- ASR 라인 결정 원본: [`../../../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md`](../../../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md)
 - Pose 라인 청사진: [`../../../pose/docs/00_project_blueprint.md`](../../../pose/docs/00_project_blueprint.md)
 - Pose 통합 스크립트: [`../../../pose/scripts/infer_camera_pose_multimode.py`](../../../pose/scripts/infer_camera_pose_multimode.py)
 - 이전 사이클 상태: [`../../../PROJECT_STATUS_2026-07-01.md`](../../../PROJECT_STATUS_2026-07-01.md)

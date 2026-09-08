@@ -1,4 +1,4 @@
-# Real-time Camera Input with YOLOv8 (Mentor 06 Format)
+# Real-time Camera Input with YOLOv8 (Benchmark Standard Format)
 
 본 문서는 UNO Q 디바이스에 USB UVC 카메라를 연결하여 YOLOv8n int8 TFLite로 실시간 추론한 측정 결과를 정리합니다. 단일 책임 — 카메라 입력 시 e2e 성능 + 운영 안정성 검증.
 
@@ -6,7 +6,7 @@
 
 | 항목 | 값 |
 |---|---|
-| **측정 도구** | `src/infer_camera.py` (멘토 06 권고 준수) |
+| **측정 도구** | `src/infer_camera.py` (벤치마크 표준 권고 준수) |
 | **모델** | `yolov8n_int8.tflite` (3.19 MB, 320×320, w8a8) |
 | **입력** | 카메라 (640×480) → letterbox (320×320) |
 | **런타임** | ai_edge_litert + XNNPACK (4 thread) |
@@ -139,9 +139,9 @@ YOLOv8n int8 @ 320×320 / 카메라 640×480 / CPU 4 thread / ai_edge_litert + X
 
 단시간 운영 합격 확정. 장시간 운영은 thermal soak test 권고.
 
-## 4. infer_camera.py 멘토 06 권고 준수 항목
+## 4. infer_camera.py 벤치마크 표준 권고 준수 항목
 
-| 멘토 06 필드 / 권고 | 본 도구 구현 |
+| 벤치마크 표준 필드 / 권고 | 본 도구 구현 |
 |---|---|
 | `model` | 수집 |
 | `runtime` | 수집 (`ai_edge_litert:4` 형식) |
@@ -180,7 +180,7 @@ p95 / p50 = 1.36. 임베디드 환경에서 시스템 백그라운드(cron, sshd
 
 285초 운영에서 70.8°C 도달 — 합격선(70°C) 1도 초과. QRB2210 안전 영역(~85°C) 내지만 margin 좁아짐. 시간 누적 + 부하 누적 + HTTP 스트리밍 부담 복합 영향. 완화 옵션:
 
-- 8시간+ soak test (멘토 06 권고)로 thermal plateau 또는 throttle 거동 확인 — 최우선 후속 작업.
+- 8시간+ soak test (벤치마크 표준 권고)로 thermal plateau 또는 throttle 거동 확인 — 최우선 후속 작업.
 - 필요 시 방열판 / 통풍 개선 (하드웨어).
 - 또는 frame rate cap (예: 7.5 FPS limit)으로 thermal 부담 감소 (소프트웨어).
 - HTTP `--serve` 부담 분리 측정 (`--serve` 없이 같은 시간 측정 → 차이 정량화).

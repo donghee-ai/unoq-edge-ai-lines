@@ -4,7 +4,7 @@
 2026-06-27 (e2e 합격 직후 정리 사이클)
 
 ## 사건
-사용자가 1,320 프레임 전체 trace 콘솔 로그 제공 → 패턴 분석. 동시에 본 라인 이름이 검토 단계 모델명(`unoq-mediapipe-pose`) 그대로라 일관성 정리 결정 — `unoq-pose`로 rename. 스쿼트 카운터 + 멘토 스타일 docs 추가.
+사용자가 1,320 프레임 전체 trace 콘솔 로그 제공 → 패턴 분석. 동시에 본 라인 이름이 검토 단계 모델명(`unoq-mediapipe-pose`) 그대로라 일관성 정리 결정 — `unoq-pose`로 rename. 스쿼트 카운터 + 표준 스타일 docs 추가.
 
 ## 1. Trace 분석 (1,320 frames / 136.2 s)
 
@@ -132,9 +132,9 @@ HTTP stats JSON에 `squat: { state, reps, deepest_overall_deg, last_rep_min_deg,
 
 SUMMARY에 `squat_reps`, `deepest_deg`, `last_rep_min` 추가.
 
-## 4. 멘토 스타일 docs 추가
+## 4. 표준 스타일 docs 추가
 
-[`docs/00_project_blueprint.md`](../docs/00_project_blueprint.md), [`docs/02_quickstart_pose.md`](../docs/02_quickstart_pose.md), [`docs/03_runbook_camera_serve.md`](../docs/03_runbook_camera_serve.md) 3건 신규. 01은 기존 작성 활용. 멘토 docs(`vision/docs/mentor/02_quickstart_*`) 형식 참고.
+[`docs/00_project_blueprint.md`](../docs/00_project_blueprint.md), [`docs/02_quickstart_pose.md`](../docs/02_quickstart_pose.md), [`docs/03_runbook_camera_serve.md`](../docs/03_runbook_camera_serve.md) 3건 신규. 01은 기존 작성 활용. 참고자료(`vision/docs/_private_refs/02_quickstart_*`) 형식 참고.
 
 ## 5. ADB push 완료
 
@@ -169,7 +169,7 @@ inspect_movenet_thunder.py  3,888 B  (이전 push 유지)
 | 1 | **Soak test** ≥10 min | trace 분석상 thermal plateau 미도달 — 합격 마진 정량 확보 필수 |
 | 2 | **스쿼트 카운터 실측** | 사용자가 실제 옆모습 자세로 측정해서 rep 정확도 검증 |
 | 3 | Vision + Pose 동시 운영 자원 청사진 | CPU 합산 286+316=602% 경합 측정 |
-| 4 | `--json` benchmark 저장 옵션 (vision 패턴 적용) | 멘토 06 형식 |
+| 4 | `--json` benchmark 저장 옵션 (vision 패턴 적용) | 벤치마크 표준 형식 |
 | 5 | MCU 트리거 (STM32U585 LED/모터) | rep 이벤트 → 반응 |
 
 ## 8. 관련

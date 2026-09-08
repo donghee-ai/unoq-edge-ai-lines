@@ -222,6 +222,6 @@ pose 라인과 동일.
 - Quickstart: [`02_quickstart_kws.md`](02_quickstart_kws.md)
 - SSH→벤치마크 가이드: [`03_ssh_to_benchmark_walkthrough.md`](03_ssh_to_benchmark_walkthrough.md)
 - 통합 아키텍처: [`04_mode_interrupt_architecture.md`](04_mode_interrupt_architecture.md)
-- ASR 라인 히스토리 (KWS 결정 원본): [`../../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md`](../../asr/docs/history/2026-06-27_02_mentor_meeting_lightweight_model_and_interrupt_decision.md)
+- ASR 라인 히스토리 (KWS 결정 원본): [`../../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md`](../../asr/docs/history/2026-06-27_02_review_meeting_lightweight_model_and_interrupt_decision.md)
 - Pose 라인 청사진: [`../../pose/docs/00_project_blueprint.md`](../../pose/docs/00_project_blueprint.md)
 - 세션 상태: [`../../PROJECT_STATUS_2026-07-01.md`](../../PROJECT_STATUS_2026-07-01.md)

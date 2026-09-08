@@ -267,9 +267,9 @@ def hip_angle(kp, side):
 |---|---|
 | 즉시 (비용 0) | 카메라 위치 무릎~허리 높이 (40~50 cm) |
 | **본 작품 마무리** | **PTZ 서보** (위/아래/양옆) — 카메라만 회전, 본체 정지 |
-| (폐기, 멘토 미팅 2026-06-27) | ~본체 자율 추적~ — 본 작품 범위 외 |
+| (폐기, 리뷰 미팅 2026-06-27) | ~본체 자율 추적~ — 본 작품 범위 외 |
 
-자세한 결정 과정: [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md), [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
+자세한 결정 과정: [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md), [`history/2026-06-27_11_review_meeting_outcomes.md`](history/2026-06-27_11_review_meeting_outcomes.md)
 
 A/B/C(알고리즘 신호 보완)와 추적(물리 위치 보완)은 **독립적이고 보완 관계**:
 - A/B/C는 신호 처리 — STM32 없이 UNO Q 단독으로 즉시 가능
@@ -329,7 +329,7 @@ class MultiSignalCounter:
 - 청사진: [`00_project_blueprint.md`](00_project_blueprint.md) §7 한계 + 개선
 - Quickstart: [`02_quickstart_pose.md`](02_quickstart_pose.md) §6 실행 명령
 - 운영 런북: [`03_runbook_camera_serve.md`](03_runbook_camera_serve.md) §2 카운터 시나리오
-- 멘토 보고: [`05_mentor_report_pose_line.md`](05_mentor_report_pose_line.md)
+- 보고: [`05_pose_line_report.md`](05_pose_line_report.md)
 - 코드:
   - [`../scripts/squat_counter.py`](../scripts/squat_counter.py) (96줄, 상태 머신)
   - [`../scripts/infer_camera_pose.py`](../scripts/infer_camera_pose.py) (각도 계산 + 통합)

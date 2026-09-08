@@ -28,7 +28,7 @@
 
 | 이유 | 설명 |
 |---|---|
-| 시간 압박 | 멘토 ASR 요청 다음 날 보고 — 폴더 정리 1.5 시간이 부담 |
+| 시간 압박 | ASR 요구사항 다음 날 보고 — 폴더 정리 1.5 시간이 부담 |
 | 도메인 격리 의지 | 사용자가 `yolo` / `asr` 명확히 분리 선호 |
 | 의존성 충돌 회피 | librosa / scipy ↔ torch / numpy ABI 충돌 가능성 — 별도 Docker로 사전 차단 |
 | 작업 격리 | vision 안정화 상태 보존, audio 실험이 vision 자산 흔들지 않게 |
@@ -71,7 +71,7 @@ vision/
 │   ├── overview/                          ← 작품 전체 청사진 + 운영 + 규약
 │   ├── vision/                            ← 현 docs/01~08 이동
 │   ├── audio/                             ← 현 asr/docs 이동
-│   └── mentor/                            ← 대외비, 그대로
+│   └── _private_refs/                            ← 대외비, 그대로
 │
 ├── scripts/
 │   ├── env.sh
@@ -210,7 +210,7 @@ rm -rf ../unoq-asr
 1. **fusion 코드 작성 시점** — vision 결과 + audio 결과를 호스트에서 동시 시뮬레이션 필요
 2. **Public 전환 / 시연** — 외부에 단일 진입점(`bash docker/run-vision.sh`) 제공
 3. **CI/CD 구축** — 통합 빌드로 vision + audio 회귀 테스트
-4. **멘토 최종 인계** — 한 묶음 작품으로 정리
+4. **최종 인계** — 한 묶음 작품으로 정리
 
 현 단계(KWS PoC + 안정화)에선 트리거 미충족 → 분리 유지가 정답.
 
@@ -224,7 +224,7 @@ rm -rf ../unoq-asr
 | 2 | (컨테이너) `python -m unoq.vision.validate_model models/vision/yolov8n_int8.tflite` | 호스트 baseline 80 FPS 동일 |
 | 3 | `scp src/unoq/vision/validate_model.py arduino@192.168.0.45:~/` | 전송 성공 |
 | 4 | (디바이스) `python3 ~/validate_model.py /opt/unoq-yolo/models/yolov8n_int8.tflite` | 9.88 FPS 동일 |
-| 5 | `git archive HEAD -o test.zip README.md docs/` | 압축 성공, mentor/SESSION 제외 |
+| 5 | `git archive HEAD -o test.zip README.md docs/` | 압축 성공, _private_refs/SESSION 제외 |
 | 6 | README + docs 내부 링크 클릭 | 모두 살아있음 |
 
 6개 다 통과해야 commit. 1개라도 실패 시 `git reset --hard pre-monorepo-restructure`로 롤백.

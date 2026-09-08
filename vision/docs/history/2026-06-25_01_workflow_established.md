@@ -9,7 +9,7 @@
 ## 배경
 - ASR 라인에서 같은 워크플로우 적용 후 작동 검증 ([`../../asr/docs/history/2026-06-25_01_workflow_established.md`](../../asr/docs/history/2026-06-25_01_workflow_established.md))
 - vision 라인은 1차 PoC 합격선 통과 후 안정화 단계. 그러나 향후 작업 (soak test, monorepo 통합, fusion 추가, ADB 셋업 등)에서 신규 사건 발생 예정
-- 양 라인 일관된 기록 패턴으로 멘토 보고 / 핸드오프 / 재발 방지 표준화
+- 양 라인 일관된 기록 패턴으로 보고 / 핸드오프 / 재발 방지 표준화
 
 ## 결과
 - `vision/docs/issues/` 폴더 신규 + `README.md` (작성 규칙 + 기존 함정 docs 링크 매핑)
@@ -25,7 +25,7 @@
 | 파일명 | `<YYYY-MM-DD>_<NN>_<짧은_영문_제목>.md` |
 | 단위 | **1 사건 1 파일** (배치 X, 즉시 기록) |
 | issues 대상 | 오류 / 함정 / 의외 동작 / 호환 문제 |
-| history 대상 | 의사결정 / 마일스톤 / 자산 / 환경 변경 / 측정 / 멘토 |
+| history 대상 | 의사결정 / 마일스톤 / 자산 / 환경 변경 / 측정 / 리뷰어 |
 
 ## 다음 단계 (vision 라인)
 - 보고 시연 후 결과 history 기록

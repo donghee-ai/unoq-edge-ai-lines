@@ -52,7 +52,7 @@ UNO Q 호환성 관점에서 양자화 형식은 **무관**. TFLite 포장 + ai-
 | `docs/00_project_blueprint.md` | 확인 필요 | 양자화 형식 언급되어 있으면 정정 |
 | `docs/02_quickstart_asr.md` | 확인 필요 | 동일 |
 | `docs/03_implementation_log.md` | 확인 필요 | 동일 |
-| 멘토 보고용 한 줄 | "Whisper Tiny.en TFLite (40 MB)" | 크기만, 양자화 형식 미언급 → OK |
+| 보고용 한 줄 | "Whisper Tiny.en TFLite (40 MB)" | 크기만, 양자화 형식 미언급 → OK |
 
 ## 자산
 - `scripts/inspect_whisper_quant.py` (텐서 dtype 분포 출력 90줄)

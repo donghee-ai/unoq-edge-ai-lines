@@ -1,17 +1,17 @@
 # Session Summary — 2026-06-24
 
-본 세션은 멘토 인계 준비를 중심으로 한 메타 작업 세션. 코드 변경 없음, 문서/설정/메타데이터 보강 중심.
+본 세션은 인계 준비를 중심으로 한 메타 작업 세션. 코드 변경 없음, 문서/설정/메타데이터 보강 중심.
 
 ## 0. 세션 결정 요약
 
 | 항목 | 결과 |
 |---|---|
-| 주제 | 멘토 인계 준비 (압축 / Collaborator / md only 결정) + 카메라 사양 보강 |
+| 주제 | 인계 준비 (압축 / Collaborator / md only 결정) + 카메라 사양 보강 |
 | 신규 코드 | 없음 |
 | 변경 파일 | `README.md`, `docs/08_realtime_camera.md`, `.gitignore` |
 | 추적 해제 | `.markdownlint.jsonc` (로컬 에디터 설정) |
 | 신규 커밋 | 6건 |
-| 미해결 작업 | 메모리 파일 갱신 (docs 경로 변경 반영), soak test, 멘토 GitHub 핸들 수신 후 Collaborator 초대 |
+| 미해결 작업 | 메모리 파일 갱신 (docs 경로 변경 반영), soak test, 리뷰어 GitHub 핸들 수신 후 Collaborator 초대 |
 
 ## 1. 작업 항목
 
@@ -47,30 +47,30 @@
 
 `git rm --cached .markdownlint.jsonc`로 인덱스에서 제거, 파일 자체는 로컬에 보존 (VSCode 린트 계속 동작).
 
-### 1-4. 멘토 인계 방법 정리
+### 1-4. 인계 방법 정리
 
 | 방법 | 적합한 상황 | 비고 |
 |---|---|---|
-| GitHub Collaborator 초대 | 멘토 GitHub 계정 있음 + 지속 검토 | 권장. 멘토 GitHub 핸들 또는 가입 이메일 필요 |
-| ZIP 전송 | 일회성 / 멘토 GitHub 없음 | 단발성 — 후속 업데이트 매번 다시 보내야 함 |
+| GitHub Collaborator 초대 | 리뷰어 GitHub 계정 있음 + 지속 검토 | 권장. 리뷰어 GitHub 핸들 또는 가입 이메일 필요 |
+| ZIP 전송 | 일회성 / 리뷰어 GitHub 없음 | 단발성 — 후속 업데이트 매번 다시 보내야 함 |
 | Public 전환 | 최종 발표 / 공개 시점 | 현 단계엔 부적합 (LICENSE, 비밀 정보 점검 미완) |
 
-본 세션 결정: 멘토 GitHub 핸들 받기 전 1차 검토는 **md만 ZIP 전송**으로 진행.
+본 세션 결정: 리뷰어 GitHub 핸들 받기 전 1차 검토는 **md만 ZIP 전송**으로 진행.
 
 ### 1-5. 압축 방법 안내
 
-`git archive` 사용 (트래킹된 파일만 자동 선별 → `docs/mentor/`, `SESSION_SUMMARY*`, `.markdownlint.jsonc` 자동 제외).
+`git archive` 사용 (트래킹된 파일만 자동 선별 → `docs/_private_refs/`, `SESSION_SUMMARY*`, `.markdownlint.jsonc` 자동 제외).
 
 | 시나리오 | 명령 |
 |---|---|
 | 전체 (코드 + 문서 + Docker) | `git archive --format=zip HEAD -o unoq-full-<DATE>.zip` |
-| md만 (멘토 1차 검토) | `git archive --format=zip HEAD -o unoq-docs-<DATE>.zip README.md docs/` |
+| md만 (리뷰어 1차 검토) | `git archive --format=zip HEAD -o unoq-docs-<DATE>.zip README.md docs/` |
 
-탐색기 우클릭 압축 비추천 — `docs/mentor/` 같이 포함되어 대외비 노출 위험.
+탐색기 우클릭 압축 비추천 — `docs/_private_refs/` 같이 포함되어 대외비 노출 위험.
 
 ### 1-6. 도커 환경 점검
 
-지금 상태에서 멘토가 환경 그대로 재현 가능한지 확인 → **그대로 가능**.
+지금 상태에서 리뷰어가 환경 그대로 재현 가능한지 확인 → **그대로 가능**.
 
 | 파일 | 역할 | 상태 |
 |---|---|---|
@@ -78,7 +78,7 @@
 | `run.sh` | 원샷 빌드+실행, 이미지 없으면 빌드 / 있으면 재사용, `--rebuild`로 강제 재빌드 | 준비됨 |
 | `requirements.lock` | 94 패키지 byte-exact 핀 | 준비됨 |
 
-멘토 측 실행: 압축 풀고 `bash docker/run-vision.sh` 한 줄로 컨테이너 진입.
+리뷰어 측 실행: 압축 풀고 `bash docker/run-vision.sh` 한 줄로 컨테이너 진입.
 
 전제: Docker (Desktop or Engine) + bash 셸 (Windows는 WSL2 / Git Bash) + 디스크 약 5 GB.
 
@@ -169,21 +169,21 @@ sleep 2
 ls /dev/video*
 ```
 
-### 4-3. git archive로 안전한 멘토용 ZIP
+### 4-3. git archive로 안전한 보고용 ZIP
 
 ```bash
 # md만
 git archive --format=zip HEAD -o unoq-docs-2026-06-24.zip README.md docs/
 
-# 결과 검증 (mentor / SESSION 문자열이 없어야 함)
-unzip -l unoq-docs-2026-06-24.zip | grep -E "mentor|SESSION" && echo "WARN: leak"
+# 결과 검증 (_private_refs / SESSION 문자열이 없어야 함)
+unzip -l unoq-docs-2026-06-24.zip | grep -E "_private_refs|SESSION" && echo "WARN: leak"
 ```
 
 ## 5. 다음 작업 후보
 
 | 우선순위 | 항목 | 비고 |
 |---|---|---|
-| 1 | 멘토 GitHub 핸들 받고 Collaborator 초대 또는 1차 ZIP 전송 | 본 세션 결과물 기반 |
+| 1 | 리뷰어 GitHub 핸들 받고 Collaborator 초대 또는 1차 ZIP 전송 | 본 세션 결과물 기반 |
 | 2 | Soak test 8h+ (thermal plateau 확인) | docs/08 운영 측정에서 thermal 70.8°C — 임계 1°C 초과 |
 | 3 | `--serve` 부담 분리 측정 (30분 작업) | HTTP MJPEG 서빙이 thermal에 미친 영향 분리 |
 | 4 | 메모리 파일 갱신 (docs/00~08 → 00~09 경로 반영) | `~/.claude/projects/c--Project/memory/` 하위 파일 |
@@ -193,5 +193,5 @@ unzip -l unoq-docs-2026-06-24.zip | grep -E "mentor|SESSION" && echo "WARN: leak
 ## 6. 미해결 사항
 
 - `.gitignore`에 `SESSION_SUMMARY*.md` 패턴이 명시되지 않음 — 현재 트래킹은 안 되고 있지만 `git add .` 같은 광범위 add 시 실수로 포함될 수 있음. 명시 추가 검토 필요.
-- README의 `한국어 + 영문 키워드 제목` 일관성 — 일부 섹션 헤더 한국어, 일부 영문. 통일 여부는 멘토 양식 가이드라인에 명시 안 됨.
+- README의 `한국어 + 영문 키워드 제목` 일관성 — 일부 섹션 헤더 한국어, 일부 영문. 통일 여부는 리뷰어 양식 가이드라인에 명시 안 됨.
 - docs/00 청사진의 eMMC 16 GB (측정값) vs 실 사양 32 GB — 한 곳에 주석 추가 검토 가능 (본 세션은 미반영).

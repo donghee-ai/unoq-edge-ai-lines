@@ -1,6 +1,6 @@
-# Official Benchmark — Host vs UNO Q (Mentor docs 06 Format)
+# Official Benchmark — Host vs UNO Q (Benchmark Standard Format)
 
-본 문서는 멘토 패키지 `06_testing_benchmarking_reliability.md` Section 3의 JSON 형식 권고를 따른 정식 벤치마크 결과를 정리합니다. 단일 이미지 100회 반복 측정 (warmup 10 + measure 100), 호스트(Docker)와 UNO Q 디바이스 양쪽에서 수행.
+본 문서는 외부 참고자료 `06_testing_benchmarking_reliability.md` Section 3의 JSON 형식 권고를 따른 정식 벤치마크 결과를 정리합니다. 단일 이미지 100회 반복 측정 (warmup 10 + measure 100), 호스트(Docker)와 UNO Q 디바이스 양쪽에서 수행.
 
 ## 0. 핵심 결정
 
@@ -8,7 +8,7 @@
 |---|---|
 | **측정 도구** | `src/benchmark_e2e.py` (호스트 / 디바이스 공용) |
 | **모델** | `yolov8n_int8.tflite` (3.19 MB, 320×320, w8a8) |
-| **데이터 형식** | 멘토 `06_testing_benchmarking_reliability.md` Section 3 JSON 권고 그대로 |
+| **데이터 형식** | 리뷰어 `06_testing_benchmarking_reliability.md` Section 3 JSON 권고 그대로 |
 | **측정 횟수** | 100 frames (warmup 10) |
 | **런타임** | ai_edge_litert + XNNPACK delegate (호스트 / 디바이스 동일) |
 | **호스트 FPS** | 73.09 (Ryzen 7 6800HS, 4 thread) |
@@ -30,11 +30,11 @@
 3. Measure 100회 — 각 프레임의 preprocess / inference / postprocess / draw 시간 기록.
 4. 매 측정 후 `/proc/self/status` VmRSS 갱신 (피크 추적).
 5. 매 측정 후 `/sys/class/thermal/thermal_zone*/temp` 갱신 (피크 추적).
-6. 종료 시 mean / median / p50 / p95 / min / max 집계 + 멘토 형식 JSON 저장.
+6. 종료 시 mean / median / p50 / p95 / min / max 집계 + 표준 형식 JSON 저장.
 
-### 1-3. 멘토 docs 06 형식 준수 항목
+### 1-3. 벤치마크 표준 형식 준수 항목
 
-| 멘토 필드 | 우리 수집 | 비고 |
+| 표준 필드 | 우리 수집 | 비고 |
 |---|---|---|
 | `model` | 수집 | 모델 파일 경로 |
 | `runtime` | 수집 | `ai_edge_litert:4` 형식 (런타임명 : 스레드수) |
@@ -168,7 +168,7 @@ ai_edge_litert는 Google AI Edge의 모던 런타임. tensorflow.lite와 동일 
 
 ### 6-2. cv2 cold start는 warmup 10회로 충분 제거
 
-이전 단계에서 발견한 cv2 drawing cold start (~60 ms, 단일 이미지 측정 시 발생)가 warmup 10회 측정에선 사라짐 (디바이스 draw mean 3.90 ms). 멘토 06 권고 "warmup → measure" 패턴이 효과적.
+이전 단계에서 발견한 cv2 drawing cold start (~60 ms, 단일 이미지 측정 시 발생)가 warmup 10회 측정에선 사라짐 (디바이스 draw mean 3.90 ms). 벤치마크 표준 권고 "warmup → measure" 패턴이 효과적.
 
 ### 6-3. 디바이스 온도 안전 영역
 
@@ -188,10 +188,10 @@ ai_edge_litert는 Google AI Edge의 모던 런타임. tensorflow.lite와 동일 
 
 | 한계 | 영향 | 향후 대응 |
 |---|---|---|
-| 단일 이미지 1장 반복 | 다양한 입력 시나리오 미커버 | golden image set으로 확장 (멘토 docs 06 Section 2) |
+| 단일 이미지 1장 반복 | 다양한 입력 시나리오 미커버 | golden image set으로 확장 (벤치마크 표준 Section 2) |
 | 카메라 입력 미포함 | 실제 운영 시 capture overhead 누락 | UVC 카메라 연결 후 별도 측정 (예정) |
 | dropped_frames = 0 (강제) | 단일 이미지라 측정 불가 | 카메라 + 비디오 입력 시 진짜 측정 |
-| 단시간 100회 (≈ 11초) | 장시간 thermal 거동 모름 | soak test (멘토 docs 06 Section 4) 필요 |
+| 단시간 100회 (≈ 11초) | 장시간 thermal 거동 모름 | soak test (벤치마크 표준 Section 4) 필요 |
 | GPU delegate 미시도 | CPU 충분으로 후순위 | `/dev/kgsl*` 부재로 어려울 가능성 큼 |
 
 ## 8. 재현 절차
@@ -234,6 +234,6 @@ scp arduino@192.168.0.45:~/benchmarks/device_e2e_*.json ./benchmarks/
 
 `benchmarks/` 폴더는 현재 `.gitignore` 패턴에 포함 안 되어 있으므로 git에 들어감. 자산 보존 의도 시 그대로 유지, 별도 채널 원하면 `.gitignore`에 추가.
 
-## 9. 멘토 보고 시 핵심 요약 한 줄
+## 9. 보고 시 핵심 요약 한 줄
 
 > **Arduino UNO Q (QRB2210) 위에서 YOLOv8n int8 (320×320, ai_edge_litert + XNNPACK) end-to-end 9.23 FPS, p95 latency 132 ms, 최대 메모리 100 MB, 최대 온도 60.5°C 실측 — 본 작품 합격선(8 FPS) 통과 + 장시간 운영 안전 영역.**

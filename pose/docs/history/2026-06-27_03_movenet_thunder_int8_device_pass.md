@@ -68,7 +68,7 @@ range  : 0.0161 ~ 0.9795 (호스트) / 0.0161 ~ 0.8349 (디바이스)
 
 - AI Hub precompiled QNN ONNX(X2 Elite 종속) 비호환 결론 [`issues/2026-06-27_01_*.md`](../issues/2026-06-27_01_precompiled_qnn_onnx_incompatible_with_qrb2210.md) 직후 **대안 형식 1발 합격**
 - **AI Hub 우회 + TFLite + chipset 비종속** 전략 일관 (ASR Whisper와 동일 패턴)
-- vision/ASR/Pose **세 라인 모두 1차 PoC 통과** — 멘토 보고용 한 줄 갱신 가능
+- vision/ASR/Pose **세 라인 모두 1차 PoC 통과** — 보고용 한 줄 갱신 가능
 
 ## 미확인 (다음 세션 후보)
 

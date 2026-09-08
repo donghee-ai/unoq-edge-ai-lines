@@ -1,6 +1,6 @@
 # 하드웨어 하우징 디자인 (Pose 라인)
 
-본 문서는 본 작품 하드웨어 외형/하우징의 디자인 컨셉 + 색상 + 결정 옵션 정리. 2026-06-27 멘토 미팅 결정 기반.
+본 문서는 본 작품 하드웨어 외형/하우징의 디자인 컨셉 + 색상 + 결정 옵션 정리. 2026-06-27 리뷰 미팅 결정 기반.
 
 > **현 단계 위치**: 본 작품 하우징은 PTZ 검증 PoC([`08_ptz_camera_angle_validation.md`](08_ptz_camera_angle_validation.md))와 함께 진행. **PoC 통과 후 정식 통합** 결정. PoC 실패 시 하우징은 카메라 고정 형태로 단순화 가능.
 
@@ -34,7 +34,7 @@
 
 ### 2-1. 컨셉
 - Qualcomm 드래곤윙 프로세서 (QRB2210) 이름 참조
-- 브랜드 정체성 강조 — 멘토/Qualcomm 보고 사이클에 친화적
+- 브랜드 정체성 강조 — Qualcomm 보고 사이클에 친화적
 - 다소 유니크한 외형 — 시연/전시 시 주목성 ↑
 
 ### 2-2. 디자인 요소
@@ -100,6 +100,6 @@
 
 ## 7. 관련
 
-- 멘토 미팅 결과: [`history/2026-06-27_11_mentor_meeting_outcomes.md`](history/2026-06-27_11_mentor_meeting_outcomes.md)
+- 리뷰 미팅 결과: [`history/2026-06-27_11_review_meeting_outcomes.md`](history/2026-06-27_11_review_meeting_outcomes.md)
 - PTZ 결정: [`issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md`](issues/2026-06-27_05_camera_low_position_side_back_detection_drop.md)
 - 버전관리: [`07_versioning.md`](07_versioning.md)
