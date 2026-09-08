@@ -447,9 +447,9 @@ rsync -avz ~/kws_test/benchmarks/ user@archive.local:/backups/unoq-kws/
 
 ## 13. 관련
 
-- 청사진: [`00_project_blueprint.md`](00_project_blueprint.md)
-- 모델 후보 + 라이선스: [`01_model_candidates.md`](01_model_candidates.md)
-- Quickstart: [`02_quickstart_kws.md`](02_quickstart_kws.md)
-- 인터럽트 아키텍처: [`04_mode_interrupt_architecture.md`](04_mode_interrupt_architecture.md)
-- 버튼 배선: [`05_button_wiring.md`](05_button_wiring.md)
-- Pose 라인 runbook: [`../../pose/docs/03_runbook_camera_serve.md`](../../pose/docs/03_runbook_camera_serve.md)
+- 청사진: [`00_project_blueprint.md`](history/superseded/00_project_blueprint.md)
+- 모델 후보 + 라이선스: [`01_model_candidates.md`](history/superseded/01_model_candidates.md)
+- Quickstart: [`02_quickstart_kws.md`](history/superseded/02_quickstart_kws.md)
+- 인터럽트 아키텍처: [`04_mode_interrupt_architecture.md`](history/superseded/04_mode_interrupt_architecture.md)
+- 버튼 배선: [`05_button_wiring.md`](history/superseded/05_button_wiring.md)
+- Pose 라인 runbook: [`../../pose/docs/history/superseded/03_runbook_camera_serve.md`](../../pose/docs/history/superseded/03_runbook_camera_serve.md)

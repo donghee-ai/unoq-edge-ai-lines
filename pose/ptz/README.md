@@ -1,6 +1,6 @@
 # PTZ PoC — Pose-based Camera Tracking
 
-본 폴더는 **본 작품 PTZ 검증 PoC** 코드. 본 작품 메인 라인(Pose v1)이 아니라 임시 검증 작업. 자세한 정의 + 가설: [`../docs/08_ptz_camera_angle_validation.md`](../docs/08_ptz_camera_angle_validation.md).
+본 폴더는 **본 작품 PTZ 검증 PoC** 코드. 본 작품 메인 라인(Pose v1)이 아니라 임시 검증 작업. 자세한 정의 + 가설: [`../docs/history/superseded/08_ptz_camera_angle_validation.md`](../docs/history/superseded/08_ptz_camera_angle_validation.md).
 
 ## 검증 가설 (H1~H4)
 
@@ -72,7 +72,7 @@ ptz/
 
 ## 빌드 + 실행
 
-전체 절차: [`../docs/09_quickstart_ptz_poc.md`](../docs/09_quickstart_ptz_poc.md)
+전체 절차: [`../docs/history/superseded/09_quickstart_ptz_poc.md`](../docs/history/superseded/09_quickstart_ptz_poc.md)
 
 빠른 요약:
 
@@ -113,8 +113,8 @@ arduino-app-cli app logs ~/ArduinoApps/ptz-poc
 
 ## 관련
 
-- 본 PoC 정의 + 가설: [`../docs/08_ptz_camera_angle_validation.md`](../docs/08_ptz_camera_angle_validation.md)
-- Quickstart: [`../docs/09_quickstart_ptz_poc.md`](../docs/09_quickstart_ptz_poc.md)
+- 본 PoC 정의 + 가설: [`../docs/history/superseded/08_ptz_camera_angle_validation.md`](../docs/history/superseded/08_ptz_camera_angle_validation.md)
+- Quickstart: [`../docs/history/superseded/09_quickstart_ptz_poc.md`](../docs/history/superseded/09_quickstart_ptz_poc.md)
 - 리뷰 미팅 결과 (PTZ만 진행 결정): [`../docs/history/2026-06-27_11_review_meeting_outcomes.md`](../docs/history/2026-06-27_11_review_meeting_outcomes.md)
 - 기반 프로젝트 결정 history: [`../docs/history/2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md`](../docs/history/2026-06-27_12_ptz_poc_decision_based_on_shawn_project.md)
-- Pose v1 알고리즘 (PoC와 무관): [`../docs/04_squat_algorithm.md`](../docs/04_squat_algorithm.md)
+- Pose v1 알고리즘 (PoC와 무관): [`../docs/history/superseded/04_squat_algorithm.md`](../docs/history/superseded/04_squat_algorithm.md)

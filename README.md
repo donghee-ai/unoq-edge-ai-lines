@@ -1,153 +1,96 @@
 # UNO Q Edge AI Lines
 
-> **Arduino UNO Q (Qualcomm QRB2210, Cortex-A53 ×4, NPU 없음)** 위에서
-> **Vision · ASR · Pose · KWS** 추론 라인을 CPU만으로 돌린 PoC + 실측 기록.
-> 이 중 Pose 자산으로 만든 제품 라인은 별도 리포
-> [`health_care_bot`](https://github.com/donghee-ai/health_care_bot)에 있다.
+> **NPU 없는 Arduino UNO Q(Qualcomm Dragonwing QRB2210, Cortex-A53 ×4)에서
+> 객체검출·포즈추정·음성인식을 CPU만으로 얼마나 돌릴 수 있는지 잰 기록.**
 
-**메인 사용처**: 헬스케어 봇 — 스쿼트 자세 측정 + 카운팅 + 음성 인터랙션
-**시연 모드**: 감시 모드 (같은 keypoint 신호의 다른 해석)
-**현재 버전**: `v0.1.0` (2026-06-29, 첫 GitHub release)
+이건 **측정 리포**다. 제품을 만드는 곳이 아니라, "NPU 없이 이 정도 나온다"를 실기에서
+확인하고 근거를 남기는 것이 전부다. 여기서 검증한 Pose 자산으로 만든 제품 라인은
+별도 리포 [`health_care_bot`](https://github.com/donghee-ai/health_care_bot)에 있다.
 
----
+## 결과
 
-## 1차 PoC 합격 측정 (2026-06-27)
+**전부 UNO Q 실기에서 직접 잰 값이다.** 벤더 발표치는 섞여 있지 않다.
 
-**아래 수치는 전부 이 디바이스에서 우리가 직접 측정한 값이다.** 벤더 발표치나 논문 수치가
-아니다. 측정 방법과 원본 JSON은 각 라인의 `docs/` · `benchmarks/`에 있다.
-
-Vision · ASR · Pose 3 라인이 디바이스에서 합격선 통과. KWS는 후보 선정 단계:
-
-| 라인 | 모델 | 크기 | e2e | 비고 |
+| 라인 | 모델 | 크기 | e2e | 결과 |
 |---|---|---|---|---|
-| **Vision** | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | thermal 70.8°C |
-| **ASR** | Whisper Tiny.en TFLite (partial int8) | 39.7 MB | **3.18 s** | JFK wav 6/7 단어 정확 |
-| **Pose** | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | 스쿼트 13 rep 카운팅 + 무릎 각도 |
-| KWS | MLPerf Tiny DS-CNN INT8 | 52 KB | **미측정** | 후보 선정만 완료, 디바이스 실측 전 → [`kws/`](kws/) |
+| Vision | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | 합격 |
+| Pose | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | 합격 |
+| ASR | Whisper Tiny.en TFLite (DRQ) | 39.7 MB | **3.18 s** (11초 오디오) | 합격 |
+| KWS | MLPerf Tiny DS-CNN INT8 | 52 KB | **미측정** | 후보 선정만 완료 |
 
-합격 기준 (Vision/ASR/Pose 공통): e2e FPS ≥ 8, RSS ≪ 2.4 GB, thermal ≤ 70°C, dropped frames = 0
+합격선: e2e FPS ≥ 8 · RSS ≪ 2.4 GB · thermal ≤ 70 °C · dropped frames = 0
 
-> **수치 표기 규칙** — 이 리포의 표에 들어가는 숫자는 **우리가 잰 것**이 기본이다.
-> 벤더·논문·리더보드가 발표한 값을 인용할 때는 `(참조: 출처)`를 붙여 우리 실측과
-> 구분한다. 아직 안 잰 것은 비워두거나 **미측정**이라고 적는다.
+세 라인 모두 **invoke(추론)가 병목**이고 전처리·후처리·드로잉은 다 합쳐도 13~22 %다.
+화면을 꺼도 FPS가 안 오르는 이유가 이것이다. 단계별 분해는
+[`docs/02_measurements.md`](docs/02_measurements.md) §1-1.
 
-## 기술 스택
+> **thermal은 여유가 없다.** 짧은 측정에서는 68.6 °C였지만 지속 구동에서 71.4 °C까지
+> 올라 합격선을 넘겼다. soak 측정은 아직 안 했다.
 
-| 구성 | 기술 |
+## 이 리포에서 건질 것
+
+측정값 자체보다 **다시 쓸 수 있는 판단들**이 남았다.
+
+| | |
 |---|---|
-| 디바이스 | Arduino UNO Q (QRB2210, Cortex-A53 ×4 @ 2.0 GHz, 4 GB LPDDR4, 32 GB eMMC) |
-| **NPU/GPU** | **없음 — CPU only** (XNNPACK delegate) |
-| 추론 런타임 | `ai-edge-litert` (TFLite Runtime) 2.1.5 |
-| 컨테이너 | Docker (Ubuntu 22.04, Python 3.10) — 호스트 검증용 |
-| 카메라 | USB UVC (SU200 720p) |
-| MCU (계획) | STM32U585 — 서보 PTZ + LED ring |
+| **Qualcomm AI Hub 모델은 QRB2210에서 못 쓴다** | 받은 `.onnx`가 실은 다른 칩용 QNN 컨텍스트 바이너리였다. `EPContext` 노드가 증거 → [03 §4](docs/03_model_choice.md) |
+| **모델 카드를 믿지 말고 텐서를 열어볼 것** | "int8"로 알려진 Whisper가 실제로는 int8 텐서 6.8 %인 weight-only DRQ였다 → [02 §3-1](docs/02_measurements.md) |
+| **KWS 라이선스 필터** | 후보 10종 중 Picovoice·Snowboy 등이 상업 사용 불가로 탈락. 근거와 표기 문구까지 → [03 §3](docs/03_model_choice.md) |
+| **밟은 함정 6종** | Billboard Device = 케이블 의심 신호, USB 뽑으면 컨트롤러가 죽는다 등 → [04](docs/04_traps.md) |
 
-## 작품 구조 (Monorepo)
+## 문서
 
-```
+네 개면 충분하다.
+
+| # | 문서 | 담는 것 |
+|---|---|---|
+| 01 | [`01_device_setup.md`](docs/01_device_setup.md) | 호스트·디바이스 환경 구성, 라인별 차이 |
+| 02 | [`02_measurements.md`](docs/02_measurements.md) | **측정 결과 전부** + 단계별 분해 + 원본 위치 |
+| 03 | [`03_model_choice.md`](docs/03_model_choice.md) | 무엇을 왜 골랐나, 라이선스 필터, AI Hub 비호환 |
+| 04 | [`04_traps.md`](docs/04_traps.md) | 밟은 함정 — 증상에서 원인으로 |
+
+기록은 라인별 `docs/history/` · `docs/issues/`에 그대로 있다(append-only).
+2026-09-08 통합 전의 상설 문서 38개는 `<라인>/docs/history/superseded/`에 보존돼 있다 —
+지운 게 아니라 상설에서 내린 것이다.
+
+## 구조
+
+```text
 unoq-edge-ai-lines/
-├── vision/                       Vision YOLOv8n int8 라인
-│   ├── docker/   docs/   models/   scripts/   src/
-├── asr/                          ASR Whisper Tiny.en 라인
-│   ├── docker/   docs/   models/   scripts/   src/
-├── pose/                         Pose MoveNet Thunder + 스쿼트 카운터
-│   ├── docker/   docs/   models/   scripts/
-│   └── ptz/                      PTZ PoC (Shawn Hymel fork, MIT)
-│       ├── python/   sketch/
-├── kws/                          KWS DS-CNN 라인 (후보 선정 완료, 실측 전)
-│   ├── docker/   docs/   models/   scripts/
-├── device-deploy/                디바이스에 올리는 런타임 묶음
-└── README.md                     (본 문서)
+├── docs/                  상설 문서 4개 (위 표)
+├── vision/                YOLOv8n int8 — 코드 · Dockerfile · benchmarks/*.json
+├── pose/                  MoveNet Thunder — 코드 · Dockerfile
+│   └── ptz/               PTZ PoC (Shawn Hymel fork, MIT)
+├── asr/                   Whisper Tiny.en — 코드 · Dockerfile
+├── kws/                   DS-CNN — 코드 · Dockerfile (측정 전)
+│   └── docs/03_ssh_to_benchmark_walkthrough.md   측정 절차 (미실행)
+└── device-deploy/         디바이스에 올리는 런타임 묶음
 ```
 
-각 라인은 **자체 docs/ 가이드 + history (작업 기록) + issues (함정 모음)** 포함.
+모델 파일은 리포에 없다. 출처는 [`docs/03_model_choice.md`](docs/03_model_choice.md).
 
-## 빌드 + 실행 — 라인별
+## 실행
 
 ```bash
-# Vision YOLO 라인
-cd vision && bash docker/run-vision.sh
-
-# ASR Whisper 라인
-cd asr && bash docker/run-asr.sh
-
-# Pose MoveNet 라인 (스쿼트 카운터 포함)
-cd pose && bash docker/run-pose.sh
+cd vision && bash docker/run-vision.sh     # 호스트 컨테이너 (대조군)
 ```
 
-자세한 진입 절차:
-- [`vision/docs/01_host_environment_setup.md`](vision/docs/01_host_environment_setup.md)
-- [`asr/docs/02_quickstart_asr.md`](asr/docs/02_quickstart_asr.md)
-- [`pose/docs/02_quickstart_pose.md`](pose/docs/02_quickstart_pose.md)
+디바이스는 `~/venv-unoq` + `ai-edge-litert`로 돈다. 절차는
+[`docs/01_device_setup.md`](docs/01_device_setup.md).
 
-## 디바이스 운영 — 이중 모드
+## 수치 표기 규칙
 
-USB-C 1포트 + 허브 토폴로지 제약으로 2 모드 분리:
+- 표의 숫자는 **우리가 잰 것**이 기본이다.
+- 벤더·논문·리더보드 인용은 `(참조: 출처)`를 붙여 구분한다.
+- **안 잰 것은 "미측정"이라고 쓴다.** 빈 칸이나 `?`로 채운 결과 표를 만들지 않는다 —
+  데이터가 있는 것처럼 보여서 없느니만 못하다.
 
-| 모드 | 토폴로지 | 용도 |
-|---|---|---|
-| **ADB** | PC ↔ USB-C ↔ UNO Q (직접) | 자동화, 모델 push, 자료 회수 |
-| **SSH** | UNO Q ↔ 허브 ↔ 카메라/마이크. PC는 LAN | 카메라 라이브, HTTP MJPEG 디버그 |
+## 남은 일
 
-자세히: [`vision/docs/history/2026-06-25_03_usb_topology_decision.md`](vision/docs/history/2026-06-25_03_usb_topology_decision.md)
-
-## 라이선스
-
-| 구성 | 라이선스 |
-|---|---|
-| 본 작품 코드 | 미설정 (Apache-2.0 권장 — 후속 release 시 추가) |
-| Vision YOLOv8n | AGPL-3.0 (Ultralytics) — 상업화 시 검토 필요 |
-| ASR Whisper Tiny.en | MIT (OpenAI) |
-| Pose MoveNet Thunder | Apache-2.0 (code) + CC BY 4.0 (model weights) — Google |
-| PTZ PoC (`pose/ptz/`) | MIT (Shawn Hymel) — [원본](https://github.com/ShawnHymel/face-expression-detection-robot) |
-| 의존 라이브러리 (`ai-edge-litert`, `numpy`, `opencv`, `scipy`) | Apache-2.0 / BSD-3 |
-
-본 작품 시연/사내 범위에선 라이선스 호환. 상업 배포 단계 진입 시 vision YOLO 교체 또는 상용 라이선스 검토.
-
-## 버전 로드맵
-
-| 버전 | 시점 | 주요 변경 |
-|---|---|---|
-| **v0.1.0** ★ | **2026-06-29 (현재)** | 첫 GitHub release — 3 라인 PoC + monorepo + docs |
-| v0.2.0 | 다음 사이클 | PTZ PoC 검증 + Pose A+B+C 다중 신호 카운터 |
-| v0.3.0 | 후속 | ASR Whisper → KWS 교체 (인터럽트 지원) |
-| v0.4.0 | 후속 | 하우징 시제품 + STM32U585 통합 |
-| **v1.0.0** | **본 작품 마감** | 첫 stable release — 시연 가능 |
-
-자세한 버전 규칙: [`pose/docs/07_versioning.md`](pose/docs/07_versioning.md)
-
-## 본 작품 특징 (리뷰 미팅 결정, 2026-06-27)
-
-- **NPU 없는 CPU 환경**에서 3 라인 동시 운영 가능성 입증 (Qualcomm 보고용)
-- **AI Hub precompiled QNN ONNX 비호환** 정량 진단 + TFLite 우회 진로
-- 본체 자율 추적은 **본 작품 범위 외** — PTZ 서보만 (안전, 단순)
-- 메인 = 헬스케어 봇 / 시연 보조 = 감시 모드 (같은 keypoint 다른 해석)
-- 하우징 컨셉: 귀여운 캐릭터 or Qualcomm 드래곤 (드래곤윙 프로세서 참조), 파란색 + 흰색
-
-## 자료
-
-| 종류 | 위치 |
-|---|---|
-| 라인별 청사진 | `vision/docs/00_project_blueprint.md`, `asr/docs/00_*`, `pose/docs/00_*` |
-| 알고리즘 가이드 | [`pose/docs/04_squat_algorithm.md`](pose/docs/04_squat_algorithm.md) (스쿼트 카운터 자세) |
-| 보고서 | [`pose/docs/05_pose_line_report.md`](pose/docs/05_pose_line_report.md) |
-| PTZ PoC 정의 | [`pose/docs/08_ptz_camera_angle_validation.md`](pose/docs/08_ptz_camera_angle_validation.md) |
-| 작업 기록 | 각 라인 `docs/history/` (총 19+) |
-| 함정 모음 | 각 라인 `docs/issues/` (총 5) |
-
-## 백업
-
-본 작품 monorepo 통합 직전 평행 폴더 3개:
-- `c:/Project/backup-2026-06-29/{unoq-companion-robot, unoq-asr, unoq-pose}/`
-
-## 다음 작업 후보
-
-- [ ] PTZ PoC 하드웨어 측정 (Shawn fork 기반)
-- [ ] Pose A+B+C 다중 신호 카운터 (측면/후면 카운팅 누락 해결)
-- [ ] ASR KWS 모델 후보 검토 + 교체
-- [ ] 하우징 3D 프린팅 시제품
-- [ ] 시연 영상 녹화 + 포트폴리오 README 보강
+1. **KWS 디바이스 측정** — 절차는 준비돼 있고 실행만 남았다
+2. **soak(장시간) thermal 측정** — 합격선을 넘긴 71.4 °C의 지속 거동 확인
+3. Vision 외 세 라인의 측정값을 JSON으로 남기기 (현재는 history 문서 안에만 있다)
 
 ---
 
-**작자**: DongHee Kim (한성대) | **레포**: `donghee-ai/unoq-edge-ai-lines` (Private)
+**작자**: DongHee Kim (한성대) | **리포**: `donghee-ai/unoq-edge-ai-lines` (Private)
