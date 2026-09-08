@@ -1,5 +1,10 @@
 # KWS 모델 후보 — 상업 라이선스 안전 최우선 (2026-07-02)
 
+> **이 문서의 숫자는 대부분 우리가 잰 값이 아니다.** 모델 크기·입출력 shape·정확도는
+> 각 프로젝트가 발표한 사양이고, 채택 판단의 근거로 **참조**한 것이다.
+> 디바이스 실측(latency / RSS / thermal)은 아직 하지 않았다 — 측정하면 이 문서가 아니라
+> `docs/`의 벤치마크 문서와 `benchmarks/` JSON에 우리 값으로 따로 남긴다.
+
 본 문서는 **상업 사용 가능한 KWS 모델** 후보 비교 + 채택 근거. 사용자 요건: **절대 라이센스 문제가 있어서는 안 됨** — Apache-2.0 / MIT / BSD-3 / CC-BY 4.0 만 허용, Non-Commercial / GPL / Custom EULA 는 전면 기각.
 
 ## 0. 라이선스 필터 결과
@@ -49,7 +54,7 @@ Speech Commands Dataset v2 (Pete Warden, Google, 2018): **CC BY 4.0** — Creati
 | 클래스 (12) | `Down, Go, Left, No, Off, On, Right, Stop, Up, Yes, _silence_, _unknown_` |
 | 오디오 프론트엔드 | MFCC 10 계수, 25ms 윈도우, 10ms 홉, 1s 클립 → 49 프레임 |
 | Sample rate | 16 kHz mono |
-| 정확도 (참조 데이터셋) | ~90.5% (MLPerf Tiny 리더보드) |
+| 정확도 | **참조** ~90.5% — 출처: [MLPerf Tiny 리더보드](https://mlcommons.org/benchmarks/inference-tiny/). **우리 실측 아님** |
 
 ### 1-4. 다운로드 절차
 

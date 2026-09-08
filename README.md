@@ -1,7 +1,9 @@
-# UNO Q Companion Robot
+# UNO Q Edge AI Lines
 
 > **Arduino UNO Q (Qualcomm QRB2210, Cortex-A53 ×4, NPU 없음)** 위에서
-> **Vision + ASR + Pose** 3 라인을 모두 CPU만으로 실시간 추론하는 교감로봇.
+> **Vision · ASR · Pose · KWS** 추론 라인을 CPU만으로 돌린 PoC + 실측 기록.
+> 이 중 Pose 자산으로 만든 제품 라인은 별도 리포
+> [`health_care_bot`](https://github.com/donghee-ai/health_care_bot)에 있다.
 
 **메인 사용처**: 헬스케어 봇 — 스쿼트 자세 측정 + 카운팅 + 음성 인터랙션
 **시연 모드**: 감시 모드 (같은 keypoint 신호의 다른 해석)
@@ -11,15 +13,23 @@
 
 ## 1차 PoC 합격 측정 (2026-06-27)
 
-3 라인 모두 디바이스에서 합격선 통과:
+**아래 수치는 전부 이 디바이스에서 우리가 직접 측정한 값이다.** 벤더 발표치나 논문 수치가
+아니다. 측정 방법과 원본 JSON은 각 라인의 `docs/` · `benchmarks/`에 있다.
+
+Vision · ASR · Pose 3 라인이 디바이스에서 합격선 통과. KWS는 후보 선정 단계:
 
 | 라인 | 모델 | 크기 | e2e | 비고 |
 |---|---|---|---|---|
 | **Vision** | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | thermal 70.8°C |
 | **ASR** | Whisper Tiny.en TFLite (partial int8) | 39.7 MB | **3.18 s** | JFK wav 6/7 단어 정확 |
 | **Pose** | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | 스쿼트 13 rep 카운팅 + 무릎 각도 |
+| KWS | MLPerf Tiny DS-CNN INT8 | 52 KB | **미측정** | 후보 선정만 완료, 디바이스 실측 전 → [`kws/`](kws/) |
 
-합격 기준 (3 라인 공통): e2e FPS ≥ 8, RSS ≪ 2.4 GB, thermal ≤ 70°C, dropped frames = 0
+합격 기준 (Vision/ASR/Pose 공통): e2e FPS ≥ 8, RSS ≪ 2.4 GB, thermal ≤ 70°C, dropped frames = 0
+
+> **수치 표기 규칙** — 이 리포의 표에 들어가는 숫자는 **우리가 잰 것**이 기본이다.
+> 벤더·논문·리더보드가 발표한 값을 인용할 때는 `(참조: 출처)`를 붙여 우리 실측과
+> 구분한다. 아직 안 잰 것은 비워두거나 **미측정**이라고 적는다.
 
 ## 기술 스택
 
@@ -44,6 +54,9 @@ unoq-companion-robot/
 │   ├── docker/   docs/   models/   scripts/
 │   └── ptz/                      PTZ PoC (Shawn Hymel fork, MIT)
 │       ├── python/   sketch/
+├── kws/                          KWS DS-CNN 라인 (후보 선정 완료, 실측 전)
+│   ├── docker/   docs/   models/   scripts/
+├── device-deploy/                디바이스에 올리는 런타임 묶음
 └── README.md                     (본 문서)
 ```
 
