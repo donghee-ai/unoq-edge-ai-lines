@@ -25,12 +25,16 @@
 |---|---|---|---|
 | Vision | YOLOv8n int8 | [Ultralytics](https://docs.ultralytics.com/) 표준 export 경로 | **AGPL-3.0** — §1-4 참고 |
 | Pose | MoveNet Thunder INT8 | TensorFlow Hub (Google) | Apache-2.0 (모델) + CC BY 4.0 |
-| ASR | Whisper Tiny.en TFLite | [nyadla-sys/whisper.tflite](https://github.com/nyadla-sys/whisper.tflite) | MIT (OpenAI Whisper) |
+| ASR | Whisper Tiny.en TFLite | [nyadla-sys/whisper.tflite](https://github.com/nyadla-sys/whisper.tflite) | **MIT** — Copyright (c) 2023 Niranjan Yadla. 원본 Whisper도 MIT (OpenAI) |
 | KWS † | MLPerf Tiny DS-CNN INT8 | [mlcommons/tiny](https://github.com/mlcommons/tiny) | Apache-2.0 (코드) + CC BY 4.0 (데이터) |
 
 **YOLOv8n 가중치는 이 리포에 넣지 않는다** — AGPL-3.0이라 재배포하면 라이선스 의무가
-따라붙는다. 아래 export를 각자 로컬에서 돌려서 만든다. 나머지 셋은 MIT/Apache라
-재배포에 문제가 없다.
+따라붙는다. 아래 export를 각자 로컬에서 돌려서 만든다.
+
+리포가 실제로 재배포하는 제3자 바이너리는 **Whisper 변환본 하나뿐**이고(MIT),
+MIT가 요구하는 저작권 고지를 모델 옆에
+[`asr/models/audio/LICENSE-whisper-tflite.txt`](../asr/models/audio/LICENSE-whisper-tflite.txt)에
+동봉했다. MoveNet은 wget 한 줄이라 넣지 않았고, Qualcomm 산출물은 EULA라 뺐다(§1-4).
 
 ```bash
 # Vision — 받는 게 아니라 직접 export (AGPL, 재배포 금지)
@@ -106,7 +110,7 @@ HTTP로 서빙하지만, AGPL의 네트워크 사용 조항도 같은 이유로 
 | YOLOv8n int8 | **없음** | AGPL-3.0 — export로 각자 생성 |
 | Whisper Tiny.en | 있음 (`asr/models/audio/`) | MIT — 재배포 가능 |
 | MoveNet Thunder | 없음 | 용량. wget 한 줄이면 받는다 |
-| QNN 컨텍스트 바이너리 | 있음 (`pose/models/archive/`) | §2의 **증거물**이라 보존 |
+| QNN 컨텍스트 바이너리 | **없음** | Qualcomm AI Hub EULA(proprietary) — 재배포하지 않는다. 판별 결과는 §2 표에 남겼다 |
 
 ### 1-5. KWS — 라이선스 필터가 후보를 반으로 줄였다
 
@@ -159,6 +163,11 @@ Unsupported model IR version: 13, max supported IR version: 10
 
 **재발 방지** — 모델을 받기 전에 **대상 칩**과 `EPContext` 유무를 확인할 것. 확장자가
 `.onnx`라고 다 이식 가능한 게 아니다.
+
+> **받은 파일 자체는 리포에 두지 않는다.** Qualcomm AI Hub 산출물은 Qualcomm EULA
+> (proprietary) 아래 있어서 재배포 대상이 아니다 — §1-1 필터 1이 기각한 바로 그
+> 조건이다. 위 표(producer·IR version·op_types·EPContext.source)가 판별에 필요한
+> 전부이고, 원본이 필요하면 AI Hub에서 각자 받으면 된다.
 
 ## 3. 모델 카드를 믿지 말고 텐서를 열어볼 것
 
