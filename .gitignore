@@ -1,0 +1,58 @@
+# 리포 루트 공통 규칙 — 각 라인(vision/asr/pose/kws)의 .gitignore를 보완하는 안전망.
+# 라인별 .gitignore는 그 라인 사정에 맞춘 것이고, 여기는 "어느 라인에서든 절대
+# 커밋되면 안 되는 것"만 둔다. 새 라인을 추가해도 자동으로 걸린다.
+#
+# 2026-09-09: asr/에 .gitignore가 없어서 디바이스 카메라 테스트 프레임 10장이
+# 그대로 커밋된 적이 있다(촬영 장소가 그대로 찍힘). 히스토리에서 제거했고,
+# 같은 실수가 다른 라인에서 반복되지 않도록 규칙을 루트로 올린다.
+
+# === 카메라 캡처 산출물 ===
+# 사생활 문제: 테스트 프레임에는 촬영한 방·책상·사람이 그대로 남는다.
+# 벤치마크 수치는 문서에 적고, 원본 프레임은 리포에 넣지 않는다.
+**/test_camera_output/
+**/camera_output/
+**/captures/
+**/recordings/
+frame_*.jpg
+frame_*.jpeg
+frame_*.png
+test_*.jpg
+test_*.jpeg
+test_*.png
+*_annotated.jpg
+*_annotated.png
+
+# === 영상 ===
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+
+# === 파이썬 ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+
+# === 로그 / 런타임 산출물 ===
+*.log
+logs/
+
+# === 비밀 ===
+.env
+.env.*
+*.key
+*.pem
+credentials.*
+secrets.*
+
+# === OS / 에디터 ===
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
