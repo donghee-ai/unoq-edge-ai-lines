@@ -62,15 +62,23 @@ unoq-edge-ai-lines/
 
 **모델 출처·라이선스는 [`docs/lessons.md`](docs/lessons.md) §1-2에 있다** — 전부 외부
 자산이고 다운로드 URL까지 적혀 있다. **YOLOv8n은 AGPL-3.0이라 가중치를 리포에 두지
-않는다** — export 명령으로 각자 만든다(§1-4).
+않는다**(§1-4). 별도로 구해올 필요는 없고, 아래 컨테이너 안에서 export 한 줄이면 된다 —
+`ultralytics`가 이미 이미지에 들어 있고 `yolov8n.pt`도 자동으로 받아온다.
 
 측정 원본 중 기계 판독이 되는 것은 `vision/benchmarks/*.json` 둘뿐이다.
 
 ## 실행
 
 ```bash
-cd vision && bash docker/run-vision.sh     # 호스트 컨테이너 (대조군)
+cd vision && bash docker/run-vision.sh              # 컨테이너 진입 (vision/이 /work에 마운트됨)
+
+# 컨테이너 안에서 — 최초 1회, 모델 만들기
+yolo export model=yolov8n.pt format=tflite int8=True imgsz=320
 ```
+
+**모델은 이미지에 굽지 않는다.** Dockerfile은 파이썬 패키지만 깔고, `vision/`이 볼륨으로
+마운트되므로 export 산출물은 호스트에 그대로 남는다. `*.tflite`는 gitignore 대상이라
+실수로 커밋되지 않는다.
 
 디바이스는 `~/venv-unoq` + `ai-edge-litert`로 돈다. 구성 절차는
 [`docs/measurements.md`](docs/measurements.md) §1.

@@ -53,7 +53,7 @@ interp = Interpreter(model_path=..., num_threads=4)
 
 | 라인 | 모델 파일 | 입력 | 진입점 |
 |---|---|---|---|
-| Vision | `yolov8n_int8.tflite` | 640×640 | `vision/src/infer_camera.py` · `benchmark_e2e.py` |
+| Vision | `yolov8n_int8.tflite` | **320×320** | `vision/src/infer_camera.py` · `benchmark_e2e.py` |
 | Pose | `movenet_thunder_int8.tflite` | 256×256 letterbox | `pose/scripts/infer_camera_pose.py` |
 | ASR | `whisper_tiny_en.tflite` | 80×3000 mel | `asr/src/` |
 
@@ -71,7 +71,11 @@ cat /sys/class/thermal/thermal_zone0/temp    # ÷1000 = °C
 ## 2. Vision — YOLOv8n int8
 
 원본: [`vision/benchmarks/device_e2e_20260623.json`](../vision/benchmarks/device_e2e_20260623.json)
-(호스트 대조군 `host_e2e_20260623.json`). 100 프레임, warmup 10, 4 threads.
+(호스트 대조군 `host_e2e_20260623.json`). 100 프레임, warmup 10, 4 threads,
+**입력 320×320**(JSON의 `input_shape = [1,320,320,3]`).
+
+> **9.23 FPS는 320 입력 기준이다.** 640으로 export하면 연산량이 4배가 되어 이 수치는
+> 재현되지 않고, `postprocess.py`도 320 전용(앵커 2100개)이라 디코딩이 깨진다.
 
 | 항목 | 값 |
 |---|---|

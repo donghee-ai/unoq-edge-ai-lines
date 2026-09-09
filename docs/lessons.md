@@ -34,8 +34,11 @@
 
 ```bash
 # Vision — 받는 게 아니라 직접 export (AGPL, 재배포 금지)
+#   imgsz=320 필수: postprocess.py가 320 전용(앵커 2100개)이고 실측도 320 기준
 pip install ultralytics
-yolo export model=yolov8n.pt format=tflite int8=True
+yolo export model=yolov8n.pt format=tflite int8=True imgsz=320
+#   -> yolov8n_saved_model/yolov8n_full_integer_quant.tflite 를 쓴다
+#   (yolov8n.pt는 ultralytics가 자동으로 받아온다 - 따로 구할 필요 없다)
 
 # Pose — 채택본
 wget -O movenet_thunder_int8.tflite \
