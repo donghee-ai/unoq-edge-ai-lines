@@ -1,95 +1,113 @@
 # UNO Q Edge AI Lines
 
-> **NPU 없는 Arduino UNO Q(Qualcomm Dragonwing QRB2210, Cortex-A53 ×4)에서
-> 객체검출·포즈추정·음성인식을 CPU만으로 얼마나 돌릴 수 있는지 잰 기록.**
+> 한국어: [`README_kr.md`](README_kr.md)
 
-측정 리포다. 제품을 만드는 곳이 아니라 "NPU 없이 이 정도 나온다"를 실기에서 확인하고
-근거를 남기는 것이 전부다. 여기서 검증한 Pose 자산으로 만든 제품 라인은 별도 리포
-[`health_care_bot`](https://github.com/donghee-ai/health_care_bot)에 있다.
+> **How much object detection, pose estimation, and speech recognition can you run on
+> an Arduino UNO Q (Qualcomm Dragonwing QRB2210, Cortex-A53 ×4) with no NPU — CPU only?
+> This repo is the measurement record.**
 
-측정은 2026-06 사이클에서 끝났고, 이 리포는 그 기록으로 닫혀 있다.
+This is a measurement repo, not a product. Its entire purpose was to confirm on real
+hardware what "no NPU, this is what you get" actually means, and to leave the evidence
+behind. The product line built from the Pose assets validated here lives in a separate
+repo: [`health_care_bot`](https://github.com/donghee-ai/health_care_bot).
 
-## 결과
+Measurement finished in the 2026-06 cycle, and this repo is closed as that record.
 
-**전부 UNO Q 실기에서 직접 잰 값이다.** 벤더 발표치는 섞여 있지 않다.
+## Results
 
-| 라인 | 모델 | 크기 | e2e | 결과 |
+**Every number below was measured by us on real UNO Q hardware.** No vendor-published
+figures are mixed in.
+
+| Line | Model | Size | e2e | Verdict |
 |---|---|---|---|---|
-| Vision | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | 합격 |
-| Pose | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | 합격 |
-| ASR | Whisper Tiny.en TFLite (DRQ) | 39.7 MB | **3.18 s** (11초 오디오) | 합격 |
+| Vision | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | pass |
+| Pose | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | pass |
+| ASR | Whisper Tiny.en TFLite (DRQ) | 39.7 MB | **3.18 s** (11 s audio) | pass |
 
-합격선: e2e FPS ≥ 8 · RSS ≪ 2.4 GB · thermal ≤ 70 °C · dropped frames = 0
+Pass criteria: e2e FPS ≥ 8 · RSS ≪ 2.4 GB · thermal ≤ 70 °C · dropped frames = 0
 
-세 라인 모두 **invoke(추론)가 병목**이고 전처리·후처리·드로잉은 다 합쳐도 13~22 %다.
-화면을 꺼도 FPS가 안 오르는 이유가 이것이다.
+All three lines are **bound by `invoke` (inference)**. Preprocessing, postprocessing and
+drawing together account for only 13–22 %. That is why turning the display off barely
+moves the FPS.
 
-> **네 번째 라인(KWS)은 재지 못했다.** 후보 선정과 라이선스 검토까지만 하고 사이클이
-> 끝나서, 구현 코드와 함께 리포에서 뺐다. 조사 결과는 남아 있다 —
-> [`docs/lessons.md`](docs/lessons.md) §1-5가 그것이고, 이 리포에서 가장 재사용
-> 가치가 높은 표다.
+> **The fourth line (KWS) was never measured.** The cycle ended after candidate selection
+> and license review, so the implementation was removed from the repo along with it. The
+> research survived — [`docs/lessons.md`](docs/lessons.md) §1-5, which is the single most
+> reusable table in this repo.
 
-> **thermal은 여유가 없다.** 짧은 측정에서는 68.6 °C였지만 지속 구동에서 71.4 °C까지
-> 올라 합격선을 넘겼다. soak 측정은 하지 않았다.
+> **Thermal has no headroom.** A short run read 68.6 °C, but sustained operation climbed
+> to 71.4 °C and crossed the limit. No soak test was performed.
 
-## 문서
+## Documentation
 
-두 장이면 충분하다.
+Two pages are enough.
 
-| 문서 | 담는 것 |
+| Document | Contents |
 |---|---|
-| [`docs/measurements.md`](docs/measurements.md) | **측정 전부** — 환경·조건·수치·단계별 분해·안 잰 것 |
-| [`docs/lessons.md`](docs/lessons.md) | **다시 쓸 판단** — 모델 선택 필터, 라이선스, 밟은 함정 6종 |
+| [`docs/measurements.md`](docs/measurements.md) | **All measurements** — environment, conditions, numbers, per-stage breakdown, what was not measured |
+| [`docs/lessons.md`](docs/lessons.md) | **Judgments worth reusing** — model selection filters, licensing, six traps we walked into |
 
-가장 재사용 가치가 높은 세 가지만 미리 꼽으면:
+> Both documents are written in Korean. This README is the English entry point; the
+> tables, numbers and command lines in them are readable without Korean, and the section
+> numbers referenced here match.
 
-- **Qualcomm AI Hub 모델은 QRB2210에서 못 쓴다.** 받은 `.onnx`가 실은 다른 칩용 QNN
-  컨텍스트 바이너리였다 — `EPContext` 노드가 증거
-- **모델 카드를 믿지 말고 텐서를 열어볼 것.** "int8"로 알려진 Whisper가 실제로는 int8
-  텐서 6.8 %인 weight-only DRQ였다
-- **"Billboard Device만 보인다" = 케이블을 먼저 의심하라는 신호**
+The three findings most worth carrying to another project:
 
-## 구조
+- **Qualcomm AI Hub models do not run on QRB2210.** The `.onnx` we downloaded was actually
+  a QNN context binary compiled for a different chip — the `EPContext` node is the proof.
+- **Do not trust the model card; open the tensors.** A Whisper build labeled "int8" turned
+  out to be weight-only DRQ, with int8 tensors making up just 6.8 % of the model.
+- **"Only a Billboard Device shows up" means suspect the cable first**, not the hub,
+  the port, or the driver.
+
+## Layout
 
 ```text
 unoq-edge-ai-lines/
-├── docs/                  문서 2장 (위 표)
-├── vision/                YOLOv8n int8 — 코드 · Dockerfile · benchmarks/*.json
-├── pose/                  MoveNet Thunder — 코드 · Dockerfile
-│   └── ptz/               PTZ PoC (Shawn Hymel fork, MIT). 후속은 health_care_bot으로 이관
-└── asr/                   Whisper Tiny.en — 코드 · Dockerfile
+├── docs/                  the two documents above (Korean)
+├── vision/                YOLOv8n int8 — code · Dockerfile · benchmarks/*.json
+├── pose/                  MoveNet Thunder — code · Dockerfile
+│   └── ptz/               PTZ PoC (fork of Shawn Hymel's project, MIT).
+│                          Follow-up work moved to health_care_bot
+└── asr/                   Whisper Tiny.en — code · Dockerfile
 ```
 
-**모델 출처·라이선스는 [`docs/lessons.md`](docs/lessons.md) §1-2에 있다** — 전부 외부
-자산이고 다운로드 URL까지 적혀 있다. **YOLOv8n은 AGPL-3.0이라 가중치를 리포에 두지
-않는다**(§1-4). 별도로 구해올 필요는 없고, 아래 컨테이너 안에서 export 한 줄이면 된다 —
-`ultralytics`가 이미 이미지에 들어 있고 `yolov8n.pt`도 자동으로 받아온다.
+**Model sources and licenses are in [`docs/lessons.md`](docs/lessons.md) §1-2**, including
+download URLs. Everything is third-party. **YOLOv8n weights are not kept in this repo
+because they are AGPL-3.0** (§1-4). You do not need to obtain them separately — one export
+command inside the container below produces them, since `ultralytics` is already in the
+image and `yolov8n.pt` is fetched automatically.
 
-측정 원본 중 기계 판독이 되는 것은 `vision/benchmarks/*.json` 둘뿐이다.
+Of the raw measurement artifacts, only `vision/benchmarks/*.json` are machine-readable.
 
-## 실행
+## Running it
 
 ```bash
-cd vision && bash docker/run-vision.sh              # 컨테이너 진입 (vision/이 /work에 마운트됨)
+cd vision && bash docker/run-vision.sh              # enter the container (vision/ is mounted at /work)
 
-# 컨테이너 안에서 — 최초 1회, 모델 만들기
+# inside the container — once, to produce the model
 yolo export model=yolov8n.pt format=tflite int8=True imgsz=320
 ```
 
-**모델은 이미지에 굽지 않는다.** Dockerfile은 파이썬 패키지만 깔고, `vision/`이 볼륨으로
-마운트되므로 export 산출물은 호스트에 그대로 남는다. `*.tflite`는 gitignore 대상이라
-실수로 커밋되지 않는다.
+`imgsz=320` is required: `postprocess.py` is written for 320 input (2100 anchors), and the
+9.23 FPS above was measured at that size.
 
-디바이스는 `~/venv-unoq` + `ai-edge-litert`로 돈다. 구성 절차는
+**The model is not baked into the image.** The Dockerfile installs Python packages only,
+and `vision/` is bind-mounted, so the export output lands on the host. `*.tflite` is
+gitignored, so it will not be committed by accident.
+
+On the device everything runs under `~/venv-unoq` with `ai-edge-litert`. Setup steps are in
 [`docs/measurements.md`](docs/measurements.md) §1.
 
-## 이 문서의 숫자를 읽는 법
+## How to read the numbers here
 
-- 표의 숫자는 **우리가 잰 것**이다. 벤더·논문·리더보드 인용에는 `(참조: 출처)`가 붙는다.
-- **안 잰 것은 "미측정"으로 적혀 있다.** 빈 칸이나 `?`로 채운 결과 표는 두지 않았다 —
-  데이터가 있는 것처럼 보여서 없느니만 못하기 때문이다.
-- KWS 실측과 soak thermal은 하지 않았고, 그 사실을 그대로 적어두는 것으로 마무리한다.
+- Figures in the tables are **ours**. Anything quoted from a vendor, paper or leaderboard
+  is marked with its source.
+- **What was not measured says "not measured."** No results table is padded with blanks or
+  `?` — that looks like data exists when it does not, which is worse than saying nothing.
+- KWS measurement and a soak thermal test were never done, and leaving that stated plainly
+  is how this record closes.
 
 ---
 
-**작자**: DongHee Kim (한성대) · **리포**: `donghee-ai/unoq-edge-ai-lines`
+**Author**: DongHee Kim (Hansung University) · **Repo**: `donghee-ai/unoq-edge-ai-lines`
