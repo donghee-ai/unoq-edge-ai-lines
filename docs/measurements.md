@@ -137,7 +137,7 @@ Quantization)** 확정. 교훈은 [`lessons.md`](lessons.md) §3.
 
 ## 5. KWS — 미측정
 
-후보 선정과 라이선스 검토만 끝났다([`lessons.md`](lessons.md) §1-3). 디바이스
+후보 선정과 라이선스 검토만 끝났다([`lessons.md`](lessons.md) §1-5). 디바이스
 latency·RSS·thermal·오탐률은 **재지 않았다.** `kws/benchmarks/`는 비어 있다.
 
 ## 6. 라인 간 비교

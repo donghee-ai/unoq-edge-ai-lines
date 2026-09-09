@@ -16,21 +16,77 @@
 | 3 | **chipset 비종속** | §2 — 특정 칩용으로 미리 컴파일된 모델은 QRB2210에서 안 돈다 |
 | 4 | **가중치가 파일에 들어 있고 `wget`으로 바로 받아지는 것** | 계정·SDK·재훈련이 필요하면 재현이 끊긴다 |
 
-### 1-2. 채택한 것
+### 1-2. 채택한 모델 — 출처와 라이선스
 
-| 라인 | 채택 | 폴백 계획 | 폴백 썼나 |
+**이 표가 제3자 자산 표기다.** 모델은 전부 외부에서 받아온 것이고, 우리가 만든 것은
+없다.
+
+| 라인 | 모델 | 출처 | 라이선스 |
 |---|---|---|---|
-| Vision | YOLOv8n int8 (Ultralytics 표준 export) | FPS < 8~10이면 MediaPipe Face | **아니오** — 트리거 미발동 |
-| Pose | **MoveNet Thunder INT8** (TF Hub, Apache-2.0 + CC BY 4.0, 256×256, 17 keypoint, 단일 invoke) | Lightning INT8(192×192) → MediaPipe Pose int8 BQ(ONNX, 2-stage) | **아니오** — 1순위로 합격 |
-| ASR | Whisper Tiny.en TFLite | — | — |
-| KWS | MLPerf Tiny DS-CNN INT8 | TFLM MicroSpeech | 미측정이라 판단 불가 |
+| Vision | YOLOv8n int8 | [Ultralytics](https://docs.ultralytics.com/) 표준 export 경로 | **AGPL-3.0** — §1-4 참고 |
+| Pose | MoveNet Thunder INT8 | TensorFlow Hub (Google) | Apache-2.0 (모델) + CC BY 4.0 |
+| ASR | Whisper Tiny.en TFLite | [nyadla-sys/whisper.tflite](https://github.com/nyadla-sys/whisper.tflite) | MIT (OpenAI Whisper) |
+| KWS | MLPerf Tiny DS-CNN INT8 | [mlcommons/tiny](https://github.com/mlcommons/tiny) | Apache-2.0 (코드) + CC BY 4.0 (데이터) |
 
-실제 수치는 [`measurements.md`](measurements.md).
+**YOLOv8n 가중치는 이 리포에 넣지 않는다** — AGPL-3.0이라 재배포하면 라이선스 의무가
+따라붙는다. 아래 export를 각자 로컬에서 돌려서 만든다. 나머지 셋은 MIT/Apache라
+재배포에 문제가 없다.
 
-Pose는 정확도 우선으로 Thunder를 먼저 시도했다 — Lightning(192)보다 keypoint 정밀도가
-높고, 그게 관절 각도 측정 정밀도로 직결되기 때문이다.
+```bash
+# Vision — 받는 게 아니라 직접 export (AGPL, 재배포 금지)
+pip install ultralytics
+yolo export model=yolov8n.pt format=tflite int8=True
 
-### 1-3. KWS — 라이선스 필터가 후보를 반으로 줄였다
+# Pose — 채택본
+wget -O movenet_thunder_int8.tflite \
+  "https://tfhub.dev/google/lite-model/movenet/singlepose/thunder/tflite/int8/4?lite-format=tflite"
+
+# Pose — 속도 폴백 (미사용)
+wget -O movenet_lightning_int8.tflite \
+  "https://tfhub.dev/google/lite-model/movenet/singlepose/lightning/tflite/int8/4?lite-format=tflite"
+
+# ASR
+wget -O whisper_tiny_en.tflite \
+  https://raw.githubusercontent.com/nyadla-sys/whisper.tflite/main/models/whisper-tiny-en.tflite
+# 대안: https://huggingface.co/DocWolle/whisper_tflite_models/resolve/main/whisper-tiny.en.tflite
+
+# KWS (미측정)
+git clone --depth 1 https://github.com/mlcommons/tiny.git
+```
+
+### 1-3. 폴백은 하나도 안 썼다
+
+| 라인 | 폴백 계획 | 발동 |
+|---|---|---|
+| Vision | FPS < 8~10이면 MediaPipe Face로 교체 | **아니오** — 트리거 미발동 |
+| Pose | Lightning INT8(192×192) → MediaPipe Pose int8 BQ(ONNX, 2-stage) | **아니오** — 1순위로 합격 |
+| KWS | TFLM MicroSpeech | 미측정이라 판단 불가 |
+
+Pose는 정확도 우선으로 Thunder(256×256, 17 keypoint, 단일 invoke)를 먼저 시도했다 —
+Lightning(192)보다 keypoint 정밀도가 높고, 그게 관절 각도 측정 정밀도로 직결되기
+때문이다. 실제 수치는 [`measurements.md`](measurements.md).
+
+### 1-4. 필터 1의 예외 — Vision은 AGPL-3.0이다
+
+§1-1에서 "상업 사용 가능 라이선스만"이라고 걸러놓고 Vision만 **AGPL-3.0**(Ultralytics
+기반)을 채택했다. 모순이 아니라 **범위를 좁혀서 통과시킨 것**이다 — 이 리포는 측정이
+목적이고 배포하지 않으므로 AGPL 조항이 발동하지 않는다.
+
+> **상업 배포 단계로 가면 이 예외가 유효하지 않다.** Ultralytics 상용 라이선스를 사거나
+> 대체 모델(MediaPipe Face 등)로 바꿔야 한다. 나머지 세 라인은 그대로 써도 된다.
+
+같은 이유로 **YOLOv8n 가중치 파일은 리포에서 뺐다**(2026-09-09). 코드와 측정값은
+남기고 모델만 §1-2의 export 명령으로 대체했다 — 재배포하지 않으면 AGPL 의무가
+발생하지 않기 때문이다.
+
+| 모델 | 리포에 있나 | 이유 |
+|---|---|---|
+| YOLOv8n int8 | **없음** | AGPL-3.0 — export로 각자 생성 |
+| Whisper Tiny.en | 있음 (`asr/models/audio/`) | MIT — 재배포 가능 |
+| MoveNet Thunder | 없음 | 용량. wget 한 줄이면 받는다 |
+| QNN 컨텍스트 바이너리 | 있음 (`pose/models/archive/`) | §2의 **증거물**이라 보존 |
+
+### 1-5. KWS — 라이선스 필터가 후보를 반으로 줄였다
 
 이 리포에서 가장 재사용 가치가 높은 표다. "상업적으로 못 쓰는 것"이 생각보다 많다.
 

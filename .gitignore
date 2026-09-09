@@ -22,6 +22,16 @@ test_*.png
 *_annotated.jpg
 *_annotated.png
 
+# === AGPL 모델 가중치 — 재배포하지 않는다 ===
+# YOLOv8n(Ultralytics)은 AGPL-3.0이라 리포에 넣으면 라이선스 의무가 따라붙는다.
+# docs/lessons.md §1-2의 export 명령으로 로컬에서 만들어 쓴다.
+yolo*.tflite
+yolo*.pt
+yolo*.onnx
+yolov*.tflite
+yolov*.pt
+yolov*.onnx
+
 # === 영상 ===
 *.mp4
 *.mov

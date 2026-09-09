@@ -54,11 +54,13 @@ unoq-edge-ai-lines/
 ├── pose/                  MoveNet Thunder — 코드 · Dockerfile
 │   └── ptz/               PTZ PoC (Shawn Hymel fork, MIT). 후속은 health_care_bot으로 이관
 ├── asr/                   Whisper Tiny.en — 코드 · Dockerfile
-├── kws/                   DS-CNN — 코드 · Dockerfile (측정 전)
-└── device-deploy/         디바이스에 올리는 런타임 묶음
+└── kws/                   DS-CNN — 코드 · Dockerfile (측정 전)
 ```
 
-**모델 파일은 리포에 없다.** 출처는 [`docs/lessons.md`](docs/lessons.md) §1.
+**모델 출처·라이선스는 [`docs/lessons.md`](docs/lessons.md) §1-2에 있다** — 전부 외부
+자산이고 다운로드 URL까지 적혀 있다. **YOLOv8n은 AGPL-3.0이라 가중치를 리포에 두지
+않는다** — export 명령으로 각자 만든다(§1-4).
+
 측정 원본 중 기계 판독이 되는 것은 `vision/benchmarks/*.json` 둘뿐이다.
 
 ## 실행
