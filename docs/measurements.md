@@ -56,7 +56,6 @@ interp = Interpreter(model_path=..., num_threads=4)
 | Vision | `yolov8n_int8.tflite` | 640×640 | `vision/src/infer_camera.py` · `benchmark_e2e.py` |
 | Pose | `movenet_thunder_int8.tflite` | 256×256 letterbox | `pose/scripts/infer_camera_pose.py` |
 | ASR | `whisper_tiny_en.tflite` | 80×3000 mel | `asr/src/` |
-| KWS | `kws_ref_model_ds_cnn_int8.tflite` | `[1,49,10,1]` MFCC | `kws/scripts/` |
 
 ### 1-4. 실기에서 반드시 확인할 것
 
@@ -135,10 +134,22 @@ JFK 1961 취임 연설 11초 wav.
 39.7 MB + dtype 분포가 DRQ와 정확히 맞는다 → **weight-only int8 (Dynamic Range
 Quantization)** 확정. 교훈은 [`lessons.md`](lessons.md) §3.
 
-## 5. KWS — 미측정
+## 5. KWS — 재지 못했다
 
-후보 선정과 라이선스 검토만 끝났다([`lessons.md`](lessons.md) §1-5). 디바이스
-latency·RSS·thermal·오탐률은 **재지 않았다.** `kws/benchmarks/`는 비어 있다.
+네 번째 라인으로 잡았지만 **디바이스 측정에 도달하지 못했다.** 후보 선정과 라이선스
+검토까지만 하고 사이클이 끝났고, MFCC 프론트엔드·추론·모드 컨트롤러 구현(약 2,200줄)은
+한 번도 실기에서 돌지 않았다. latency·RSS·thermal·오탐률 **전부 미측정**이다.
+
+측정값이 없는 구현을 측정 리포에 두면 네 라인을 다 잰 것처럼 읽히므로 **코드는
+리포에서 뺐다**(2026-09-09). git 히스토리에 그대로 있어서 KWS를 다시 하게 되면
+거기서 꺼내면 된다.
+
+> **남긴 것** — 후보 조사와 라이선스 필터링 결과는 측정 없이도 성립하는 결과물이라
+> [`lessons.md`](lessons.md) §1-5에 그대로 뒀다.
+
+재개한다면 계획했던 측정 조건은 **clean 환경(조용한 방)과 생활 노이즈 환경을 각각
+재고 결과를 분리 보고**하는 것이었다. 최소 모델(< 100 KB)로도 실시간 성능이 안 나오면
+알고리즘 튜닝 대신 GPIO 버튼으로 전환하기로 했었다.
 
 ## 6. 라인 간 비교
 

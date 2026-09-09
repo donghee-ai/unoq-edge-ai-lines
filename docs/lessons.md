@@ -26,7 +26,7 @@
 | Vision | YOLOv8n int8 | [Ultralytics](https://docs.ultralytics.com/) 표준 export 경로 | **AGPL-3.0** — §1-4 참고 |
 | Pose | MoveNet Thunder INT8 | TensorFlow Hub (Google) | Apache-2.0 (모델) + CC BY 4.0 |
 | ASR | Whisper Tiny.en TFLite | [nyadla-sys/whisper.tflite](https://github.com/nyadla-sys/whisper.tflite) | MIT (OpenAI Whisper) |
-| KWS | MLPerf Tiny DS-CNN INT8 | [mlcommons/tiny](https://github.com/mlcommons/tiny) | Apache-2.0 (코드) + CC BY 4.0 (데이터) |
+| KWS † | MLPerf Tiny DS-CNN INT8 | [mlcommons/tiny](https://github.com/mlcommons/tiny) | Apache-2.0 (코드) + CC BY 4.0 (데이터) |
 
 **YOLOv8n 가중치는 이 리포에 넣지 않는다** — AGPL-3.0이라 재배포하면 라이선스 의무가
 따라붙는다. 아래 export를 각자 로컬에서 돌려서 만든다. 나머지 셋은 MIT/Apache라
@@ -50,9 +50,12 @@ wget -O whisper_tiny_en.tflite \
   https://raw.githubusercontent.com/nyadla-sys/whisper.tflite/main/models/whisper-tiny-en.tflite
 # 대안: https://huggingface.co/DocWolle/whisper_tflite_models/resolve/main/whisper-tiny.en.tflite
 
-# KWS (미측정)
+# KWS — 선정만 하고 측정엔 못 갔다 (§1-5)
 git clone --depth 1 https://github.com/mlcommons/tiny.git
 ```
+
+† KWS는 채택까지만 하고 **실기 측정에 도달하지 못했다.** 구현 코드도 리포에서 뺐다
+([`measurements.md`](measurements.md) §5). 아래 §1-5의 조사 결과만 남긴다.
 
 ### 1-3. 폴백은 하나도 안 썼다
 
@@ -60,7 +63,6 @@ git clone --depth 1 https://github.com/mlcommons/tiny.git
 |---|---|---|
 | Vision | FPS < 8~10이면 MediaPipe Face로 교체 | **아니오** — 트리거 미발동 |
 | Pose | Lightning INT8(192×192) → MediaPipe Pose int8 BQ(ONNX, 2-stage) | **아니오** — 1순위로 합격 |
-| KWS | TFLM MicroSpeech | 미측정이라 판단 불가 |
 
 Pose는 정확도 우선으로 Thunder(256×256, 17 keypoint, 단일 invoke)를 먼저 시도했다 —
 Lightning(192)보다 keypoint 정밀도가 높고, 그게 관절 각도 측정 정밀도로 직결되기
@@ -79,6 +81,23 @@ Lightning(192)보다 keypoint 정밀도가 높고, 그게 관절 각도 측정 �
 남기고 모델만 §1-2의 export 명령으로 대체했다 — 재배포하지 않으면 AGPL 의무가
 발생하지 않기 때문이다.
 
+**왜 가중치만 빼고 `vision/` 코드와 Dockerfile은 남겼나** — AGPL이 걸리는 것은
+*Ultralytics 저작물을 배포*하는 행위인데, 이 리포가 배포하던 건 가중치뿐이었다.
+
+| | Ultralytics 저작물인가 | 판단 |
+|---|---|---|
+| `yolov8n_int8.tflite` 가중치 | **예** | 뺐다 |
+| `vision/src/*.py` | 아니오 — `ultralytics`를 import하지 않는다. `ai-edge-litert`(Apache-2.0)로 `.tflite`를 직접 돌리고, 디코딩·NMS는 numpy로 자체 구현했다 | 남긴다 |
+| `vision/docker/requirements.txt` | 아니오 — `ultralytics`를 **이름으로 나열**할 뿐이다. 빌드하는 사람이 PyPI에서 각자 받는다 | 남긴다 |
+
+요약하면 **우리 코드는 Ultralytics의 2차적 저작물이 아니다.** `infer_camera.py`가 MJPEG를
+HTTP로 서빙하지만, AGPL의 네트워크 사용 조항도 같은 이유로 닿지 않는다.
+(법률 자문은 아니고, 보수적으로 읽은 결과다.)
+
+> 다만 `requirements.txt`가 **export 도구 체인**(ultralytics·onnx·onnx2tf 등)과
+> **런타임**(ai-edge-litert·numpy·cv2)을 한 파일에 섞어두고 있다. 이제 가중치를
+> 안 넣으니 둘을 나눠두면 "실행에 필요한 것"과 "모델 만들 때만 필요한 것"이 분명해진다.
+
 | 모델 | 리포에 있나 | 이유 |
 |---|---|---|
 | YOLOv8n int8 | **없음** | AGPL-3.0 — export로 각자 생성 |
@@ -88,7 +107,8 @@ Lightning(192)보다 keypoint 정밀도가 높고, 그게 관절 각도 측정 �
 
 ### 1-5. KWS — 라이선스 필터가 후보를 반으로 줄였다
 
-이 리포에서 가장 재사용 가치가 높은 표다. "상업적으로 못 쓰는 것"이 생각보다 많다.
+**KWS는 측정까지 못 갔지만 이 표는 남긴다.** 실측 없이도 성립하는 결과이고, 이 리포에서
+가장 재사용 가치가 높다 — "상업적으로 못 쓰는 것"이 생각보다 많다.
 
 | 후보 | 코드 | 데이터 | 상업 | 판정 |
 |---|---|---|---|---|

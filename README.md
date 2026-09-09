@@ -18,12 +18,16 @@
 | Vision | YOLOv8n int8 TFLite | 3.19 MB | **9.23 FPS** | 합격 |
 | Pose | MoveNet Thunder INT8 TFLite | 6.80 MB | **9.69 FPS** | 합격 |
 | ASR | Whisper Tiny.en TFLite (DRQ) | 39.7 MB | **3.18 s** (11초 오디오) | 합격 |
-| KWS | MLPerf Tiny DS-CNN INT8 | 52 KB | **미측정** | 후보 선정만 완료 |
 
 합격선: e2e FPS ≥ 8 · RSS ≪ 2.4 GB · thermal ≤ 70 °C · dropped frames = 0
 
 세 라인 모두 **invoke(추론)가 병목**이고 전처리·후처리·드로잉은 다 합쳐도 13~22 %다.
 화면을 꺼도 FPS가 안 오르는 이유가 이것이다.
+
+> **네 번째 라인(KWS)은 재지 못했다.** 후보 선정과 라이선스 검토까지만 하고 사이클이
+> 끝나서, 구현 코드와 함께 리포에서 뺐다. 조사 결과는 남아 있다 —
+> [`docs/lessons.md`](docs/lessons.md) §1-5가 그것이고, 이 리포에서 가장 재사용
+> 가치가 높은 표다.
 
 > **thermal은 여유가 없다.** 짧은 측정에서는 68.6 °C였지만 지속 구동에서 71.4 °C까지
 > 올라 합격선을 넘겼다. soak 측정은 하지 않았다.
@@ -53,8 +57,7 @@ unoq-edge-ai-lines/
 ├── vision/                YOLOv8n int8 — 코드 · Dockerfile · benchmarks/*.json
 ├── pose/                  MoveNet Thunder — 코드 · Dockerfile
 │   └── ptz/               PTZ PoC (Shawn Hymel fork, MIT). 후속은 health_care_bot으로 이관
-├── asr/                   Whisper Tiny.en — 코드 · Dockerfile
-└── kws/                   DS-CNN — 코드 · Dockerfile (측정 전)
+└── asr/                   Whisper Tiny.en — 코드 · Dockerfile
 ```
 
 **모델 출처·라이선스는 [`docs/lessons.md`](docs/lessons.md) §1-2에 있다** — 전부 외부
